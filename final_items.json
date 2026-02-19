@@ -1,0 +1,258 @@
+[
+  {
+    "name": "Reinforced Gollux Earrings",
+    "type": "Earring",
+    "item_lv": 140,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1032222/icon",
+    "set": "Reinforced Gollux Set"
+  },
+  {
+    "name": "Reinforced Gollux Ring",
+    "type": "Ring",
+    "item_lv": 140,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1113074/icon",
+    "set": "Reinforced Gollux Set"
+  },
+  {
+    "name": "Reinforced Engraved Gollux Pendant",
+    "type": "Pendant",
+    "item_lv": 140,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1122266/icon",
+    "set": "Reinforced Gollux Set"
+  },
+  {
+    "name": "Reinforced Engraved Gollux Belt",
+    "type": "Belt",
+    "item_lv": 140,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1132245/icon",
+    "set": "Reinforced Gollux Set"
+  },
+  {
+    "name": "Horntail Necklace",
+    "type": "Pendant",
+    "item_lv": 120,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1122000/icon",
+    "set": "Boss Accessory Set"
+  },
+  {
+    "name": "Papulatus Mark",
+    "type": "Eye Acc.",
+    "item_lv": 145,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1022277/icon",
+    "set": "Boss Accessory Set"
+  },
+  {
+    "name": "Black Bean Mark",
+    "type": "Eye Acc.",
+    "item_lv": 135,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1022232/icon",
+    "set": "Boss Accessory Set"
+  },
+  {
+    "name": "Arcane Umbra Knight Hat",
+    "type": "Hat",
+    "item_lv": 200,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1004808/icon",
+    "set": "Arcane Umbra Set (Warrior)"
+  },
+  {
+    "name": "Arcane Umbra Knight Shoes",
+    "type": "Shoes",
+    "item_lv": 200,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1073158/icon",
+    "set": "Arcane Umbra Set (Warrior)"
+  },
+  {
+    "name": "Arcane Umbra Knight Gloves",
+    "type": "Gloves",
+    "item_lv": 200,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1082695/icon",
+    "set": "Arcane Umbra Set (Warrior)"
+  },
+  {
+    "name": "Arcane Umbra Knight Cape",
+    "type": "Cape",
+    "item_lv": 200,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1102940/icon",
+    "set": "Arcane Umbra Set (Warrior)"
+  },
+  {
+    "name": "Arcane Umbra Knight Shoulder",
+    "type": "Shoulder",
+    "item_lv": 200,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1152196/icon",
+    "set": "Arcane Umbra Set (Warrior)"
+  },
+  {
+    "name": "Arcane Umbra Mage Hat",
+    "type": "Hat",
+    "item_lv": 200,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1004809/icon",
+    "set": "Arcane Umbra Set (Magician)"
+  },
+  {
+    "name": "Arcane Umbra Mage Shoes",
+    "type": "Shoes",
+    "item_lv": 200,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1073159/icon",
+    "set": "Arcane Umbra Set (Magician)"
+  },
+  {
+    "name": "Arcane Umbra Mage Gloves",
+    "type": "Gloves",
+    "item_lv": 200,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1082696/icon",
+    "set": "Arcane Umbra Set (Magician)"
+  },
+  {
+    "name": "Arcane Umbra Mage Cape",
+    "type": "Cape",
+    "item_lv": 200,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1102941/icon",
+    "set": "Arcane Umbra Set (Magician)"
+  },
+  {
+    "name": "Arcane Umbra Mage Shoulder",
+    "type": "Shoulder",
+    "item_lv": 200,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1152197/icon",
+    "set": "Arcane Umbra Set (Magician)"
+  },
+  {
+    "name": "Arcane Umbra Archer Hat",
+    "type": "Hat",
+    "item_lv": 200,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1004810/icon",
+    "set": "Arcane Umbra Set (Bowman)"
+  },
+  {
+    "name": "Arcane Umbra Archer Shoes",
+    "type": "Shoes",
+    "item_lv": 200,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1073160/icon",
+    "set": "Arcane Umbra Set (Bowman)"
+  },
+  {
+    "name": "Arcane Umbra Archer Gloves",
+    "type": "Gloves",
+    "item_lv": 200,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1082697/icon",
+    "set": "Arcane Umbra Set (Bowman)"
+  },
+  {
+    "name": "Arcane Umbra Archer Cape",
+    "type": "Cape",
+    "item_lv": 200,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1102942/icon",
+    "set": "Arcane Umbra Set (Bowman)"
+  },
+  {
+    "name": "Arcane Umbra Archer Shoulder",
+    "type": "Shoulder",
+    "item_lv": 200,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1152198/icon",
+    "set": "Arcane Umbra Set (Bowman)"
+  },
+  {
+    "name": "Arcane Umbra Thief Hat",
+    "type": "Hat",
+    "item_lv": 200,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1004811/icon",
+    "set": "Arcane Umbra Set (Thief)"
+  },
+  {
+    "name": "Arcane Umbra Thief Shoes",
+    "type": "Shoes",
+    "item_lv": 200,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1073161/icon",
+    "set": "Arcane Umbra Set (Thief)"
+  },
+  {
+    "name": "Arcane Umbra Thief Gloves",
+    "type": "Gloves",
+    "item_lv": 200,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1082698/icon",
+    "set": "Arcane Umbra Set (Thief)"
+  },
+  {
+    "name": "Arcane Umbra Thief Cape",
+    "type": "Cape",
+    "item_lv": 200,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1102943/icon",
+    "set": "Arcane Umbra Set (Thief)"
+  },
+  {
+    "name": "Arcane Umbra Thief Shoulder",
+    "type": "Shoulder",
+    "item_lv": 200,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1152199/icon",
+    "set": "Arcane Umbra Set (Thief)"
+  },
+  {
+    "name": "Arcane Umbra Pirate Hat",
+    "type": "Hat",
+    "item_lv": 200,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1004812/icon",
+    "set": "Arcane Umbra Set (Pirate)"
+  },
+  {
+    "name": "Arcane Umbra Pirate Shoes",
+    "type": "Shoes",
+    "item_lv": 200,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1073162/icon",
+    "set": "Arcane Umbra Set (Pirate)"
+  },
+  {
+    "name": "Arcane Umbra Pirate Gloves",
+    "type": "Gloves",
+    "item_lv": 200,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1082699/icon",
+    "set": "Arcane Umbra Set (Pirate)"
+  },
+  {
+    "name": "Arcane Umbra Pirate Cape",
+    "type": "Cape",
+    "item_lv": 200,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1102944/icon",
+    "set": "Arcane Umbra Set (Pirate)"
+  },
+  {
+    "name": "Arcane Umbra Pirate Shoulder",
+    "type": "Shoulder",
+    "item_lv": 200,
+    "slots": 0,
+    "image_url": "https://maplestory.io/api/gms/253/item/1152200/icon",
+    "set": "Arcane Umbra Set (Pirate)"
+  }
+]

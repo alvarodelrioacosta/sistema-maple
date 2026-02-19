@@ -1,0 +1,7156 @@
+{
+  "main_potential": [
+    {
+      "item_type": "Hat",
+      "rank": "Epic",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Epic",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Epic",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Epic",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Epic",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Epic",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Epic",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Epic",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+1%",
+      "val_31_70": "+2%",
+      "val_71": "+3%",
+      "val_151": "+4%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Unique",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Unique",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Unique",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Unique",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Unique",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Unique",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Unique",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Unique",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Unique",
+      "potential_name": "Does not apply to MP potion recovery (for dual heal potions, only HP is affected) and any % based potion or skill heal applied individually.",
+      "val_0_30": "+10%",
+      "val_31_70": "+20%",
+      "val_71": "+30%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "5.5555% (1 in 18)"
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "5.5555% (1 in 18)"
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "5.5555% (1 in 18)"
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "5.5555% (1 in 18)"
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "8.3333% (1 in 12)"
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "8.3333% (1 in 12)"
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "8.3333% (1 in 12)"
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "5.5555% (1 in 18)"
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "8.3333% (1 in 12)"
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "8.3333% (1 in 12)"
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "Does not apply to MP potion recovery (for dual heal potions, only HP is affected) and any % based potion or skill heal applied individually.",
+      "val_0_30": "+20%",
+      "val_31_70": "+30%",
+      "val_71": "+40%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "8.3333% (1 in 12)"
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "8.3333% (1 in 12)"
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "5.5555% (1 in 18)"
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "8.3333% (1 in 12)"
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Epic",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Epic",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Epic",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Epic",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Epic",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Epic",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Epic",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Epic",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+1%",
+      "val_31_70": "+2%",
+      "val_71": "+3%",
+      "val_151": "+4%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "Reflect damage at a chance",
+      "val_0_30": "10%",
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "Reflect damage at a chance",
+      "val_0_30": "10%",
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "Does not apply to MP potion recovery (for dual heal potions, only HP is affected) and any % based potion or skill heal applied individually.",
+      "val_0_30": "+10%",
+      "val_31_70": "+20%",
+      "val_71": "+30%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Legendary",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Legendary",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Legendary",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Legendary",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Legendary",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Legendary",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Legendary",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Legendary",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Legendary",
+      "potential_name": "Does not apply to MP potion recovery (for dual heal potions, only HP is affected) and any % based potion or skill heal applied individually.",
+      "val_0_30": "+20%",
+      "val_31_70": "+30%",
+      "val_71": "+40%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Epic",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Epic",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Epic",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Epic",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Epic",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Epic",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Epic",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Epic",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+1%",
+      "val_31_70": "+2%",
+      "val_71": "+3%",
+      "val_151": "+4%",
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Unique",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Unique",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Unique",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Unique",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Unique",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Unique",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Unique",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Unique",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Unique",
+      "potential_name": "Does not apply to MP potion recovery (for dual heal potions, only HP is affected) and any % based potion or skill heal applied individually.",
+      "val_0_30": "+10%",
+      "val_31_70": "+20%",
+      "val_71": "+30%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Legendary",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Legendary",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Legendary",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Legendary",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Legendary",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Legendary",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Legendary",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Legendary",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Legendary",
+      "potential_name": "Reflect damage at a chance",
+      "val_0_30": "10%",
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Legendary",
+      "potential_name": "Reflect damage at a chance",
+      "val_0_30": "10%",
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Bottom",
+      "rank": "Legendary",
+      "potential_name": "Does not apply to MP potion recovery (for dual heal potions, only HP is affected) and any % based potion or skill heal applied individually.",
+      "val_0_30": "+20%",
+      "val_31_70": "+30%",
+      "val_71": "+40%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Epic",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Epic",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Epic",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Epic",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Epic",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Epic",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Epic",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Epic",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+1%",
+      "val_31_70": "+2%",
+      "val_71": "+3%",
+      "val_151": "+4%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "4.2553% (1 in 23.5)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "4.2553% (1 in 23.5)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "4.2553% (1 in 23.5)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "4.2553% (1 in 23.5)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "6.3829% (1 in 15.6666)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "6.3829% (1 in 15.6666)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "6.3829% (1 in 15.6666)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "2.1276% (1 in 47)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "6.3829% (1 in 15.6666)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "6.3829% (1 in 15.6666)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "6.3829% (1 in 15.6666)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "6.3829% (1 in 15.6666)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "6.3829% (1 in 15.6666)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "6.3829% (1 in 15.6666)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "Does not apply to MP potion recovery (for dual heal potions, only HP is affected) and any % based potion or skill heal applied individually.",
+      "val_0_30": "+10%",
+      "val_31_70": "+20%",
+      "val_71": "+30%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "6.3829% (1 in 15.6666)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "6.3829% (1 in 15.6666)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "6.3829% (1 in 15.6666)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "4.2553% (1 in 23.5)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "4.5454% (1 in 22)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "4.5454% (1 in 22)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "4.5454% (1 in 22)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "4.5454% (1 in 22)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "6.8181% (1 in 14.6666)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "6.8181% (1 in 14.6666)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "6.8181% (1 in 14.6666)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "9.0909% (1 in 11)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "4.5454% (1 in 22)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "6.8181% (1 in 14.6666)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "6.8181% (1 in 14.6666)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "Does not apply to MP potion recovery (for dual heal potions, only HP is affected) and any % based potion or skill heal applied individually.",
+      "val_0_30": "+20%",
+      "val_31_70": "+30%",
+      "val_71": "+40%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "6.8181% (1 in 14.6666)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "6.8181% (1 in 14.6666)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "6.8181% (1 in 14.6666)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "6.8181% (1 in 14.6666)"
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "Chance to obtain the stat",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": "6.8181% (1 in 14.6666)"
+    },
+    {
+      "item_type": "Shoes",
+      "rank": "Epic",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Shoes",
+      "rank": "Epic",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Shoes",
+      "rank": "Epic",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Shoes",
+      "rank": "Epic",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Shoes",
+      "rank": "Epic",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Shoes",
+      "rank": "Epic",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Shoes",
+      "rank": "Epic",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Shoes",
+      "rank": "Epic",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+1%",
+      "val_31_70": "+2%",
+      "val_71": "+3%",
+      "val_151": "+4%",
+      "val_120": null
+    },
+    {
+      "item_type": "Shoes",
+      "rank": "Unique",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Shoes",
+      "rank": "Unique",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Shoes",
+      "rank": "Unique",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Shoes",
+      "rank": "Unique",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Shoes",
+      "rank": "Unique",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Shoes",
+      "rank": "Unique",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Shoes",
+      "rank": "Unique",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Shoes",
+      "rank": "Unique",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Shoes",
+      "rank": "Unique",
+      "potential_name": "Does not apply to MP potion recovery (for dual heal potions, only HP is affected) and any % based potion or skill heal applied individually.",
+      "val_0_30": "+10%",
+      "val_31_70": "+20%",
+      "val_71": "+30%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Shoes",
+      "rank": "Legendary",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Shoes",
+      "rank": "Legendary",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Shoes",
+      "rank": "Legendary",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Shoes",
+      "rank": "Legendary",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Shoes",
+      "rank": "Legendary",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Shoes",
+      "rank": "Legendary",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Shoes",
+      "rank": "Legendary",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Shoes",
+      "rank": "Legendary",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Shoes",
+      "rank": "Legendary",
+      "potential_name": "Does not apply to MP potion recovery (for dual heal potions, only HP is affected) and any % based potion or skill heal applied individually.",
+      "val_0_30": "+20%",
+      "val_31_70": "+30%",
+      "val_71": "+40%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Cape/Belt/Shoulder",
+      "rank": "Epic",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Cape/Belt/Shoulder",
+      "rank": "Epic",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Cape/Belt/Shoulder",
+      "rank": "Epic",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Cape/Belt/Shoulder",
+      "rank": "Epic",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Cape/Belt/Shoulder",
+      "rank": "Epic",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Cape/Belt/Shoulder",
+      "rank": "Epic",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Cape/Belt/Shoulder",
+      "rank": "Epic",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Cape/Belt/Shoulder",
+      "rank": "Epic",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+1%",
+      "val_31_70": "+2%",
+      "val_71": "+3%",
+      "val_151": "+4%",
+      "val_120": null
+    },
+    {
+      "item_type": "Cape/Belt/Shoulder",
+      "rank": "Unique",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Cape/Belt/Shoulder",
+      "rank": "Unique",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Cape/Belt/Shoulder",
+      "rank": "Unique",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Cape/Belt/Shoulder",
+      "rank": "Unique",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Cape/Belt/Shoulder",
+      "rank": "Unique",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Cape/Belt/Shoulder",
+      "rank": "Unique",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Cape/Belt/Shoulder",
+      "rank": "Unique",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Cape/Belt/Shoulder",
+      "rank": "Unique",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Cape/Belt/Shoulder",
+      "rank": "Unique",
+      "potential_name": "Does not apply to MP potion recovery (for dual heal potions, only HP is affected) and any % based potion or skill heal applied individually.",
+      "val_0_30": "+10%",
+      "val_31_70": "+20%",
+      "val_71": "+30%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Cape/Belt/Shoulder",
+      "rank": "Legendary",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Cape/Belt/Shoulder",
+      "rank": "Legendary",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Cape/Belt/Shoulder",
+      "rank": "Legendary",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Cape/Belt/Shoulder",
+      "rank": "Legendary",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Cape/Belt/Shoulder",
+      "rank": "Legendary",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Cape/Belt/Shoulder",
+      "rank": "Legendary",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Cape/Belt/Shoulder",
+      "rank": "Legendary",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Cape/Belt/Shoulder",
+      "rank": "Legendary",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Cape/Belt/Shoulder",
+      "rank": "Legendary",
+      "potential_name": "Does not apply to MP potion recovery (for dual heal potions, only HP is affected) and any % based potion or skill heal applied individually.",
+      "val_0_30": "+20%",
+      "val_31_70": "+30%",
+      "val_71": "+40%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+1%",
+      "val_31_70": "+2%",
+      "val_71": "+3%",
+      "val_151": "+4%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "Does not apply to MP potion recovery (for dual heal potions, only HP is affected) and any % based potion or skill heal applied individually.",
+      "val_0_30": "+10%",
+      "val_31_70": "+20%",
+      "val_71": "+30%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "MP cost reduction as listed.",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "17%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "MP cost reduction as listed.",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "35%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "Does not apply to MP potion recovery (for dual heal potions, only HP is affected) and any % based potion or skill heal applied individually.",
+      "val_0_30": "+20%",
+      "val_31_70": "+30%",
+      "val_71": "+40%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "Maximum +100% from equipment Potentials and Bonus Potentials.",
+      "val_0_30": "+10%",
+      "val_31_70": "+15%",
+      "val_71": "+20%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "Maximum +200% from equipment Potentials and Bonus Potentials.",
+      "val_0_30": "+10%",
+      "val_31_70": "+15%",
+      "val_71": "+20%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "Weapon ATT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "Magic ATT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "Damage % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+1%",
+      "val_31_70": "+2%",
+      "val_71": "+3%",
+      "val_151": "+4%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "Weapon ATT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "Magic ATT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "Critical Rate % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "Damage % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "Weapon ATT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "Magic ATT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "Critical Rate % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "Damage % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "Weapon ATT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "Magic ATT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "Damage % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+1%",
+      "val_31_70": "+2%",
+      "val_71": "+3%",
+      "val_151": "+4%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "Weapon ATT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "Magic ATT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "Critical Rate % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "Damage % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "Weapon ATT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "Magic ATT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "Critical Rate % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "Damage % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "Weapon ATT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "Magic ATT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "Damage % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+1%",
+      "val_31_70": "+2%",
+      "val_71": "+3%",
+      "val_151": "+4%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "Weapon ATT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "Magic ATT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "Critical Rate % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "Damage % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "Weapon ATT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "Magic ATT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "Critical Rate % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "Damage % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Epic",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Epic",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Epic",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Epic",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Epic",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Epic",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Epic",
+      "potential_name": "Weapon ATT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Epic",
+      "potential_name": "Magic ATT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Epic",
+      "potential_name": "Damage % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Epic",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+1%",
+      "val_31_70": "+2%",
+      "val_71": "+3%",
+      "val_151": "+4%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Unique",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Unique",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Unique",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Unique",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Unique",
+      "potential_name": "Weapon ATT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Unique",
+      "potential_name": "Magic ATT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Unique",
+      "potential_name": "Critical Rate % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Unique",
+      "potential_name": "Damage % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Unique",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Legendary",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Legendary",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Legendary",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Legendary",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Legendary",
+      "potential_name": "Weapon ATT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Legendary",
+      "potential_name": "Magic ATT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Legendary",
+      "potential_name": "Critical Rate % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Legendary",
+      "potential_name": "Damage % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Legendary",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Epic",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Epic",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Epic",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Epic",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Epic",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Epic",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Epic",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Epic",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+1%",
+      "val_31_70": "+2%",
+      "val_71": "+3%",
+      "val_151": "+4%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Unique",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Unique",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Unique",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Unique",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Unique",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Unique",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Unique",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Unique",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Unique",
+      "potential_name": "Does not apply to MP potion recovery (for dual heal potions, only HP is affected) and any % based potion or skill heal applied individually.",
+      "val_0_30": "+10%",
+      "val_31_70": "+20%",
+      "val_71": "+30%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Legendary",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Legendary",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Legendary",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Legendary",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Legendary",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Legendary",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Legendary",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Legendary",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Legendary",
+      "potential_name": "Does not apply to MP potion recovery (for dual heal potions, only HP is affected) and any % based potion or skill heal applied individually.",
+      "val_0_30": "+20%",
+      "val_31_70": "+30%",
+      "val_71": "+40%",
+      "val_151": null,
+      "val_120": null
+    }
+  ],
+  "bonus_potential": [
+    {
+      "item_type": "Hat",
+      "rank": "Epic",
+      "potential_name": "Weapon ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+12",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Epic",
+      "potential_name": "Magic ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+12",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Epic",
+      "potential_name": "DEF Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+150",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Epic",
+      "potential_name": "Speed Increase",
+      "val_0_30": "+4",
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Epic",
+      "potential_name": "Jump Increase",
+      "val_0_30": "+4",
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Epic",
+      "potential_name": "STR % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Epic",
+      "potential_name": "DEX % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Epic",
+      "potential_name": "INT % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Epic",
+      "potential_name": "LUK % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Epic",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Epic",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Epic",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+1%",
+      "val_31_70": "+2%",
+      "val_71": "+4%",
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Epic",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+3%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Unique",
+      "potential_name": "STR Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+14",
+      "val_151": "+17",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Unique",
+      "potential_name": "DEX Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+14",
+      "val_151": "+17",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Unique",
+      "potential_name": "INT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+14",
+      "val_151": "+17",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Unique",
+      "potential_name": "LUK Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+14",
+      "val_151": "+17",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Unique",
+      "potential_name": "Weapon ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+13",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Unique",
+      "potential_name": "Magic ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+13",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Unique",
+      "potential_name": "DEF Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+185",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Unique",
+      "potential_name": "MaxHP Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+160",
+      "val_151": "+250",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Unique",
+      "potential_name": "MaxMP Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+160",
+      "val_151": "+250",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Unique",
+      "potential_name": "STR % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Unique",
+      "potential_name": "DEX % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Unique",
+      "potential_name": "INT % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Unique",
+      "potential_name": "LUK % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Unique",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Unique",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Unique",
+      "potential_name": "DEF % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Unique",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "STR Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+16",
+      "val_151": "+19",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "DEX Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+16",
+      "val_151": "+19",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "INT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+16",
+      "val_151": "+19",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "LUK Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+16",
+      "val_151": "+19",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "Weapon ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+15",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "Magic ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+15",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "DEF Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+250",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "MaxHP Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+200",
+      "val_151": "+310",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "MaxMP Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+200",
+      "val_151": "+310",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "STR % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "DEX % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "INT % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "LUK % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+11%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+11%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "DEF % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+11%",
+      "val_120": null
+    },
+    {
+      "item_type": "Hat",
+      "rank": "Legendary",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Epic",
+      "potential_name": "Weapon ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+12",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Epic",
+      "potential_name": "Magic ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+12",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Epic",
+      "potential_name": "DEF Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+150",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Epic",
+      "potential_name": "Speed Increase",
+      "val_0_30": "+4",
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Epic",
+      "potential_name": "Jump Increase",
+      "val_0_30": "+4",
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Epic",
+      "potential_name": "STR % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Epic",
+      "potential_name": "DEX % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Epic",
+      "potential_name": "INT % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Epic",
+      "potential_name": "LUK % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Epic",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Epic",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Epic",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+1%",
+      "val_31_70": "+2%",
+      "val_71": "+4%",
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Epic",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+3%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "STR Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+14",
+      "val_151": "+17",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "DEX Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+14",
+      "val_151": "+17",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "INT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+14",
+      "val_151": "+17",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "LUK Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+14",
+      "val_151": "+17",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "Weapon ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+13",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "Magic ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+13",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "DEF Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+185",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "MaxHP Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+160",
+      "val_151": "+250",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "MaxMP Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+160",
+      "val_151": "+250",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "STR % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "DEX % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "INT % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "LUK % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "DEF % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Unique",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Legendary",
+      "potential_name": "STR Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+16",
+      "val_151": "+19",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Legendary",
+      "potential_name": "DEX Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+16",
+      "val_151": "+19",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Legendary",
+      "potential_name": "INT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+16",
+      "val_151": "+19",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Legendary",
+      "potential_name": "LUK Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+16",
+      "val_151": "+19",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Legendary",
+      "potential_name": "Weapon ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+15",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Legendary",
+      "potential_name": "Magic ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+15",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Legendary",
+      "potential_name": "DEF Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+250",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Legendary",
+      "potential_name": "MaxHP Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+200",
+      "val_151": "+310",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Legendary",
+      "potential_name": "MaxMP Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+200",
+      "val_151": "+310",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Legendary",
+      "potential_name": "STR % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Legendary",
+      "potential_name": "DEX % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Legendary",
+      "potential_name": "INT % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Legendary",
+      "potential_name": "LUK % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Legendary",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+11%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Legendary",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+11%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Legendary",
+      "potential_name": "DEF % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+11%",
+      "val_120": null
+    },
+    {
+      "item_type": "Top/Overall",
+      "rank": "Legendary",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Epic",
+      "potential_name": "Weapon ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+12",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Epic",
+      "potential_name": "Magic ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+12",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Epic",
+      "potential_name": "DEF Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+150",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Epic",
+      "potential_name": "Speed Increase",
+      "val_0_30": "+4",
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Epic",
+      "potential_name": "Jump Increase",
+      "val_0_30": "+4",
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Epic",
+      "potential_name": "STR % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Epic",
+      "potential_name": "DEX % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Epic",
+      "potential_name": "INT % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Epic",
+      "potential_name": "LUK % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Epic",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Epic",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Epic",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+1%",
+      "val_31_70": "+2%",
+      "val_71": "+4%",
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Epic",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+3%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "STR Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+14",
+      "val_151": "+17",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "DEX Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+14",
+      "val_151": "+17",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "INT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+14",
+      "val_151": "+17",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "LUK Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+14",
+      "val_151": "+17",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "Weapon ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+13",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "Magic ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+13",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "DEF Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+185",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "MaxHP Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+160",
+      "val_151": "+250",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "MaxMP Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+160",
+      "val_151": "+250",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "STR % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "DEX % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "INT % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "LUK % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "DEF % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Unique",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "STR Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+16",
+      "val_151": "+19",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "DEX Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+16",
+      "val_151": "+19",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "INT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+16",
+      "val_151": "+19",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "LUK Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+16",
+      "val_151": "+19",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "Weapon ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+15",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "Magic ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+15",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "DEF Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+250",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "MaxHP Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+200",
+      "val_151": "+310",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "MaxMP Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+200",
+      "val_151": "+310",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "STR % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "DEX % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "INT % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "LUK % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+11%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+11%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "DEF % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+11%",
+      "val_120": null
+    },
+    {
+      "item_type": "Gloves",
+      "rank": "Legendary",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "Weapon ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+12",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "Magic ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+12",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "DEF Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+150",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "Speed Increase",
+      "val_0_30": "+4",
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "Jump Increase",
+      "val_0_30": "+4",
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "STR % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "DEX % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "INT % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "LUK % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+1%",
+      "val_31_70": "+2%",
+      "val_71": "+4%",
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Epic",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+3%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "STR Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+14",
+      "val_151": "+17",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "DEX Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+14",
+      "val_151": "+17",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "INT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+14",
+      "val_151": "+17",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "LUK Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+14",
+      "val_151": "+17",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "Weapon ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+13",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "Magic ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+13",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "DEF Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+185",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "MaxHP Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+160",
+      "val_151": "+250",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "MaxMP Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+160",
+      "val_151": "+250",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "STR % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "DEX % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "INT % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "LUK % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "DEF % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Unique",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "STR Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+16",
+      "val_151": "+19",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "DEX Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+16",
+      "val_151": "+19",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "INT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+16",
+      "val_151": "+19",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "LUK Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+16",
+      "val_151": "+19",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "Weapon ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+15",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "Magic ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+15",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "DEF Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+250",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "MaxHP Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+200",
+      "val_151": "+310",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "MaxMP Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+200",
+      "val_151": "+310",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "STR % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "DEX % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "INT % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "LUK % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+11%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+11%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "DEF % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+11%",
+      "val_120": null
+    },
+    {
+      "item_type": "Accessory",
+      "rank": "Legendary",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Epic",
+      "potential_name": "Weapon ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+12",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Epic",
+      "potential_name": "Magic ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+12",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Epic",
+      "potential_name": "DEF Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+150",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Epic",
+      "potential_name": "Speed Increase",
+      "val_0_30": "+4",
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Epic",
+      "potential_name": "Jump Increase",
+      "val_0_30": "+4",
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": null,
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Epic",
+      "potential_name": "STR % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Epic",
+      "potential_name": "DEX % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Epic",
+      "potential_name": "INT % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Epic",
+      "potential_name": "LUK % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Epic",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Epic",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Epic",
+      "potential_name": "DEF % Increase",
+      "val_0_30": "+1%",
+      "val_31_70": "+2%",
+      "val_71": "+4%",
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Epic",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+3%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Unique",
+      "potential_name": "STR Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+14",
+      "val_151": "+17",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Unique",
+      "potential_name": "DEX Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+14",
+      "val_151": "+17",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Unique",
+      "potential_name": "INT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+14",
+      "val_151": "+17",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Unique",
+      "potential_name": "LUK Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+14",
+      "val_151": "+17",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Unique",
+      "potential_name": "Weapon ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+13",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Unique",
+      "potential_name": "Magic ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+13",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Unique",
+      "potential_name": "DEF Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+185",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Unique",
+      "potential_name": "MaxHP Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+160",
+      "val_151": "+250",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Unique",
+      "potential_name": "MaxMP Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+160",
+      "val_151": "+250",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Unique",
+      "potential_name": "STR % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Unique",
+      "potential_name": "DEX % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Unique",
+      "potential_name": "INT % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Unique",
+      "potential_name": "LUK % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Unique",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Unique",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Unique",
+      "potential_name": "DEF % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Unique",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+5%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Legendary",
+      "potential_name": "STR Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+16",
+      "val_151": "+19",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Legendary",
+      "potential_name": "DEX Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+16",
+      "val_151": "+19",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Legendary",
+      "potential_name": "INT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+16",
+      "val_151": "+19",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Legendary",
+      "potential_name": "LUK Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+16",
+      "val_151": "+19",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Legendary",
+      "potential_name": "Weapon ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+15",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Legendary",
+      "potential_name": "Magic ATT Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+15",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Legendary",
+      "potential_name": "DEF Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+250",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Legendary",
+      "potential_name": "MaxHP Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+200",
+      "val_151": "+310",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Legendary",
+      "potential_name": "MaxMP Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "+200",
+      "val_151": "+310",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Legendary",
+      "potential_name": "STR % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Legendary",
+      "potential_name": "DEX % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Legendary",
+      "potential_name": "INT % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Legendary",
+      "potential_name": "LUK % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Legendary",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+11%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Legendary",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+11%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Legendary",
+      "potential_name": "DEF % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+11%",
+      "val_120": null
+    },
+    {
+      "item_type": "Heart/Badge",
+      "rank": "Legendary",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "Weapon ATT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "Magic ATT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "Damage % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "Critical Rate % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+1%",
+      "val_31_70": "+2%",
+      "val_71": "+3%",
+      "val_151": "+4%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "Weapon ATT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "Magic ATT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "Damage % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "Critical Rate % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "HP recovered as listed.",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "75",
+      "val_151": "97",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "MP recovered as listed.",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "75",
+      "val_151": "97",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "Weapon ATT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "Magic ATT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "Damage % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "Critical Rate % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+11%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+11%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Epic",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Epic",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Epic",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Epic",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Epic",
+      "potential_name": "Weapon ATT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Epic",
+      "potential_name": "Magic ATT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Epic",
+      "potential_name": "Damage % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Epic",
+      "potential_name": "Critical Rate % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Epic",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Epic",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Epic",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+1%",
+      "val_31_70": "+2%",
+      "val_71": "+3%",
+      "val_151": "+4%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Unique",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Unique",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Unique",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Unique",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Unique",
+      "potential_name": "Weapon ATT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Unique",
+      "potential_name": "Magic ATT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Unique",
+      "potential_name": "Damage % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Unique",
+      "potential_name": "Critical Rate % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Unique",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Unique",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Unique",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Unique",
+      "potential_name": "HP recovered as listed.",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "75",
+      "val_151": "97",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Unique",
+      "potential_name": "MP recovered as listed.",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "75",
+      "val_151": "97",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Legendary",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Legendary",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Legendary",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Legendary",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Legendary",
+      "potential_name": "Weapon ATT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Legendary",
+      "potential_name": "Magic ATT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Legendary",
+      "potential_name": "Damage % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Legendary",
+      "potential_name": "Critical Rate % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Legendary",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+11%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Legendary",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+11%",
+      "val_120": null
+    },
+    {
+      "item_type": "Emblem",
+      "rank": "Legendary",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "Weapon ATT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "Magic ATT % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "Damage % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "Critical Rate % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+6%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Epic",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+1%",
+      "val_31_70": "+2%",
+      "val_71": "+3%",
+      "val_151": "+4%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "Weapon ATT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "Magic ATT % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "Damage % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "Critical Rate % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+8%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+2%",
+      "val_31_70": "+4%",
+      "val_71": "+6%",
+      "val_151": "+7%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "HP recovered as listed.",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "75",
+      "val_151": "97",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Unique",
+      "potential_name": "MP recovered as listed.",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": "75",
+      "val_151": "97",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "STR % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "DEX % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "INT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "LUK % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "Weapon ATT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "Magic ATT % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "Damage % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "Critical Rate % Increase",
+      "val_0_30": "+6%",
+      "val_31_70": "+9%",
+      "val_71": "+12%",
+      "val_151": "+13%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "MaxHP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+11%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "MaxMP % Increase",
+      "val_0_30": null,
+      "val_31_70": null,
+      "val_71": null,
+      "val_151": "+11%",
+      "val_120": null
+    },
+    {
+      "item_type": "Weapon",
+      "rank": "Legendary",
+      "potential_name": "All Stats % Increase",
+      "val_0_30": "+3%",
+      "val_31_70": "+6%",
+      "val_71": "+9%",
+      "val_151": "+10%",
+      "val_120": null
+    }
+  ]
+}

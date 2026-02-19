@@ -1,0 +1,258 @@
+[
+  {
+    "name": "Reinforced Gollux Earrings",
+    "set": "Reinforced Gollux Set",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Earring",
+    "slots": 0
+  },
+  {
+    "name": "Reinforced Gollux Ring",
+    "set": "Reinforced Gollux Set",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Ring",
+    "slots": 0
+  },
+  {
+    "name": "Reinforced Engraved Gollux Pendant",
+    "set": "Reinforced Gollux Set",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Pendant",
+    "slots": 0
+  },
+  {
+    "name": "Reinforced Engraved Gollux Belt",
+    "set": "Reinforced Gollux Set",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Belt",
+    "slots": 0
+  },
+  {
+    "name": "Horntail Necklace",
+    "set": "Boss Accessory Set",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Unknown",
+    "slots": 0
+  },
+  {
+    "name": "Papulatus Mark",
+    "set": "Boss Accessory Set",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Eye Acc.",
+    "slots": 0
+  },
+  {
+    "name": "Black Bean Mark",
+    "set": "Boss Accessory Set",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Eye Acc.",
+    "slots": 0
+  },
+  {
+    "name": "Arcane Umbra Knight Hat",
+    "set": "Arcane Umbra Set (Warrior)",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Hat",
+    "slots": 0
+  },
+  {
+    "name": "Arcane Umbra Knight Shoes",
+    "set": "Arcane Umbra Set (Warrior)",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Shoes",
+    "slots": 0
+  },
+  {
+    "name": "Arcane Umbra Knight Gloves",
+    "set": "Arcane Umbra Set (Warrior)",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Gloves",
+    "slots": 0
+  },
+  {
+    "name": "Arcane Umbra Knight Cape",
+    "set": "Arcane Umbra Set (Warrior)",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Cape",
+    "slots": 0
+  },
+  {
+    "name": "Arcane Umbra Knight Shoulder",
+    "set": "Arcane Umbra Set (Warrior)",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Shoulder",
+    "slots": 0
+  },
+  {
+    "name": "Arcane Umbra Mage Hat",
+    "set": "Arcane Umbra Set (Magician)",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Hat",
+    "slots": 0
+  },
+  {
+    "name": "Arcane Umbra Mage Shoes",
+    "set": "Arcane Umbra Set (Magician)",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Shoes",
+    "slots": 0
+  },
+  {
+    "name": "Arcane Umbra Mage Gloves",
+    "set": "Arcane Umbra Set (Magician)",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Gloves",
+    "slots": 0
+  },
+  {
+    "name": "Arcane Umbra Mage Cape",
+    "set": "Arcane Umbra Set (Magician)",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Cape",
+    "slots": 0
+  },
+  {
+    "name": "Arcane Umbra Mage Shoulder",
+    "set": "Arcane Umbra Set (Magician)",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Shoulder",
+    "slots": 0
+  },
+  {
+    "name": "Arcane Umbra Archer Hat",
+    "set": "Arcane Umbra Set (Bowman)",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Hat",
+    "slots": 0
+  },
+  {
+    "name": "Arcane Umbra Archer Shoes",
+    "set": "Arcane Umbra Set (Bowman)",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Shoes",
+    "slots": 0
+  },
+  {
+    "name": "Arcane Umbra Archer Gloves",
+    "set": "Arcane Umbra Set (Bowman)",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Gloves",
+    "slots": 0
+  },
+  {
+    "name": "Arcane Umbra Archer Cape",
+    "set": "Arcane Umbra Set (Bowman)",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Cape",
+    "slots": 0
+  },
+  {
+    "name": "Arcane Umbra Archer Shoulder",
+    "set": "Arcane Umbra Set (Bowman)",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Shoulder",
+    "slots": 0
+  },
+  {
+    "name": "Arcane Umbra Thief Hat",
+    "set": "Arcane Umbra Set (Thief)",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Hat",
+    "slots": 0
+  },
+  {
+    "name": "Arcane Umbra Thief Shoes",
+    "set": "Arcane Umbra Set (Thief)",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Shoes",
+    "slots": 0
+  },
+  {
+    "name": "Arcane Umbra Thief Gloves",
+    "set": "Arcane Umbra Set (Thief)",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Gloves",
+    "slots": 0
+  },
+  {
+    "name": "Arcane Umbra Thief Cape",
+    "set": "Arcane Umbra Set (Thief)",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Cape",
+    "slots": 0
+  },
+  {
+    "name": "Arcane Umbra Thief Shoulder",
+    "set": "Arcane Umbra Set (Thief)",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Shoulder",
+    "slots": 0
+  },
+  {
+    "name": "Arcane Umbra Pirate Hat",
+    "set": "Arcane Umbra Set (Pirate)",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Hat",
+    "slots": 0
+  },
+  {
+    "name": "Arcane Umbra Pirate Shoes",
+    "set": "Arcane Umbra Set (Pirate)",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Shoes",
+    "slots": 0
+  },
+  {
+    "name": "Arcane Umbra Pirate Gloves",
+    "set": "Arcane Umbra Set (Pirate)",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Gloves",
+    "slots": 0
+  },
+  {
+    "name": "Arcane Umbra Pirate Cape",
+    "set": "Arcane Umbra Set (Pirate)",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Cape",
+    "slots": 0
+  },
+  {
+    "name": "Arcane Umbra Pirate Shoulder",
+    "set": "Arcane Umbra Set (Pirate)",
+    "image_url": null,
+    "item_lv": 1,
+    "type": "Shoulder",
+    "slots": 0
+  }
+]

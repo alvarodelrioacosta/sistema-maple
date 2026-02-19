@@ -1,0 +1,282 @@
+[
+  {
+    "Set": "Dawn Boss Set",
+    "Name": "Daybreak Pendant",
+    "Type": "Pendant",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/e/e9/Eqp_Daybreak_Pendant.png",
+    "Level": 140
+  },
+  {
+    "Set": "Dawn Boss Set",
+    "Name": "Twilight Mark",
+    "Type": "Face",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/4/46/Eqp_Twilight_Mark.png",
+    "Level": 140
+  },
+  {
+    "Set": "Dawn Boss Set",
+    "Name": "Estella Earrings",
+    "Type": "Ring",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/a/aa/Eqp_Estella_Earrings.png",
+    "Level": 160
+  },
+  {
+    "Set": "Dawn Boss Set",
+    "Name": "Dawn Guardian Angel Ring",
+    "Type": "Ring",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/a/aa/Eqp_Guardian_Angel_Ring.png",
+    "Level": 160
+  },
+  {
+    "Set": "Pitched Boss Set",
+    "Name": "Black Heart",
+    "Type": "Heart",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/9/99/Eqp_Black_Heart.png",
+    "Level": 120
+  },
+  {
+    "Set": "Pitched Boss Set",
+    "Name": "Berserked",
+    "Type": "Face",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/8/89/Eqp_Berserked.png",
+    "Level": 160
+  },
+  {
+    "Set": "Pitched Boss Set",
+    "Name": "Magic Eyepatch",
+    "Type": "Eye",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/c/c1/Eqp_Magic_Eyepatch.png",
+    "Level": 160
+  },
+  {
+    "Set": "Pitched Boss Set",
+    "Name": "Source of Suffering",
+    "Type": "Ring",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/b/bb/Eqp_Source_of_Suffering.png",
+    "Level": 160
+  },
+  {
+    "Set": "Pitched Boss Set",
+    "Name": "Cursed Red Spellbook",
+    "Type": "Pocket",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/c/cb/Eqp_Cursed_Red_Spellbook.png",
+    "Level": 160
+  },
+  {
+    "Set": "Pitched Boss Set",
+    "Name": "Cursed Blue Spellbook",
+    "Type": "Pocket",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/f/f3/Eqp_Cursed_Blue_Spellbook.png",
+    "Level": 160
+  },
+  {
+    "Set": "Pitched Boss Set",
+    "Name": "Cursed Green Spellbook",
+    "Type": "Pocket",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/f/f7/Eqp_Cursed_Green_Spellbook.png",
+    "Level": 160
+  },
+  {
+    "Set": "Pitched Boss Set",
+    "Name": "Cursed Yellow Spellbook",
+    "Type": "Pocket",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/d/d4/Eqp_Cursed_Yellow_Spellbook.png",
+    "Level": 160
+  },
+  {
+    "Set": "Pitched Boss Set",
+    "Name": "Commanding Force Earring",
+    "Type": "Ring",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/9/98/Eqp_Commanding_Force_Earring.png",
+    "Level": 200
+  },
+  {
+    "Set": "Pitched Boss Set",
+    "Name": "Endless Terror",
+    "Type": "Ring",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/8/83/Eqp_Endless_Terror.png",
+    "Level": 200
+  },
+  {
+    "Set": "Pitched Boss Set",
+    "Name": "Dreamy Belt",
+    "Type": "Belt",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/0/02/Eqp_Dreamy_Belt.png",
+    "Level": 200
+  },
+  {
+    "Set": "Pitched Boss Set",
+    "Name": "Genesis Badge",
+    "Type": "Badge",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/d/d2/Eqp_Genesis_Badge.png",
+    "Level": 200
+  },
+  {
+    "Set": "Superior Gollux Set",
+    "Name": "Superior Gollux Earrings",
+    "Type": "Ring",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/9/91/Eqp_Superior_Gollux_Earrings.png",
+    "Level": 150
+  },
+  {
+    "Set": "Superior Gollux Set",
+    "Name": "Superior Gollux Ring",
+    "Type": "Ring",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/6/61/Eqp_Superior_Gollux_Ring.png",
+    "Level": 150
+  },
+  {
+    "Set": "Superior Gollux Set",
+    "Name": "Superior Engraved Gollux Pendant",
+    "Type": "Pendant",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/4/4c/Eqp_Superior_Engraved_Gollux_Pendant.png",
+    "Level": 150
+  },
+  {
+    "Set": "Superior Gollux Set",
+    "Name": "Superior Engraved Gollux Belt",
+    "Type": "Belt",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/f/f7/Eqp_Superior_Engraved_Gollux_Belt.png",
+    "Level": 150
+  },
+  {
+    "Set": "Eternal Set (Warrior)",
+    "Name": "Eternal Knight Helm",
+    "Type": "Hat",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/1/14/Eqp_Eternal_Knight_Helm.png",
+    "Level": 250
+  },
+  {
+    "Set": "Eternal Set (Warrior)",
+    "Name": "Eternal Knight Armor",
+    "Type": "Top",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/0/0e/Eqp_Eternal_Knight_Armor.png",
+    "Level": 250
+  },
+  {
+    "Set": "Eternal Set (Warrior)",
+    "Name": "Eternal Knight Pants",
+    "Type": "Bottom",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/5/57/Eqp_Eternal_Knight_Pants.png",
+    "Level": 250
+  },
+  {
+    "Set": "Eternal Set (Warrior)",
+    "Name": "Eternal Knight Shoulder",
+    "Type": "Shoulder",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/8/8e/Eqp_Eternal_Shoulder.png",
+    "Level": 250
+  },
+  {
+    "Set": "Eternal Set (Magician)",
+    "Name": "Eternal Mage Hat",
+    "Type": "Hat",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/b/b7/Eqp_Eternal_Mage_Hat.png",
+    "Level": 250
+  },
+  {
+    "Set": "Eternal Set (Magician)",
+    "Name": "Eternal Mage Robe",
+    "Type": "Top",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/0/0e/Eqp_Eternal_Mage_Robe.png",
+    "Level": 250
+  },
+  {
+    "Set": "Eternal Set (Magician)",
+    "Name": "Eternal Mage Pants",
+    "Type": "Bottom",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/a/ae/Eqp_Eternal_Mage_Pants.png",
+    "Level": 250
+  },
+  {
+    "Set": "Eternal Set (Magician)",
+    "Name": "Eternal Mage Shoulder",
+    "Type": "Shoulder",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/8/8e/Eqp_Eternal_Shoulder.png",
+    "Level": 250
+  },
+  {
+    "Set": "Eternal Set (Bowman)",
+    "Name": "Eternal Archer Hat",
+    "Type": "Hat",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/d/db/Eqp_Eternal_Archer_Hat.png",
+    "Level": 250
+  },
+  {
+    "Set": "Eternal Set (Bowman)",
+    "Name": "Eternal Archer Hood",
+    "Type": "Top",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/1/12/Eqp_Eternal_Archer_Hood.png",
+    "Level": 250
+  },
+  {
+    "Set": "Eternal Set (Bowman)",
+    "Name": "Eternal Archer Pants",
+    "Type": "Bottom",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/f/f8/Eqp_Eternal_Archer_Pants.png",
+    "Level": 250
+  },
+  {
+    "Set": "Eternal Set (Bowman)",
+    "Name": "Eternal Archer Shoulder",
+    "Type": "Shoulder",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/8/8e/Eqp_Eternal_Shoulder.png",
+    "Level": 250
+  },
+  {
+    "Set": "Eternal Set (Thief)",
+    "Name": "Eternal Thief Bandana",
+    "Type": "Hat",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/8/8e/Eqp_Eternal_Thief_Bandana.png",
+    "Level": 250
+  },
+  {
+    "Set": "Eternal Set (Thief)",
+    "Name": "Eternal Thief Shirt",
+    "Type": "Top",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/7/72/Eqp_Eternal_Thief_Shirt.png",
+    "Level": 250
+  },
+  {
+    "Set": "Eternal Set (Thief)",
+    "Name": "Eternal Thief Pants",
+    "Type": "Bottom",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/a/a7/Eqp_Eternal_Thief_Pants.png",
+    "Level": 250
+  },
+  {
+    "Set": "Eternal Set (Thief)",
+    "Name": "Eternal Thief Shoulder",
+    "Type": "Shoulder",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/8/8e/Eqp_Eternal_Shoulder.png",
+    "Level": 250
+  },
+  {
+    "Set": "Eternal Set (Pirate)",
+    "Name": "Eternal Pirate Hat",
+    "Type": "Hat",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/a/a2/Eqp_Eternal_Pirate_Hat.png",
+    "Level": 250
+  },
+  {
+    "Set": "Eternal Set (Pirate)",
+    "Name": "Eternal Pirate Coat",
+    "Type": "Top",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/f/f7/Eqp_Eternal_Pirate_Coat.png",
+    "Level": 250
+  },
+  {
+    "Set": "Eternal Set (Pirate)",
+    "Name": "Eternal Pirate Pants",
+    "Type": "Bottom",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/2/27/Eqp_Eternal_Pirate_Pants.png",
+    "Level": 250
+  },
+  {
+    "Set": "Eternal Set (Pirate)",
+    "Name": "Eternal Pirate Shoulder",
+    "Type": "Shoulder",
+    "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/8/8e/Eqp_Eternal_Shoulder.png",
+    "Level": 250
+  }
+]

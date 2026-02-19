@@ -1,0 +1,225 @@
+/* =============================================
+   CREATE EVENT MODAL STYLES (PREMIUM REDESIGN)
+   ============================================= */
+
+.create-event-modal {
+    width: 500px;
+    /* More compact width */
+    max-width: 95vw;
+    padding: 0.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    overflow-x: hidden;
+}
+
+.modal-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Sections as Cards with Glassmorphism */
+.form-section {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-section:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Consistent Headers: Icon left, Title right */
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    width: 100%;
+}
+
+.section-header h3 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #a78bfa;
+}
+
+/* Remove the old vertical bar indicator if existed */
+.form-section h3::before {
+    display: none;
+}
+
+.section-icon {
+    font-size: 1.2rem;
+}
+
+/* Layout Grids */
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.form-row.full {
+    grid-template-columns: 1fr;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-field label {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    font-weight: 600;
+    margin-left: 0.25rem;
+}
+
+/* Premium Date Input */
+.date-input {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.date-input:focus {
+    outline: none;
+    background: rgba(0, 0, 0, 0.3);
+    border-color: rgba(167, 139, 250, 0.5);
+    box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.1);
+}
+
+/* Dynamic Rows Styling (Sub-cards) */
+.dynamic-rows-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-height: 40vh;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.dynamic-row {
+    display: grid;
+    grid-template-columns: 2fr 80px 80px 40px;
+    /* Specific ratios: Resource takes more space */
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.2s;
+}
+
+.dynamic-row:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dynamic-row .form-field {
+    min-width: 0;
+    /* Important for grid items */
+}
+
+/* Specific Grid Layouts for Sections */
+.rewards-row {
+    grid-template-columns: 1fr 65px 65px 32px;
+    /* Tighter columns for 500px */
+}
+
+.bosses-row {
+    grid-template-columns: 1fr 80px 32px;
+}
+
+.shop-items-row {
+    grid-template-columns: 1fr 70px 70px 32px;
+}
+
+/* Override flex-basis from before with grid-aware styles */
+.dynamic-row .form-field.smaller,
+.dynamic-row .form-field.small {
+    flex: none;
+}
+
+/* Custom Remove Button */
+.remove-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 1.4rem;
+}
+
+.remove-btn:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.4);
+    transform: scale(1.05);
+}
+
+.remove-btn:disabled {
+    opacity: 0.1;
+    cursor: not-allowed;
+}
+
+/* Footer Actions */
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.error-message {
+    background: rgba(239, 68, 68, 0.1);
+    border-left: 4px solid #ef4444;
+    color: #fca5a5;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Scrollbar styling */
+.dynamic-rows-container::-webkit-scrollbar {
+    width: 4px;
+}
+
+.dynamic-rows-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.dynamic-rows-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}

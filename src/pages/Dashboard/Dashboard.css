@@ -1,0 +1,150 @@
+.dashboard {
+    min-height: 100vh;
+}
+
+.dashboard__content {
+    padding: var(--spacing-xl);
+}
+
+.dashboard__kpis {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+@media (max-width: 1200px) {
+    .dashboard__kpis {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .dashboard__kpis {
+        grid-template-columns: 1fr;
+    }
+}
+
+.dashboard__charts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-lg);
+}
+
+@media (max-width: 1024px) {
+    .dashboard__charts {
+        grid-template-columns: 1fr;
+    }
+}
+
+.dashboard__chart-card,
+.dashboard__stats-card {
+    padding: var(--spacing-lg);
+}
+
+.dashboard__chart-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-lg);
+}
+
+.dashboard__pie-container {
+    position: relative;
+}
+
+.dashboard__pie-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -60%);
+    text-align: center;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.dashboard__pie-total {
+    display: block;
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+}
+
+.dashboard__pie-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+}
+
+.dashboard__loading,
+.dashboard__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    color: var(--color-text-tertiary);
+}
+
+.dashboard__balance {
+    text-align: center;
+    padding: var(--spacing-xl) 0;
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--spacing-lg);
+}
+
+.dashboard__balance-value {
+    display: block;
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+}
+
+.dashboard__balance-value.positive {
+    color: var(--color-success);
+}
+
+.dashboard__balance-value.negative {
+    color: var(--color-danger);
+}
+
+.dashboard__balance-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+}
+
+.dashboard__stats-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.dashboard__stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) 0;
+}
+
+.dashboard__stat-label {
+    color: var(--color-text-secondary);
+}
+
+.dashboard__stat-value {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+}
+
+.dashboard__stats-subtitle {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 2px solid var(--color-bg-tertiary);
+    margin: var(--spacing-md) 0 var(--spacing-xs) 0;
+}
+
+.kpi-card--active {
+    outline: 2px solid var(--color-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}

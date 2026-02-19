@@ -1,0 +1,108 @@
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-lg) var(--spacing-xl);
+    background: var(--color-bg-primary);
+    border-bottom: 1px solid var(--color-border);
+    min-height: var(--header-height);
+}
+
+.header__left {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.header__title {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+.header__subtitle {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    margin: 0;
+}
+
+.header__right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+}
+
+.header__time-group {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.header__date {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    transition: all 0.2s ease;
+    border: 1px solid var(--color-border);
+}
+
+.header__date:hover {
+    background: var(--color-bg-tertiary);
+    border-color: var(--color-primary-light);
+}
+
+.header__date.game-time {
+    background: rgba(124, 58, 237, 0.05);
+    border-color: rgba(124, 58, 237, 0.2);
+}
+
+.header__date.game-time:hover {
+    background: rgba(124, 58, 237, 0.1);
+    border-color: var(--color-primary);
+}
+
+.header__tag {
+    font-size: 10px;
+    font-weight: var(--font-weight-black);
+    color: var(--color-primary);
+    background: rgba(124, 58, 237, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+}
+
+.header__date-icon {
+    font-size: var(--font-size-base);
+    opacity: 0.8;
+}
+
+.header__datetime-container {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.header__date-text {
+    font-weight: var(--font-weight-medium);
+}
+
+.header__time-text {
+    font-family: 'Inter', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-bold);
+    min-width: 45px;
+    text-align: right;
+    border-left: 1px solid var(--color-border);
+    padding-left: var(--spacing-md);
+}
+
+.header__actions {
+    display: flex;
+    gap: var(--spacing-sm);
+}

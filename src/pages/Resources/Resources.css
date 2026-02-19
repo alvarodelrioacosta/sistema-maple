@@ -1,0 +1,160 @@
+.resources-page .page-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.resources-kpis {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-lg);
+}
+
+.kpi-wrapper {
+    flex: 1;
+}
+
+.resource-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.resource-icon-sm {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.resource-icon-text {
+    font-size: 1.2rem;
+}
+
+.account-cell {
+    display: flex;
+    flex-direction: column;
+}
+
+.account-number {
+    font-weight: 500;
+}
+
+.account-email {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.resources-page .account-tag {
+    display: inline-block;
+    padding: 0.1rem 0.4rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    background: var(--color-primary);
+    opacity: 0.8;
+}
+
+.mt-6 {
+    margin-top: 1.5rem;
+}
+
+/* Modal Form Styles */
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+}
+
+/* =============================================
+   RESOURCES MODAL REDESIGN (PREMIUM)
+   ============================================= */
+
+.premium-modal-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+}
+
+.premium-input-row {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 1.25rem !important;
+    padding: 0.6rem 1rem !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-radius: 10px !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    width: 100% !important;
+}
+
+.premium-input-row:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    transform: translateX(4px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.input-value-box {
+    width: 90px !important;
+    flex-shrink: 0 !important;
+}
+
+.input-value-box input {
+    width: 100% !important;
+    background: rgba(15, 23, 42, 0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px !important;
+    color: #fff !important;
+    padding: 0.6rem !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+    font-size: 1.1rem !important;
+    transition: all 0.2s !important;
+    font-family: inherit !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+    margin: 0 !important;
+}
+
+.input-value-box input:focus {
+    outline: none !important;
+    border-color: #a78bfa !important;
+    background: rgba(15, 23, 42, 1) !important;
+    box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.2), inset 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Hide arrows in number input */
+.input-value-box input::-webkit-outer-spin-button,
+.input-value-box input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+}
+
+.input-value-box input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.input-label-text {
+    display: inline-block !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: #94a3b8 !important;
+    letter-spacing: 0.01em !important;
+    transition: color 0.2s !important;
+    flex: 1 !important;
+    text-shadow: none !important;
+}
+
+.premium-input-row:hover .input-label-text {
+    color: #e2e8f0 !important;
+}

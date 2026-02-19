@@ -1,0 +1,583 @@
+[
+    {
+        "Set": "Dawn Boss Set",
+        "Name": "Daybreak Pendant",
+        "Type": "Pendant",
+        "Requirements": "Level 140",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/e/e9/Eqp_Daybreak_Pendant.png"
+    },
+    {
+        "Set": "Dawn Boss Set",
+        "Name": "Twilight Mark",
+        "Type": "Face",
+        "Requirements": "Level 140",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/4/46/Eqp_Twilight_Mark.png"
+    },
+    {
+        "Set": "Dawn Boss Set",
+        "Name": "Estella Earrings",
+        "Type": "Ring",
+        "Requirements": "Level 160",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/a/aa/Eqp_Estella_Earrings.png"
+    },
+    {
+        "Set": "Dawn Boss Set",
+        "Name": "Dawn Guardian Angel Ring",
+        "Type": "Ring",
+        "Requirements": "Level 160",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/a/aa/Eqp_Guardian_Angel_Ring.png"
+    },
+    {
+        "Set": "Pitched Boss Set",
+        "Name": "Black Heart",
+        "Type": "Heart",
+        "Requirements": "Level 120",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/9/99/Eqp_Black_Heart.png"
+    },
+    {
+        "Set": "Pitched Boss Set",
+        "Name": "Berserked",
+        "Type": "Face",
+        "Requirements": "Level 160",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/8/89/Eqp_Berserked.png"
+    },
+    {
+        "Set": "Pitched Boss Set",
+        "Name": "Magic Eyepatch",
+        "Type": "Eye",
+        "Requirements": "Level 160",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/c/c1/Eqp_Magic_Eyepatch.png"
+    },
+    {
+        "Set": "Pitched Boss Set",
+        "Name": "Source of Suffering",
+        "Type": "Ring",
+        "Requirements": "Level 160",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/b/bb/Eqp_Source_of_Suffering.png"
+    },
+    {
+        "Set": "Pitched Boss Set",
+        "Name": "Cursed Red Spellbook",
+        "Type": "Pocket",
+        "Requirements": "Level 160",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/c/cb/Eqp_Cursed_Red_Spellbook.png"
+    },
+    {
+        "Set": "Pitched Boss Set",
+        "Name": "Cursed Blue Spellbook",
+        "Type": "Pocket",
+        "Requirements": "Level 160",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/f/f3/Eqp_Cursed_Blue_Spellbook.png"
+    },
+    {
+        "Set": "Pitched Boss Set",
+        "Name": "Cursed Green Spellbook",
+        "Type": "Pocket",
+        "Requirements": "Level 160",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/f/f7/Eqp_Cursed_Green_Spellbook.png"
+    },
+    {
+        "Set": "Pitched Boss Set",
+        "Name": "Cursed Yellow Spellbook",
+        "Type": "Pocket",
+        "Requirements": "Level 160",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/d/d4/Eqp_Cursed_Yellow_Spellbook.png"
+    },
+    {
+        "Set": "Pitched Boss Set",
+        "Name": "Commanding Force Earring",
+        "Type": "Ring",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/9/98/Eqp_Commanding_Force_Earring.png"
+    },
+    {
+        "Set": "Pitched Boss Set",
+        "Name": "Endless Terror",
+        "Type": "Ring",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/8/83/Eqp_Endless_Terror.png"
+    },
+    {
+        "Set": "Pitched Boss Set",
+        "Name": "Dreamy Belt",
+        "Type": "Belt",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/0/02/Eqp_Dreamy_Belt.png"
+    },
+    {
+        "Set": "Pitched Boss Set",
+        "Name": "Genesis Badge",
+        "Type": "Badge",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/d/d2/Eqp_Genesis_Badge.png"
+    },
+    {
+        "Set": "Pitched Boss Set",
+        "Name": "Mitra's Rage: Warrior",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/5/5f/Eqp_Mitra%27s_Rage_Warrior.png"
+    },
+    {
+        "Set": "Pitched Boss Set",
+        "Name": "Mitra's Rage: Bowman",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/2/21/Eqp_Mitra%27s_Rage_Bowman.png"
+    },
+    {
+        "Set": "Pitched Boss Set",
+        "Name": "Mitra's Rage: Pirate",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/4/46/Eqp_Mitra%27s_Rage_Pirate.png"
+    },
+    {
+        "Set": "Pitched Boss Set",
+        "Name": "Mitra's Rage: Magician",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/b/b2/Eqp_Mitra%27s_Rage_Magician.png"
+    },
+    {
+        "Set": "Pitched Boss Set",
+        "Name": "Mitra's Rage: Thief",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/b/bf/Eqp_Mitra%27s_Rage_Thief.png"
+    },
+    {
+        "Set": "Superior Gollux Set",
+        "Name": "Superior Gollux Earrings",
+        "Type": "Ring",
+        "Requirements": "Level 150",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/9/91/Eqp_Superior_Gollux_Earrings.png"
+    },
+    {
+        "Set": "Superior Gollux Set",
+        "Name": "Superior Gollux Ring",
+        "Type": "Ring",
+        "Requirements": "Level 150",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/6/61/Eqp_Superior_Gollux_Ring.png"
+    },
+    {
+        "Set": "Superior Gollux Set",
+        "Name": "Superior Engraved Gollux Pendant",
+        "Type": "Pendant",
+        "Requirements": "Level 150",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/4/4c/Eqp_Superior_Engraved_Gollux_Pendant.png"
+    },
+    {
+        "Set": "Superior Gollux Set",
+        "Name": "Superior Engraved Gollux Belt",
+        "Type": "Belt",
+        "Requirements": "Level 150",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/f/f7/Eqp_Superior_Engraved_Gollux_Belt.png"
+    },
+    {
+        "Set": "Eternal Set (Warrior)",
+        "Name": "Eternal Knight Helm",
+        "Type": "Hat",
+        "Requirements": "Level 250",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/1/14/Eqp_Eternal_Knight_Helm.png"
+    },
+    {
+        "Set": "Eternal Set (Warrior)",
+        "Name": "Eternal Knight Armor",
+        "Type": "Top",
+        "Requirements": "Level 250",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/0/0e/Eqp_Eternal_Knight_Armor.png"
+    },
+    {
+        "Set": "Eternal Set (Warrior)",
+        "Name": "Eternal Knight Pants",
+        "Type": "Bottom",
+        "Requirements": "Level 250",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/5/57/Eqp_Eternal_Knight_Pants.png"
+    },
+    {
+        "Set": "Eternal Set (Warrior)",
+        "Name": "Eternal Knight Shoulder",
+        "Type": "Shoulder",
+        "Requirements": "Level 250",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/8/8e/Eqp_Eternal_Shoulder.png"
+    },
+    {
+        "Set": "Eternal Set (Warrior)",
+        "Name": "Genesis Bladecaster",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/a/ae/Eqp_Genesis_Bladecaster.png"
+    },
+    {
+        "Set": "Eternal Set (Warrior)",
+        "Name": "Genesis Desperado",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/7/71/Eqp_Genesis_Desperado.png"
+    },
+    {
+        "Set": "Eternal Set (Warrior)",
+        "Name": "Genesis Saber",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/0/02/Eqp_Genesis_Saber.png"
+    },
+    {
+        "Set": "Eternal Set (Warrior)",
+        "Name": "Genesis Axe",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/e/ef/Eqp_Genesis_Axe.png"
+    },
+    {
+        "Set": "Eternal Set (Warrior)",
+        "Name": "Genesis Hammer",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/5/5f/Eqp_Genesis_Hammer.png"
+    },
+    {
+        "Set": "Eternal Set (Warrior)",
+        "Name": "Genesis Two-Handed Sword",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/0/0c/Eqp_Genesis_Two-Handed_Sword.png"
+    },
+    {
+        "Set": "Eternal Set (Warrior)",
+        "Name": "Genesis Two-Handed Axe",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/a/aa/Eqp_Genesis_Two-Handed_Axe.png"
+    },
+    {
+        "Set": "Eternal Set (Warrior)",
+        "Name": "Genesis Two-Handed Hammer",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/b/be/Eqp_Genesis_Two-Handed_Hammer.png"
+    },
+    {
+        "Set": "Eternal Set (Warrior)",
+        "Name": "Genesis Spear",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/e/ef/Eqp_Genesis_Spear.png"
+    },
+    {
+        "Set": "Eternal Set (Warrior)",
+        "Name": "Genesis Polearm",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/1/1e/Eqp_Genesis_Polearm.png"
+    },
+    {
+        "Set": "Eternal Set (Warrior)",
+        "Name": "Genesis Katana",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/e/ec/Eqp_Genesis_Katana.png"
+    },
+    {
+        "Set": "Eternal Set (Warrior)",
+        "Name": "Genesis Lapis",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/2/2f/Eqp_Genesis_Lapis.png"
+    },
+    {
+        "Set": "Eternal Set (Warrior)",
+        "Name": "Genesis Lazuli",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/3/3a/Eqp_Genesis_Lazuli.png"
+    },
+    {
+        "Set": "Eternal Set (Warrior)",
+        "Name": "Genesis Ellaha",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/1/1f/Eqp_Genesis_Ellaha.png"
+    },
+    {
+        "Set": "Eternal Set (Magician)",
+        "Name": "Eternal Mage Hat",
+        "Type": "Hat",
+        "Requirements": "Level 250",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/b/b7/Eqp_Eternal_Mage_Hat.png"
+    },
+    {
+        "Set": "Eternal Set (Magician)",
+        "Name": "Eternal Mage Robe",
+        "Type": "Top",
+        "Requirements": "Level 250",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/0/0e/Eqp_Eternal_Mage_Robe.png"
+    },
+    {
+        "Set": "Eternal Set (Magician)",
+        "Name": "Eternal Mage Pants",
+        "Type": "Bottom",
+        "Requirements": "Level 250",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/a/ae/Eqp_Eternal_Mage_Pants.png"
+    },
+    {
+        "Set": "Eternal Set (Magician)",
+        "Name": "Eternal Mage Shoulder",
+        "Type": "Shoulder",
+        "Requirements": "Level 250",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/8/8e/Eqp_Eternal_Shoulder.png"
+    },
+    {
+        "Set": "Eternal Set (Magician)",
+        "Name": "Genesis Shining Rod",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/7/7e/Eqp_Genesis_Shining_Rod.png"
+    },
+    {
+        "Set": "Eternal Set (Magician)",
+        "Name": "Genesis Scepter",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/a/aa/Eqp_Genesis_Scepter.png"
+    },
+    {
+        "Set": "Eternal Set (Magician)",
+        "Name": "Genesis Psy-limiter",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/9/95/Eqp_Genesis_Psy-limiter.png"
+    },
+    {
+        "Set": "Eternal Set (Magician)",
+        "Name": "Genesis Lucent Gauntlet",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/e/e9/Eqp_Genesis_Lucent_Gauntlet.png"
+    },
+    {
+        "Set": "Eternal Set (Magician)",
+        "Name": "Genesis Wand",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/2/27/Eqp_Genesis_Wand.png"
+    },
+    {
+        "Set": "Eternal Set (Magician)",
+        "Name": "Genesis Staff",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/b/b9/Eqp_Genesis_Staff.png"
+    },
+    {
+        "Set": "Eternal Set (Magician)",
+        "Name": "Genesis Fan",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/2/23/Eqp_Genesis_Fan.png"
+    },
+    {
+        "Set": "Eternal Set (Bowman)",
+        "Name": "Eternal Archer Hat",
+        "Type": "Hat",
+        "Requirements": "Level 250",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/d/db/Eqp_Eternal_Archer_Hat.png"
+    },
+    {
+        "Set": "Eternal Set (Bowman)",
+        "Name": "Eternal Archer Hood",
+        "Type": "Top",
+        "Requirements": "Level 250",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/1/12/Eqp_Eternal_Archer_Hood.png"
+    },
+    {
+        "Set": "Eternal Set (Bowman)",
+        "Name": "Eternal Archer Pants",
+        "Type": "Bottom",
+        "Requirements": "Level 250",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/f/f8/Eqp_Eternal_Archer_Pants.png"
+    },
+    {
+        "Set": "Eternal Set (Bowman)",
+        "Name": "Eternal Archer Shoulder",
+        "Type": "Shoulder",
+        "Requirements": "Level 250",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/8/8e/Eqp_Eternal_Shoulder.png"
+    },
+    {
+        "Set": "Eternal Set (Bowman)",
+        "Name": "Genesis Whispershot",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/d/d1/Eqp_Genesis_Whispershot.png"
+    },
+    {
+        "Set": "Eternal Set (Bowman)",
+        "Name": "Genesis Bow",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/6/65/Eqp_Genesis_Bow.png"
+    },
+    {
+        "Set": "Eternal Set (Bowman)",
+        "Name": "Genesis Crossbow",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/c/c4/Eqp_Genesis_Crossbow.png"
+    },
+    {
+        "Set": "Eternal Set (Bowman)",
+        "Name": "Genesis Dual Bowguns",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/1/15/Eqp_Genesis_Dual_Bowguns.png"
+    },
+    {
+        "Set": "Eternal Set (Bowman)",
+        "Name": "Genesis Ancient Bow",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/2/24/Eqp_Genesis_Ancient_Bow.png"
+    },
+    {
+        "Set": "Eternal Set (Thief)",
+        "Name": "Eternal Thief Bandana",
+        "Type": "Hat",
+        "Requirements": "Level 250",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/8/8e/Eqp_Eternal_Thief_Bandana.png"
+    },
+    {
+        "Set": "Eternal Set (Thief)",
+        "Name": "Eternal Thief Shirt",
+        "Type": "Top",
+        "Requirements": "Level 250",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/7/72/Eqp_Eternal_Thief_Shirt.png"
+    },
+    {
+        "Set": "Eternal Set (Thief)",
+        "Name": "Eternal Thief Pants",
+        "Type": "Bottom",
+        "Requirements": "Level 250",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/a/a7/Eqp_Eternal_Thief_Pants.png"
+    },
+    {
+        "Set": "Eternal Set (Thief)",
+        "Name": "Eternal Thief Shoulder",
+        "Type": "Shoulder",
+        "Requirements": "Level 250",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/8/8e/Eqp_Eternal_Shoulder.png"
+    },
+    {
+        "Set": "Eternal Set (Thief)",
+        "Name": "Genesis Energy Chain",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/1/1f/Eqp_Genesis_Energy_Chain.png"
+    },
+    {
+        "Set": "Eternal Set (Thief)",
+        "Name": "Genesis Chain",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/4/4f/Eqp_Genesis_Chain.png"
+    },
+    {
+        "Set": "Eternal Set (Thief)",
+        "Name": "Genesis Ritual Fan",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/b/b3/Eqp_Genesis_Ritual_Fan.png"
+    },
+    {
+        "Set": "Eternal Set (Thief)",
+        "Name": "Genesis Dagger",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/f/fb/Eqp_Genesis_Dagger.png"
+    },
+    {
+        "Set": "Eternal Set (Thief)",
+        "Name": "Genesis Cane",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/1/14/Eqp_Genesis_Cane.png"
+    },
+    {
+        "Set": "Eternal Set (Thief)",
+        "Name": "Genesis Eclipse",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/4/44/Eqp_Genesis_Eclipse.png"
+    },
+    {
+        "Set": "Eternal Set (Thief)",
+        "Name": "Genesis Guards",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/9/97/Eqp_Genesis_Guards.png"
+    },
+    {
+        "Set": "Eternal Set (Pirate)",
+        "Name": "Eternal Pirate Hat",
+        "Type": "Hat",
+        "Requirements": "Level 250",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/a/a2/Eqp_Eternal_Pirate_Hat.png"
+    },
+    {
+        "Set": "Eternal Set (Pirate)",
+        "Name": "Eternal Pirate Coat",
+        "Type": "Top",
+        "Requirements": "Level 250",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/f/f7/Eqp_Eternal_Pirate_Coat.png"
+    },
+    {
+        "Set": "Eternal Set (Pirate)",
+        "Name": "Eternal Pirate Pants",
+        "Type": "Bottom",
+        "Requirements": "Level 250",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/2/27/Eqp_Eternal_Pirate_Pants.png"
+    },
+    {
+        "Set": "Eternal Set (Pirate)",
+        "Name": "Eternal Pirate Shoulder",
+        "Type": "Shoulder",
+        "Requirements": "Level 250",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/8/8e/Eqp_Eternal_Shoulder.png"
+    },
+    {
+        "Set": "Eternal Set (Pirate)",
+        "Name": "Genesis Soul Shooter",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/c/c2/Eqp_Genesis_Soul_Shooter.png"
+    },
+    {
+        "Set": "Eternal Set (Pirate)",
+        "Name": "War Fist",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/4/43/Eqp_Genesis_War_Fist.png"
+    },
+    {
+        "Set": "Eternal Set (Pirate)",
+        "Name": "Genesis Claw",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/e/ee/Eqp_Genesis_Claw.png"
+    },
+    {
+        "Set": "Eternal Set (Pirate)",
+        "Name": "Genesis Pistol",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/4/4f/Eqp_Genesis_Pistol.png"
+    },
+    {
+        "Set": "Eternal Set (Pirate)",
+        "Name": "Genesis Siege Gun",
+        "Type": "Weapon",
+        "Requirements": "Level 200",
+        "ImageUrl": "https://static.wikia.nocookie.net/maplestory/images/7/79/Eqp_Genesis_Siege_Gun.png"
+    }
+]

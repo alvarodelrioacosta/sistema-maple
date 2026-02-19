@@ -1,0 +1,18 @@
+.item-thumbnail {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-tertiary);
+}
+
+.item-thumbnail-placeholder {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-sm);
+    font-size: 1.25rem;
+}

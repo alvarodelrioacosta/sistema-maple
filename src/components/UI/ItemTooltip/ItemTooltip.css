@@ -1,0 +1,181 @@
+.item-tooltip {
+    background-color: rgba(20, 20, 25, 0.95);
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 10px;
+    width: 280px;
+    color: #eee;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+.tooltip-header {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.star-force {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 4px;
+    color: #ffcc00;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.item-name {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.item-name.tier-legendary {
+    color: #4ade80;
+}
+
+/* Green */
+.item-name.tier-unique {
+    color: #facc15;
+}
+
+/* Yellow */
+.item-name.tier-epic {
+    color: #c084fc;
+}
+
+/* Purple */
+.item-name.tier-rare {
+    color: #38bdf8;
+}
+
+/* Blue */
+
+.item-tradeability {
+    color: #FFA500;
+    margin-bottom: 2px;
+}
+
+.item-slots {
+    color: #aaa;
+}
+
+.tooltip-image-container {
+    display: flex;
+    justify-content: center;
+    padding: 15px;
+    border-bottom: 1px dashed #444;
+    margin-bottom: 10px;
+}
+
+.tooltip-image-container img {
+    max-width: 60px;
+    max-height: 60px;
+}
+
+.potential-group {
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.potential-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+    font-weight: bold;
+    font-size: 11px;
+}
+
+.pot-icon {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 1px solid #777;
+    border-radius: 2px;
+    text-align: center;
+    line-height: 12px;
+    font-size: 10px;
+    margin-right: 4px;
+}
+
+.tier-legendary .pot-icon {
+    border-color: #4ade80;
+    color: #4ade80;
+}
+
+.tier-unique .pot-icon {
+    border-color: #facc15;
+    color: #facc15;
+}
+
+.tier-epic .pot-icon {
+    border-color: #c084fc;
+    color: #c084fc;
+}
+
+.tier-rare .pot-icon {
+    border-color: #38bdf8;
+    color: #38bdf8;
+}
+
+.potential-header.tier-legendary {
+    color: #4ade80;
+}
+
+.potential-header.tier-unique {
+    color: #facc15;
+}
+
+.potential-header.tier-epic {
+    color: #c084fc;
+}
+
+.potential-header.tier-rare {
+    color: #38bdf8;
+}
+
+.potential-lines {
+    padding-left: 2px;
+}
+
+.potential-lines div {
+    margin-bottom: 2px;
+}
+
+.potential-lines div::before {
+    content: "•";
+    /* Bullet point standard in generic tooltips, implied by 'just list them' */
+    margin-right: 5px;
+    color: #fff;
+    opacity: 0.5;
+}
+
+/* Potential Lines Coloring */
+.potential-lines.tier-legendary {
+    color: #4ade80;
+}
+
+.potential-lines.tier-unique {
+    color: #facc15;
+}
+
+.potential-lines.tier-epic {
+    color: #c084fc;
+}
+
+.potential-lines.tier-rare {
+    color: #38bdf8;
+}
+
+.potential-lines.tier-rare div::before,
+.potential-lines.tier-epic div::before,
+.potential-lines.tier-unique div::before,
+.potential-lines.tier-legendary div::before {
+    color: inherit;
+    /* Bullet should match text color */
+    opacity: 0.8;
+}

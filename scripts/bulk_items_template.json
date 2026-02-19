@@ -1,0 +1,22 @@
+[
+    {
+        "name": "Arcane Umbra Knight Hat",
+        "character_id": null,
+        "star_force": 0,
+        "tradeability": "Tradeable",
+        "remaining_trade_slots": 10,
+        "status": "bulk",
+        "main_potential_tier": "Unique",
+        "main_potential_1": "STR: +9%",
+        "costo_item": 1.5
+    },
+    {
+        "name": "Arcane Umbra Knight Shoulder",
+        "character_id": null,
+        "star_force": 17,
+        "tradeability": "Tradeable Once",
+        "remaining_trade_slots": 9,
+        "status": "in_stock",
+        "costo_item": 2.1
+    }
+]

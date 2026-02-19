@@ -1,0 +1,228 @@
+/* =============================================
+   CLIENTS MODAL STYLES (PREMIUM REDESIGN)
+   ============================================= */
+
+.client-modal-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 0.5rem;
+}
+
+/* Sections as Cards with Glassmorphism */
+.client-form-section {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.client-form-section:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Consistent Headers: Icon left, Title right */
+.section-header,
+.section-header-pricing {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.section-icon {
+    font-size: 1.2rem;
+}
+
+.section-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #a78bfa;
+}
+
+/* General Information Layout */
+.general-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    /* Slightly more space for contact */
+    gap: 1rem;
+}
+
+.general-info-grid .input-wrapper {
+    width: 100%;
+    /* Ensure they stay within the grid cell */
+    min-width: 0;
+    /* Avoid overflow in flex/grid */
+}
+
+/* Pricing Grid - Two Columns */
+.pricing-layout-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.pricing-inputs-column {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* Input with label on the right */
+.price-input-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.price-input-row .input-wrapper {
+    width: 60px;
+    /* Mini inputs */
+    margin: 0;
+}
+
+.price-input-row .input-wrapper .input-label {
+    display: none;
+    /* Hide default label */
+}
+
+.price-input-row .input-field {
+    text-align: center;
+    padding: 0.4rem !important;
+    height: 32px !important;
+}
+
+.price-label-text {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Special styling for currency in the right column */
+.currency-config-column {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.currency-label-title {
+    font-size: 0.8rem;
+    color: #64748b;
+    font-weight: 600;
+}
+
+/* Custom Premium Checkbox (inspired by Daily Tasks) */
+.client-checkbox-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.premium-checkbox {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.premium-checkbox:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(167, 139, 250, 0.3);
+}
+
+.premium-checkbox.active {
+    background: rgba(139, 92, 246, 0.1);
+    border-color: rgba(139, 92, 246, 0.4);
+}
+
+.checkbox-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.checkbox-label-text {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #cbd5e1;
+}
+
+.premium-checkbox.active .checkbox-label-text {
+    color: #fff;
+}
+
+/* The actual mark styling */
+.checkbox-mark {
+    width: 22px;
+    height: 22px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.premium-checkbox.active .checkbox-mark {
+    background-color: #7c3aed;
+    border-color: #a78bfa;
+    box-shadow: 0 0 12px rgba(124, 58, 237, 0.5);
+}
+
+.checkbox-mark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 7px;
+    top: 3px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.premium-checkbox.active .checkbox-mark:after {
+    display: block;
+}
+
+/* Extra badge for Admin */
+.admin-badge {
+    background: #8b5cf6;
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+/* Form Layout adjustment */
+.modal-form {
+    padding-top: 0.5rem;
+}
+
+.footer-actions {
+    margin-top: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
