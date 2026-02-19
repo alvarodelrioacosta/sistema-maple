@@ -61,7 +61,7 @@ export const Dashboard: React.FC = () => {
         itemsByCategory: { status: string, count: number, mesos: number }[];
         financialAccounts: { name: string, balance: number, currency: string }[];
         cubesBreakdown: { type: string, count: number, valueMesos: number }[];
-        mesosAccounts: { name: string, mesos: number, isVault?: boolean }[];
+        mesosAccounts: { name: string, mesos: number, isVault?: boolean, isConsolidated?: boolean }[];
         receivableByCurrency: { currency: string, count: number, balance: number }[];
         totalStockMesos: number;
         totalResourceMesos: number;
@@ -204,21 +204,36 @@ export const Dashboard: React.FC = () => {
 
                 const totalStockMesos = itemsByCategory.reduce((sum, cat) => sum + cat.mesos, 0);
                 const stockValueUSD = totalStockMesos * mesoToUSDRate;
-                // 6. Mesos Account Sorting
-                const mesosAccts: { name: string, mesos: number, isVault?: boolean }[] = [
-                    { name: 'Vault (Shared)', mesos: sharedInventory?.mesos_stock || 0, isVault: true },
-                    ...accounts
-                        .map(acc => ({ name: `${acc.number} - ${acc.email}`, mesos: acc.mesos_b || 0 }))
-                        .filter(a => a.mesos > 0)
+                // 6. Mesos Account Sorting & Grouping
+                const individualAccts = accounts
+                    .map(acc => ({ name: `${acc.number} - ${acc.email}`, mesos: acc.mesos_b || 0 }))
+                    .filter(a => a.mesos > 0);
+
+                const threshold = 0.5;
+                const highValueAccts = individualAccts.filter(a => a.mesos >= threshold);
+                const lowValueAccts = individualAccts.filter(a => a.mesos < threshold);
+
+                const mesosAccts: { name: string, mesos: number, isVault?: boolean, isConsolidated?: boolean }[] = [
+                    { name: 'Vault (Shared)', mesos: sharedInventory?.mesos_stock || 0, isVault: true }
                 ];
 
-                mesosAccts.sort((a, b) => {
-                    if (a.isVault) return -1;
-                    if (b.isVault) return 1;
-                    if (a.name === 'alvarodelrioacosta@gmail.com') return -1;
-                    if (b.name === 'alvarodelrioacosta@gmail.com') return 1;
+                // Add high value accounts sorted
+                mesosAccts.push(...highValueAccts.sort((a, b) => {
+                    const isAlvaroA = a.name.includes('alvarodelrioacosta@gmail.com');
+                    const isAlvaroB = b.name.includes('alvarodelrioacosta@gmail.com');
+                    if (isAlvaroA && !isAlvaroB) return -1;
+                    if (!isAlvaroA && isAlvaroB) return 1;
                     return b.mesos - a.mesos;
-                });
+                }));
+
+                // Add consolidated entry for low value accounts
+                if (lowValueAccts.length > 0) {
+                    mesosAccts.push({
+                        name: `${lowValueAccts.length} Accounts < 0.5 B`,
+                        mesos: lowValueAccts.reduce((sum, a) => sum + a.mesos, 0),
+                        isConsolidated: true
+                    });
+                }
 
                 // 7. Receivable by Currency
                 const arByCurr: Record<string, { count: number, balance: number }> = {};
@@ -556,7 +571,7 @@ export const Dashboard: React.FC = () => {
                                         <h4 className="dashboard__stats-subtitle">Meso Distribution</h4>
                                         {details.mesosAccounts.map((acc, i) => (
                                             <div className="dashboard__stat-item" key={acc.name + i}>
-                                                <span className="dashboard__stat-label" style={{ fontWeight: acc.isVault ? 'bold' : 'normal' }}>
+                                                <span className="dashboard__stat-label" style={{ fontWeight: (acc.isVault || acc.isConsolidated) ? 'bold' : 'normal' }}>
                                                     {acc.name}
                                                 </span>
                                                 <span className="dashboard__stat-value" style={{ color: '#fbbf24' }}>
