@@ -208,7 +208,7 @@ export const Dashboard: React.FC = () => {
                 const mesosAccts: { name: string, mesos: number, isVault?: boolean }[] = [
                     { name: 'Vault (Shared)', mesos: sharedInventory?.mesos_stock || 0, isVault: true },
                     ...accounts
-                        .map(acc => ({ name: acc.email || `Account ${acc.number}`, mesos: acc.mesos_b || 0 }))
+                        .map(acc => ({ name: `${acc.number} - ${acc.email}`, mesos: acc.mesos_b || 0 }))
                         .filter(a => a.mesos > 0)
                 ];
 
@@ -348,7 +348,7 @@ export const Dashboard: React.FC = () => {
     return (
         <div className="dashboard">
             <Header
-                title="Welcome back! 👋"
+                title="Welcome back! 👋 (v2)"
                 subtitle="Overview of your inventory and finances"
             />
 
@@ -549,7 +549,7 @@ export const Dashboard: React.FC = () => {
                                     <>
                                         <div className="dashboard__balance">
                                             <span className="dashboard__balance-value positive">
-                                                {details.totalMesosSum.toLocaleString()} B
+                                                {details.totalMesosSum.toFixed(2)} B
                                             </span>
                                             <span className="dashboard__balance-label">Total in Mesos</span>
                                         </div>
@@ -560,7 +560,7 @@ export const Dashboard: React.FC = () => {
                                                     {acc.name}
                                                 </span>
                                                 <span className="dashboard__stat-value" style={{ color: '#fbbf24' }}>
-                                                    {acc.mesos.toLocaleString()} B
+                                                    {acc.mesos.toFixed(2)} B
                                                 </span>
                                             </div>
                                         ))}

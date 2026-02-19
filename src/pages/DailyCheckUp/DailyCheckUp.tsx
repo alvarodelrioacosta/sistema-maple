@@ -57,28 +57,53 @@ const DailyCheckUp: React.FC = () => {
         // Configurar Realtime
         const channel = supabase
             .channel('daily_checkup_changes')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'event_daily_progress' }, (payload) => {
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'event_daily_progress' }, (payload: any) => {
                 console.log('Realtime Event Progress Change:', payload);
                 setEventProgress(prev => {
-                    const updated = [...prev];
-                    const index = updated.findIndex(p => p.id === (payload.new as any).id);
+                    const newData = payload.new as EventDailyProgress;
+                    const oldData = payload.old as EventDailyProgress;
+                    let updated = [...prev];
+
+                    if (payload.eventType === 'DELETE') {
+                        return updated.filter(p => p.id !== oldData.id);
+                    }
+
+                    // Look for existing by ID or composite key
+                    const index = updated.findIndex(p =>
+                        (newData.id && p.id === newData.id) ||
+                        (p.event_id === newData.event_id &&
+                            p.account_id === newData.account_id &&
+                            (p.date?.split('T')[0] === newData.date?.split('T')[0]))
+                    );
+
                     if (index > -1) {
-                        updated[index] = payload.new as EventDailyProgress;
-                    } else if (payload.eventType === 'INSERT') {
-                        updated.push(payload.new as EventDailyProgress);
+                        updated[index] = { ...updated[index], ...newData };
+                    } else if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+                        updated.push(newData);
                     }
                     return updated;
                 });
             })
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'task_progress' }, (payload) => {
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'task_progress' }, (payload: any) => {
                 console.log('Realtime Task Progress Change:', payload);
                 setTaskProgress(prev => {
-                    const updated = [...prev];
-                    const index = updated.findIndex(p => p.id === (payload.new as any).id);
+                    const newData = payload.new as TaskProgress;
+                    const oldData = payload.old as TaskProgress;
+                    let updated = [...prev];
+
+                    if (payload.eventType === 'DELETE') {
+                        return updated.filter(p => p.id !== oldData.id);
+                    }
+
+                    const index = updated.findIndex(p =>
+                        (newData.id && p.id === newData.id) ||
+                        (p.task_id === newData.task_id && p.account_id === newData.account_id)
+                    );
+
                     if (index > -1) {
-                        updated[index] = payload.new as TaskProgress;
-                    } else if (payload.eventType === 'INSERT') {
-                        updated.push(payload.new as TaskProgress);
+                        updated[index] = { ...updated[index], ...newData };
+                    } else if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+                        updated.push(newData);
                     }
                     return updated;
                 });
@@ -190,8 +215,11 @@ const DailyCheckUp: React.FC = () => {
     const indexedEventProgress = useMemo(() => {
         const map = new Map<string, boolean>();
         (eventProgress || []).forEach(p => {
-            if (p.event_id && p.account_id && p.date === todayStr) {
-                map.set(`${p.event_id}-${p.account_id}`, p.completed);
+            if (p.event_id && p.account_id && p.date) {
+                const dateOnly = p.date.split('T')[0];
+                if (dateOnly === todayStr) {
+                    map.set(`${p.event_id}-${p.account_id}`, p.completed);
+                }
             }
         });
         return map;
