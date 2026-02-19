@@ -20,7 +20,7 @@ const formatCurrency = (value: number): string => {
     } else if (value >= 1_000) {
         return `${(value / 1_000).toFixed(1)}K`;
     }
-    return value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 1 });
+    return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
 const CustomTooltip = ({ active, payload }: any) => {
@@ -638,6 +638,7 @@ export const Dashboard: React.FC = () => {
                                     <Tooltip
                                         cursor={{ fill: 'rgba(255,255,255,0.05)' }}
                                         contentStyle={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px' }}
+                                        formatter={(value: number) => value.toFixed(2)}
                                     />
                                     <Legend />
                                     <Bar dataKey="income" name="Income" fill="#4ade80" radius={[4, 4, 0, 0]} />

@@ -68,20 +68,16 @@ const DailyCheckUp: React.FC = () => {
                         return updated.filter(p => p.id !== oldData.id);
                     }
 
-                    // Look for existing by ID or composite key
-                    const index = updated.findIndex(p =>
-                        (newData.id && p.id === newData.id) ||
-                        (p.event_id === newData.event_id &&
-                            p.account_id === newData.account_id &&
-                            (p.date?.split('T')[0] === newData.date?.split('T')[0]))
+                    // Aggressive deduplication: remove any record with same ID or same composite key
+                    const filtered = updated.filter(p =>
+                        !(newData.id && p.id === newData.id) &&
+                        !(p.event_id === newData.event_id && p.account_id === newData.account_id && (p.date?.split('T')[0] === newData.date?.split('T')[0]))
                     );
 
-                    if (index > -1) {
-                        updated[index] = { ...updated[index], ...newData };
-                    } else if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
-                        updated.push(newData);
+                    if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+                        filtered.push(newData);
                     }
-                    return updated;
+                    return filtered;
                 });
             })
             .on('postgres_changes', { event: '*', schema: 'public', table: 'task_progress' }, (payload: any) => {
@@ -95,17 +91,16 @@ const DailyCheckUp: React.FC = () => {
                         return updated.filter(p => p.id !== oldData.id);
                     }
 
-                    const index = updated.findIndex(p =>
-                        (newData.id && p.id === newData.id) ||
-                        (p.task_id === newData.task_id && p.account_id === newData.account_id)
+                    // Aggressive deduplication
+                    const filtered = updated.filter(p =>
+                        !(newData.id && p.id === newData.id) &&
+                        !(p.task_id === newData.task_id && p.account_id === newData.account_id)
                     );
 
-                    if (index > -1) {
-                        updated[index] = { ...updated[index], ...newData };
-                    } else if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
-                        updated.push(newData);
+                    if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+                        filtered.push(newData);
                     }
-                    return updated;
+                    return filtered;
                 });
             })
             .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'accounts' }, (payload) => {
@@ -346,38 +341,41 @@ const DailyCheckUp: React.FC = () => {
 
 
     const handleToggleEvent = async (eventId: string, accountId: string, completed: boolean) => {
+        // Optimistic update
+        setEventProgress(prev => {
+            const existingIndex = prev.findIndex(p => p.event_id === eventId && p.account_id === accountId && p.date === todayStr);
+            if (existingIndex > -1) {
+                const newArr = [...prev];
+                newArr[existingIndex] = { ...newArr[existingIndex], completed };
+                return newArr;
+            } else {
+                return [...prev, { event_id: eventId, account_id: accountId, date: todayStr, completed } as EventDailyProgress];
+            }
+        });
+
         try {
             await eventsService.toggleDailyProgress(eventId, accountId, todayStr, completed);
-            // Optimistic update
-            setEventProgress(prev => {
-                const existingIndex = prev.findIndex(p => p.event_id === eventId && p.account_id === accountId && p.date === todayStr);
-                if (existingIndex > -1) {
-                    const newArr = [...prev];
-                    newArr[existingIndex] = { ...newArr[existingIndex], completed };
-                    return newArr;
-                } else {
-                    return [...prev, { event_id: eventId, account_id: accountId, date: todayStr, completed } as EventDailyProgress];
-                }
-            });
         } catch (error) {
             console.error('Error toggling event progress:', error);
+            // Revert on error could be done here if needed
         }
     };
 
     const handleToggleTask = async (taskId: string, accountId: string, completed: boolean) => {
+        // Optimistic update
+        setTaskProgress(prev => {
+            const existingIndex = prev.findIndex(p => p.task_id === taskId && p.account_id === accountId);
+            if (existingIndex > -1) {
+                const newArr = [...prev];
+                newArr[existingIndex] = { ...newArr[existingIndex], completed };
+                return newArr;
+            } else {
+                return [...prev, { task_id: taskId, account_id: accountId, completed } as TaskProgress];
+            }
+        });
+
         try {
             await tasksService.toggleProgress(taskId, accountId, completed);
-            // Optimistic update
-            setTaskProgress(prev => {
-                const existingIndex = prev.findIndex(p => p.task_id === taskId && p.account_id === accountId);
-                if (existingIndex > -1) {
-                    const newArr = [...prev];
-                    newArr[existingIndex] = { ...newArr[existingIndex], completed };
-                    return newArr;
-                } else {
-                    return [...prev, { task_id: taskId, account_id: accountId, completed } as TaskProgress];
-                }
-            });
         } catch (error) {
             console.error('Error toggling task progress:', error);
         }

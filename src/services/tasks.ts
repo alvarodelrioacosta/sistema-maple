@@ -95,7 +95,7 @@ export const tasksService = {
                 completed,
                 updated_at: new Date().toISOString()
             }, {
-                onConflict: 'task_id, account_id'
+                onConflict: 'task_id,account_id'
             })
             .select()
             .single();

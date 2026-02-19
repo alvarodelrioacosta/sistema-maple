@@ -9,7 +9,6 @@ import type {
     EventDailyReward,
     EventDailyRewardInsert,
     EventDailyProgress,
-    EventDailyProgressInsert,
     EventDailyClaim,
     EventDailyClaimInsert,
     EventBoss,
@@ -166,37 +165,21 @@ export const eventsService = {
     },
 
     async toggleDailyProgress(eventId: string, accountId: string, date: string, completed: boolean): Promise<EventDailyProgress> {
-        // First check if record exists
-        const { data: existing } = await supabase
+        const { data, error } = await supabase
             .from('event_daily_progress')
-            .select('*')
-            .eq('event_id', eventId)
-            .eq('account_id', accountId)
-            .eq('date', date)
+            .upsert({
+                event_id: eventId,
+                account_id: accountId,
+                date,
+                completed
+            }, {
+                onConflict: 'event_id,account_id,date'
+            })
+            .select()
             .single();
 
-        if (existing) {
-            // Update existing
-            const { data, error } = await supabase
-                .from('event_daily_progress')
-                .update({ completed })
-                .eq('id', existing.id)
-                .select()
-                .single();
-
-            if (error) throw error;
-            return data;
-        } else {
-            // Create new
-            const { data, error } = await supabase
-                .from('event_daily_progress')
-                .insert({ event_id: eventId, account_id: accountId, date, completed } as EventDailyProgressInsert)
-                .select()
-                .single();
-
-            if (error) throw error;
-            return data;
-        }
+        if (error) throw error;
+        return data;
     },
 
     // ===== DAILY CLAIMS =====
