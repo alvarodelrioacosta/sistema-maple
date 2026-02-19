@@ -132,7 +132,8 @@ export const itemsService = {
             for_sale: 0,
             sold: 0,
             in_progress: 0,
-            Service: 0
+            Service: 0,
+            in_use: 0
         };
 
         data?.forEach(item => {

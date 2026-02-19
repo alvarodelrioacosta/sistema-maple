@@ -189,10 +189,9 @@ export const charactersService = {
 
             if (account.number === 0) {
                 // RULE: Account 0 entries are always Mains
-                const muleIds = rawChars.filter(c => c.main !== 'Main').map(c => c.id);
-                if (muleIds.length > 0) {
-                    console.log(`[Categorization] Account 0: Forcing 'Main' on ${muleIds.length} characters`);
-                    await supabase.from('characters').update({ main: 'Main' }).in('id', muleIds);
+                if (rawChars.some(c => c.main !== 'Main')) {
+                    console.log(`[Categorization] Account 0: Forcing 'Main' on characters`);
+                    await supabase.from('characters').update({ main: 'Main' }).in('id', rawChars.filter(c => c.main !== 'Main').map(c => c.id));
                 }
                 return;
             }
@@ -213,7 +212,7 @@ export const charactersService = {
             });
 
             const mainCharacter = sorted[0];
-            const muleIds = sorted.slice(1).map(c => c.id);
+            // sorted.slice(1).map(c => c.id); // muleIds unused
 
             console.log(`%c[Categorization] Result: '${mainCharacter.name}' (Lv ${mainCharacter.level}) is MAIN.`, 'font-weight: bold; font-size: 14px; color: #4ade80');
 

@@ -5,7 +5,7 @@ import { ocrUtil } from '../../utils/ocr';
 import { Header } from '../../components/Layout';
 import { Button, Card, Select, Input, ItemTooltip, ResourceHistoryPanel } from '../../components/UI';
 import { itemsService, clientsService, accountsService, accountsReceivableService, resourcesService, charactersService, itemsDBService, cubeSessionsService, sharedInventoryService, resourceHistoryService, exchangeRatesService, transactionsService } from '../../services';
-import type { Item, Client, Account, ResourceType, PotentialTier, Character, ItemDB, CubeSession, SharedInventory } from '../../types';
+import type { Item, Client, Account, ResourceType, Character, ItemDB, CubeSession, SharedInventory } from '../../types';
 import './UpgradeWorkspaceV2.css';
 
 const TIER_OPTIONS = [

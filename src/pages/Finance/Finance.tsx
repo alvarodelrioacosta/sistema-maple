@@ -6,7 +6,7 @@ import type { Transaction, TransactionInsert, TransactionType, FinancialAccount,
 import { CURRENCIES } from '../../constants/currencies';
 import { formatCurrencyValue } from '../../utils/format';
 import type { Column } from '../../components/UI/Table';
-import { FINANCE_CATEGORIES, FINANCE_SUBCATEGORIES, CATEGORY_MAP } from '../../utils/categorization';
+import { FINANCE_CATEGORIES, CATEGORY_MAP } from '../../utils/categorization';
 import './Finance.css';
 
 const TYPE_OPTIONS = [
