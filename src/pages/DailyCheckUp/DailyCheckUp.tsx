@@ -49,13 +49,7 @@ const DailyCheckUp: React.FC = () => {
     const [showRP, setShowRP] = useState(false);
     const [showItems, setShowItems] = useState(true);
 
-    // Obtener fecha local en formato YYYY-MM-DD (Argentina GMT-3)
-    const todayStr = useMemo(() => {
-        const d = new Date();
-        const offset = d.getTimezoneOffset();
-        const localDate = new Date(d.getTime() - (offset * 60 * 1000));
-        return localDate.toISOString().split('T')[0];
-    }, []);
+    const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
 
     useEffect(() => {
         loadData();

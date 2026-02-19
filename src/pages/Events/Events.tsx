@@ -51,13 +51,7 @@ const Events: React.FC = () => {
     // Week Navigation State
     const [selectedWeek, setSelectedWeek] = useState<number>(1);
 
-    // Obtener fecha local en formato YYYY-MM-DD (Argentina GMT-3)
-    const today = useMemo(() => {
-        const d = new Date();
-        const offset = d.getTimezoneOffset();
-        const localDate = new Date(d.getTime() - (offset * 60 * 1000));
-        return localDate.toISOString().split('T')[0];
-    }, []);
+    const today = useMemo(() => new Date().toISOString().split('T')[0], []);
 
     const handleNewEvent = () => {
         setEditingEvent(null);
