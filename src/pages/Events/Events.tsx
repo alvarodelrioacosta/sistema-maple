@@ -51,6 +51,14 @@ const Events: React.FC = () => {
     // Week Navigation State
     const [selectedWeek, setSelectedWeek] = useState<number>(1);
 
+    // Obtener fecha local en formato YYYY-MM-DD (Argentina GMT-3)
+    const today = useMemo(() => {
+        const d = new Date();
+        const offset = d.getTimezoneOffset();
+        const localDate = new Date(d.getTime() - (offset * 60 * 1000));
+        return localDate.toISOString().split('T')[0];
+    }, []);
+
     const handleNewEvent = () => {
         setEditingEvent(null);
         setShowCreateModal(true);
@@ -235,12 +243,6 @@ const Events: React.FC = () => {
     // Bulk Actions
     const handleBulkCompleteToday = async () => {
         if (!selectedEventId) return;
-
-        // Obtener fecha local en formato YYYY-MM-DD (Argentina GMT-3)
-        const d = new Date();
-        const offset = d.getTimezoneOffset();
-        const localDate = new Date(d.getTime() - (offset * 60 * 1000));
-        const today = localDate.toISOString().split('T')[0];
 
         const accountIds = accounts.map(a => a.id);
 
@@ -470,12 +472,6 @@ const Events: React.FC = () => {
     const renderDailyLoginView = () => {
         if (!selectedEvent) return null;
         const weekDays = getWeekDays();
-
-        // Obtener fecha local en formato YYYY-MM-DD (Argentina GMT-3)
-        const d_now = new Date();
-        const offset_now = d_now.getTimezoneOffset();
-        const localDate_now = new Date(d_now.getTime() - (offset_now * 60 * 1000));
-        const today = localDate_now.toISOString().split('T')[0];
 
         // Map day names and dates for headers
         const dayHeaders = weekDays.map(date => {
@@ -786,7 +782,7 @@ const Events: React.FC = () => {
                                         >
                                             Edit
                                         </Button>
-                                        {new Date() > new Date(selectedEvent.end_date) && (
+                                        {today > (selectedEvent.end_date?.split('T')[0] || '') && (
                                             <Button
                                                 variant="secondary"
                                                 size="sm"

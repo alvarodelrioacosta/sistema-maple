@@ -176,13 +176,10 @@ const DailyCheckUp: React.FC = () => {
             setMainChars(charsData.filter((c: Character) => c.main === 'Main'));
 
             // Filter events that are currently active (today between start and end date)
-            const now = new Date();
             const filteredEvents = eventsData.filter(event => {
-                const start = new Date(event.start_date);
-                const end = new Date(event.end_date);
-                // We adjust end to include the full day in UTC
-                end.setUTCHours(23, 59, 59, 999);
-                return now >= start && now <= end;
+                const start = event.start_date.split('T')[0];
+                const end = event.end_date.split('T')[0];
+                return todayStr >= start && todayStr <= end;
             });
             setActiveEvents(filteredEvents);
 
