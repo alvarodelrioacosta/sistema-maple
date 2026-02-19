@@ -49,7 +49,13 @@ const DailyCheckUp: React.FC = () => {
     const [showRP, setShowRP] = useState(false);
     const [showItems, setShowItems] = useState(true);
 
-    const todayStr = new Date().toISOString().split('T')[0];
+    // Obtener fecha local en formato YYYY-MM-DD (Argentina GMT-3)
+    const todayStr = useMemo(() => {
+        const d = new Date();
+        const offset = d.getTimezoneOffset();
+        const localDate = new Date(d.getTime() - (offset * 60 * 1000));
+        return localDate.toISOString().split('T')[0];
+    }, []);
 
     useEffect(() => {
         loadData();
@@ -186,10 +192,9 @@ const DailyCheckUp: React.FC = () => {
             setItemsDB(itemsDBData);
             setTaskProgress(allTaskProgress);
 
-            // Load daily progress for each active event
             if (filteredEvents.length > 0) {
                 const eventProgressPromises = filteredEvents.map((event: GameEvent) =>
-                    eventsService.getDailyProgress(event.id).catch(e => {
+                    eventsService.getDailyProgress(event.id, todayStr).catch(e => {
                         console.error(`Failed to load progress for event ${event.id}:`, e);
                         return [];
                     })

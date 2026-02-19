@@ -235,7 +235,13 @@ const Events: React.FC = () => {
     // Bulk Actions
     const handleBulkCompleteToday = async () => {
         if (!selectedEventId) return;
-        const today = new Date().toISOString().split('T')[0];
+
+        // Obtener fecha local en formato YYYY-MM-DD (Argentina GMT-3)
+        const d = new Date();
+        const offset = d.getTimezoneOffset();
+        const localDate = new Date(d.getTime() - (offset * 60 * 1000));
+        const today = localDate.toISOString().split('T')[0];
+
         const accountIds = accounts.map(a => a.id);
 
         try {
@@ -464,7 +470,12 @@ const Events: React.FC = () => {
     const renderDailyLoginView = () => {
         if (!selectedEvent) return null;
         const weekDays = getWeekDays();
-        const today = new Date().toISOString().split('T')[0];
+
+        // Obtener fecha local en formato YYYY-MM-DD (Argentina GMT-3)
+        const d_now = new Date();
+        const offset_now = d_now.getTimezoneOffset();
+        const localDate_now = new Date(d_now.getTime() - (offset_now * 60 * 1000));
+        const today = localDate_now.toISOString().split('T')[0];
 
         // Map day names and dates for headers
         const dayHeaders = weekDays.map(date => {
