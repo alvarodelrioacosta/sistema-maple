@@ -80,7 +80,8 @@ export const tasksService = {
     async getAllProgress(): Promise<TaskProgress[]> {
         const { data, error } = await supabase
             .from('task_progress')
-            .select('*');
+            .select('*')
+            .limit(5000);
 
         if (error) throw error;
         return data || [];

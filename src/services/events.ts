@@ -192,7 +192,8 @@ export const eventsService = {
         const { data, error } = await supabase
             .from('event_daily_claims')
             .select('*')
-            .eq('event_id', eventId);
+            .eq('event_id', eventId)
+            .limit(5000);
 
         if (error) throw error;
         return data || [];
@@ -259,7 +260,8 @@ export const eventsService = {
         const { data, error } = await supabase
             .from('event_bossing_progress')
             .select('*')
-            .eq('event_id', eventId);
+            .eq('event_id', eventId)
+            .limit(5000);
 
         if (error) throw error;
         return data || [];
@@ -319,7 +321,8 @@ export const eventsService = {
         const { data, error } = await supabase
             .from('event_shop_purchases')
             .select('*')
-            .eq('event_id', eventId);
+            .eq('event_id', eventId)
+            .limit(5000);
 
         if (error) throw error;
         return data || [];
