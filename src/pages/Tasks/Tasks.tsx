@@ -30,12 +30,15 @@ const Tasks: React.FC = () => {
     const loadData = async () => {
         setLoading(true);
         try {
-            const [tasksData, accountsData, charactersData, progressData] = await Promise.all([
+            const [tasksData, accountsData, charactersData] = await Promise.all([
                 tasksService.getAll(),
                 accountsService.getAll(),
-                charactersService.getAll(),
-                tasksService.getAllProgress()
+                charactersService.getAll()
             ]);
+
+            // Load progress only for the tasks we got
+            const taskIds = tasksData.map(t => t.id);
+            const progressData = await tasksService.getAllProgress(taskIds);
 
             // Map accounts with their main characters
             const accountsWithChars: AccountWithChar[] = accountsData.map(account => {

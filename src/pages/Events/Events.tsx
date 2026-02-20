@@ -144,25 +144,17 @@ const Events: React.FC = () => {
             if (!event) return;
 
             if (event.type === 'daily_login') {
-                const [rewards, progress, claims] = await Promise.all([
-                    eventsService.getDailyRewards(eventId),
-                    eventsService.getDailyProgress(eventId),
-                    eventsService.getDailyClaims(eventId)
-                ]);
+                const rewards = await eventsService.getDailyRewards(eventId);
                 setDailyRewards(rewards);
-                setDailyProgress(progress);
-                setDailyClaims(claims);
+                // Progress and claims will be loaded by the useEffect on selectedWeek
             } else if (event.type === 'bossing') {
-                const [bossesData, itemsData, progressData, purchasesData] = await Promise.all([
+                const [bossesData, itemsData] = await Promise.all([
                     eventsService.getBosses(eventId),
-                    eventsService.getShopItems(eventId),
-                    eventsService.getBossingProgress(eventId),
-                    eventsService.getShopPurchases(eventId)
+                    eventsService.getShopItems(eventId)
                 ]);
                 setBosses(bossesData);
                 setShopItems(itemsData);
-                setBossingProgress(progressData);
-                setShopPurchases(purchasesData);
+                // Progress and purchases will be loaded by the useEffect on selectedWeek
             }
 
             // Set initial week based on current date (UTC)
@@ -174,6 +166,44 @@ const Events: React.FC = () => {
             console.error('Error loading event data:', error);
         }
     };
+
+    const loadWeeklyProgress = async (eventId: string, week: number) => {
+        try {
+            const event = events.find(e => e.id === eventId);
+            if (!event) return;
+
+            const weekDays = eventsService.getWeekDays(event, week);
+            if (weekDays.length === 0) return;
+
+            const startDate = weekDays[0];
+            const endDate = weekDays[weekDays.length - 1];
+
+            if (event.type === 'daily_login') {
+                const [progress, claims] = await Promise.all([
+                    eventsService.getDailyProgress(eventId, undefined, startDate, endDate),
+                    eventsService.getDailyClaims(eventId) // Claims are few, OK to load all or filter by rewards
+                ]);
+                setDailyProgress(progress);
+                setDailyClaims(claims);
+            } else if (event.type === 'bossing') {
+                const [progressData, purchasesData] = await Promise.all([
+                    eventsService.getBossingProgress(eventId), // Bossing is weekly, 1 row per account-week
+                    eventsService.getShopPurchases(eventId)
+                ]);
+                setBossingProgress(progressData);
+                setShopPurchases(purchasesData);
+            }
+        } catch (error) {
+            console.error('Error loading weekly progress:', error);
+        }
+    };
+
+    // Load weekly progress when week or event changes
+    useEffect(() => {
+        if (selectedEventId && selectedWeek) {
+            loadWeeklyProgress(selectedEventId, selectedWeek);
+        }
+    }, [selectedEventId, selectedWeek]);
 
     // Calculate progress counts per day (for daily_login)
     const dailyProgressCounts = useMemo(() => {

@@ -143,7 +143,7 @@ export const eventsService = {
     },
 
     // ===== DAILY PROGRESS =====
-    async getDailyProgress(eventId: string, date?: string): Promise<EventDailyProgress[]> {
+    async getDailyProgress(eventId: string, date?: string, startDate?: string, endDate?: string): Promise<EventDailyProgress[]> {
         let query = supabase
             .from('event_daily_progress')
             .select('*')
@@ -151,6 +151,8 @@ export const eventsService = {
 
         if (date) {
             query = query.eq('date', date);
+        } else if (startDate && endDate) {
+            query = query.gte('date', startDate).lte('date', endDate);
         }
 
         const { data, error } = await query.limit(5000);

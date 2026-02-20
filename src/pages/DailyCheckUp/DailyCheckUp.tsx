@@ -144,8 +144,7 @@ const DailyCheckUp: React.FC = () => {
                 dailyTasksData,
                 allTasksData,
                 itemsData,
-                itemsDBData,
-                allTaskProgress
+                itemsDBData
             ] = await Promise.all([
                 accountsService.getAll().catch(e => { console.error('Failed to load accounts:', e); return []; }),
                 charactersService.getAll().catch(e => { console.error('Failed to load characters:', e); return []; }),
@@ -153,9 +152,15 @@ const DailyCheckUp: React.FC = () => {
                 tasksService.getDailyTasks().catch(e => { console.error('Failed to load daily tasks:', e); return []; }),
                 tasksService.getAll().catch(e => { console.error('Failed to load all tasks:', e); return []; }),
                 itemsService.getByStatus('for_sale').catch(e => { console.error('Failed to load items:', e); return []; }),
-                itemsDBService.getAll().catch(e => { console.error('Failed to load itemsDB:', e); return []; }),
-                tasksService.getAllProgress().catch(e => { console.error('Failed to load task progress:', e); return []; })
+                itemsDBService.getAll().catch(e => { console.error('Failed to load itemsDB:', e); return []; })
             ]);
+
+            // Load progress only for relevant tasks
+            const taskIds = allTasksData.map(t => t.id);
+            const allTaskProgress = await tasksService.getAllProgress(taskIds).catch(e => {
+                console.error('Failed to load task progress:', e);
+                return [];
+            });
 
             console.log('DailyCheckUp Data Loaded:', {
                 accounts: accountsData.length,

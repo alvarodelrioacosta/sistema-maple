@@ -77,12 +77,16 @@ export const tasksService = {
         return data || [];
     },
 
-    async getAllProgress(): Promise<TaskProgress[]> {
-        const { data, error } = await supabase
+    async getAllProgress(taskIds?: string[]): Promise<TaskProgress[]> {
+        let query = supabase
             .from('task_progress')
-            .select('*')
-            .limit(5000);
+            .select('*');
 
+        if (taskIds && taskIds.length > 0) {
+            query = query.in('task_id', taskIds);
+        }
+
+        const { data, error } = await query.limit(10000);
         if (error) throw error;
         return data || [];
     },
