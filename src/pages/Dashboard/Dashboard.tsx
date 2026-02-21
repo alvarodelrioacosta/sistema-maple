@@ -5,7 +5,7 @@
 import React, { useEffect, useState } from 'react';
 import { Header } from '../../components/Layout';
 import { KPICard, Card } from '../../components/UI';
-import { itemsService, financialAccountsService, accountsService, resourcesService, sharedInventoryService, accountsReceivableService, exchangeRatesService, transactionsService } from '../../services';
+import { itemsService, financialAccountsService, accountsService, resourcesService, sharedInventoryService, accountsReceivableService, exchangeRatesService, transactionsService, cubeSessionsService, clientsService } from '../../services';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import type { DashboardKPIs, ItemStatus } from '../../types';
 import './Dashboard.css';
@@ -95,7 +95,9 @@ export const Dashboard: React.FC = () => {
                     sharedInventory,
                     receivables,
                     rates,
-                    dashboardTransactions
+                    dashboardTransactions,
+                    cubeSessions,
+                    clients
                 ] = await Promise.all([
                     itemsService.getItemBreakdown(),
                     financialAccountsService.getAll(),
@@ -104,7 +106,9 @@ export const Dashboard: React.FC = () => {
                     sharedInventoryService.get(),
                     accountsReceivableService.getAll(),
                     exchangeRatesService.getAll(),
-                    transactionsService.getDashboardData()
+                    transactionsService.getDashboardData(),
+                    cubeSessionsService.getAll(),
+                    clientsService.getAll()
                 ]);
 
                 // Helper to get rate to USD
@@ -154,13 +158,22 @@ export const Dashboard: React.FC = () => {
                 const totalMesosInAccounts = accounts.reduce((sum, acc) => sum + (acc.mesos_b || 0), 0);
                 const totalMesosValueUSD = (totalMesosInAccounts + (sharedInventory?.mesos_stock || 0)) * mesoToUSDRate;
 
-                // 4. Accounts Receivable in USD
+                // 4. Accounts Receivable in USD (Invoices + Ongoing Cube Sessions)
                 const activeReceivables = receivables.filter(ar => ar.status !== 'paid' && (ar.amount - (ar.paid || 0)) > 0);
-                const receivableTotalUSD = activeReceivables.reduce((sum, ar) => {
+                const activeCubeSessions = cubeSessions.filter(s => s.cubing_session_status === 'Ongoing');
+
+                const arTotalUSD = activeReceivables.reduce((sum, ar) => {
                     const currency = ar.currency || ar.client?.currency || 'USD';
                     const rate = getToUSDRate(currency);
                     return sum + ((ar.amount - (ar.paid || 0)) * rate);
                 }, 0);
+
+                const cubingTotalUSD = activeCubeSessions.reduce((sum, s) => {
+                    const rate = getToUSDRate(s.currency || 'USD');
+                    return sum + ((s.cubing_session_total || 0) * rate);
+                }, 0);
+
+                const receivableTotalUSD = arTotalUSD + cubingTotalUSD;
 
                 // 5. Item Breakdown (Count and Mesos)
                 const itemsByCategory = [
@@ -226,11 +239,25 @@ export const Dashboard: React.FC = () => {
 
                 // 7. Receivable by Client (Top 5 + Rest)
                 const arByClient: Record<string, { count: number, balanceUSD: number }> = {};
+
+                // Add regular AR
                 activeReceivables.forEach(ar => {
                     const clientName = ar.client?.name || 'Unknown Client';
                     const curr = ar.currency || ar.client?.currency || 'USD';
                     const rate = getToUSDRate(curr);
                     const pendingUSD = (ar.amount - (ar.paid || 0)) * rate;
+
+                    if (!arByClient[clientName]) arByClient[clientName] = { count: 0, balanceUSD: 0 };
+                    arByClient[clientName].count++;
+                    arByClient[clientName].balanceUSD += pendingUSD;
+                });
+
+                // Add Ongoing Cube Sessions
+                activeCubeSessions.forEach(s => {
+                    const client = clients.find(c => c.id === s.client_id);
+                    const clientName = client?.name || 'Unknown Client';
+                    const rate = getToUSDRate(s.currency || 'USD');
+                    const pendingUSD = (s.cubing_session_total || 0) * rate;
 
                     if (!arByClient[clientName]) arByClient[clientName] = { count: 0, balanceUSD: 0 };
                     arByClient[clientName].count++;
