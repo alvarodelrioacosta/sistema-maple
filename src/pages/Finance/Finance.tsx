@@ -142,12 +142,32 @@ export const Finance: React.FC = () => {
         let expUSD = 0, expMesos = 0;
 
         const getRateToUSD = (currency: string) => {
-            if (currency === 'USD' || currency === '$') return 1;
-            const rate = ratesData.find(r => r.base_currency === currency && r.target_currency === 'USD');
+            if (currency === 'USD' || currency === '$' || currency === 'USDT') return 1;
+
+            // Normalize currency name
+            const normalized = (currency === 'ARS' || currency === 'Pesos Arg') ? 'Pesos Arg' : currency;
+
+            const rate = ratesData.find(r =>
+                (r.base_currency === normalized || (normalized === 'Pesos Arg' && r.base_currency === 'ARS')) &&
+                r.target_currency === 'USD'
+            );
+
             if (rate) return rate.rate;
-            const inverse = ratesData.find(r => r.base_currency === 'USD' && r.target_currency === currency);
+
+            const inverse = ratesData.find(r =>
+                r.base_currency === 'USD' &&
+                (r.target_currency === normalized || (normalized === 'Pesos Arg' && r.target_currency === 'ARS'))
+            );
+
             if (inverse && inverse.rate > 0) return 1 / inverse.rate;
-            return 1;
+
+            // Fallback for Pesos Arg if no rate is defined (roughly 1/1200)
+            if (normalized === 'Pesos Arg') {
+                return 0.000833; // 1 USD = 1200 ARS approximately
+            }
+
+            // If unknown and no rate, default to 0 to not inflate USD totals with raw local currency values
+            return 0;
         };
 
         trx.forEach(t => {

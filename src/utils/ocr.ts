@@ -297,7 +297,7 @@ export const ocrUtil = {
             transactions.push({
                 type: 'expense',
                 amount: amt.amount,
-                currency: 'ARS',
+                currency: 'Pesos Arg',
                 description: description || 'Gasto Escaneado',
                 category,
                 subcategory,

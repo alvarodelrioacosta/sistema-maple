@@ -20,7 +20,7 @@ const TYPE_OPTIONS = [
 
 const CURRENCIES = [
     { value: 'USD', label: 'USD ($)' },
-    { value: 'ARS', label: 'ARS ($)' },
+    { value: 'Pesos Arg', label: 'Pesos Arg ($)' },
     { value: 'Soles', label: 'Soles (S/)' },
     { value: 'USDT', label: 'USDT (₮)' }
 ];
