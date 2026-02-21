@@ -231,13 +231,14 @@ export const ocrUtil = {
         const lines = text.split('\n').map(l => l.trim()).filter(l => l !== '');
         const transactions: Partial<TransactionInsert>[] = [];
 
-        // Patrón para detectar montos negativos (gastos): - $ 8.180 o -$8.180
-        const amountRegex = /-?\s?\$?\s?(\d{1,3}(\.\d{3})*(,\d+)?)/;
+        // Patrón para detectar montos negativos (gastos): - $ 8.180 o -$8.180 (IGNORA +)
+        const amountRegex = /-\s?\$?\s?(\d{1,3}(\.\d{3})*(,\d+)?)/;
+        const timeRegex = /\d{1,2}:\d{2}/;
 
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
 
-            // Si la línea contiene un monto negativo
+            // Si la línea contiene un monto negativo explícito
             if (line.includes('-')) {
                 const match = line.match(amountRegex);
                 if (match) {
@@ -245,30 +246,40 @@ export const ocrUtil = {
                     const amount = parseFloat(amountStr);
 
                     if (!isNaN(amount) && amount > 0) {
-                        // La descripción suele estar 1 o 2 líneas antes, o en la misma línea
                         let description = '';
+                        const labelsToSkip = ['pago', 'transferencia enviada', 'extracción de efectivo', 'extraccion', 'hoy', 'disponible', 'movimientos', 'saldo', 'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
-                        // Buscamos hacia atrás para encontrar algo que no sea un label genérico como "Pago" o "Transferencia"
-                        const labelsToSkip = ['pago', 'transferencia enviada', 'extracción de efectivo', 'hoy', 'disponible'];
-
-                        for (let j = 1; j <= 3; j++) {
-                            const prevIdx = i - j;
-                            if (prevIdx >= 0) {
-                                const prevLine = lines[prevIdx];
-                                const lowerPrev = prevLine.toLowerCase();
-                                if (!labelsToSkip.some(label => lowerPrev.includes(label)) && prevLine.length > 3) {
-                                    description = prevLine;
+                        // Buscamos candidatos alrededor del monto
+                        const candidates = [i - 1, i + 1, i - 2, i + 2];
+                        for (const idx of candidates) {
+                            if (idx >= 0 && idx < lines.length) {
+                                let cand = lines[idx].replace(timeRegex, '').replace(amountRegex, '').trim();
+                                if (cand.length > 2 && !labelsToSkip.some(l => cand.toLowerCase().includes(l))) {
+                                    description = cand;
                                     break;
                                 }
                             }
                         }
 
-                        // Fallback: si no encontramos descripción específica, buscamos en la línea de arriba
-                        if (!description && i > 0) {
-                            description = lines[i - 1];
+                        // Fallback para comercios cortos (ej: DIA)
+                        if (!description) {
+                            for (const idx of candidates) {
+                                if (idx >= 0 && idx < lines.length) {
+                                    let cand = lines[idx].replace(timeRegex, '').trim();
+                                    if (cand && !labelsToSkip.some(l => l === cand.toLowerCase())) {
+                                        description = cand;
+                                        break;
+                                    }
+                                }
+                            }
                         }
 
-                        // Auto-categorización
+                        // Fallback final
+                        if (!description) {
+                            if (i > 0) description = lines[i - 1].replace(amountRegex, '').trim();
+                            else if (i < lines.length - 1) description = lines[i + 1].replace(amountRegex, '').trim();
+                        }
+
                         const { category, subcategory } = autoCategorize('expense', description);
 
                         transactions.push({

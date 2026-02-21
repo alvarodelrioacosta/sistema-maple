@@ -74,6 +74,27 @@ export const Finance: React.FC = () => {
         loadData();
     }, []);
 
+    useEffect(() => {
+        const handlePaste = (e: ClipboardEvent) => {
+            if (!modalOpen || formData.type !== 'expense') return;
+
+            const items = e.clipboardData?.items;
+            if (!items) return;
+
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    const file = items[i].getAsFile();
+                    if (file) {
+                        handleScanImage(file);
+                    }
+                }
+            }
+        };
+
+        window.addEventListener('paste', handlePaste as any);
+        return () => window.removeEventListener('paste', handlePaste as any);
+    }, [modalOpen, formData.type]);
+
     const loadData = async () => {
         setLoading(true);
         try {
@@ -650,8 +671,15 @@ export const Finance: React.FC = () => {
     };
 
 
-    const handleScanImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
+    const handleScanImage = async (input: React.ChangeEvent<HTMLInputElement> | File) => {
+        let file: File | undefined;
+
+        if (input instanceof File) {
+            file = input;
+        } else {
+            file = input.target.files?.[0];
+        }
+
         if (!file) return;
 
         setIsScanning(true);
@@ -1184,7 +1212,7 @@ export const Finance: React.FC = () => {
                     {formData.type === 'expense' && (
                         <div className="ocr-upload-section" style={{ marginBottom: '1.5rem', padding: '1rem', border: '2px dashed #475569', borderRadius: '8px', textAlign: 'center' }}>
                             <p style={{ color: '#94a3b8', marginBottom: '1rem' }}>
-                                Scan Bank Screenshot (OCR)
+                                Scan Bank Screenshot (OCR / Paste Ctrl+V)
                             </p>
                             <input
                                 type="file"
