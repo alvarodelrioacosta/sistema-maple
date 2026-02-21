@@ -45,6 +45,8 @@ export const Finance: React.FC = () => {
     // Filter states
     const [searchTerm, setSearchTerm] = useState('');
     const [dateRange, setDateRange] = useState({ start: '', end: '' });
+    const [showFilters, setShowFilters] = useState(false);
+    const [kpiMode, setKpiMode] = useState<'summary' | 'balances'>('summary');
 
 
     const [formData, setFormData] = useState<TransactionInsert & { target_financial_account_id?: string | null, actual_amount_received?: number }>({
@@ -791,66 +793,123 @@ export const Finance: React.FC = () => {
                 }
             />
 
-            <div className="kpi-grid" style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginBottom: '2rem' }}>
-                <KPICard
-                    title={`Total Income (${viewMode === 'financial' ? 'USD' : 'Mesos'})`}
-                    value={viewMode === 'financial'
-                        ? `$${totalIncome.USD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-                        : `${totalIncome.Mesos.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} b`}
-                    trend={{ value: 0, isPositive: true }}
-                    icon="💰"
-                    style={{ width: '300px' }}
-                />
-                <KPICard
-                    title={`Total Expense (${viewMode === 'financial' ? 'USD' : 'Mesos'})`}
-                    value={viewMode === 'financial'
-                        ? `$${totalExpense.USD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-                        : `${totalExpense.Mesos.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} b`}
-                    trend={{ value: 0, isPositive: false }}
-                    icon="📉"
-                    style={{ width: '300px' }}
-                />
-                <KPICard
-                    title={`Net Balance (${viewMode === 'financial' ? 'USD' : 'Mesos'})`}
-                    value={viewMode === 'financial'
-                        ? `$${(totalIncome.USD - totalExpense.USD).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-                        : `${(totalIncome.Mesos - totalExpense.Mesos).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} b`}
-                    trend={{ value: 0, isPositive: (viewMode === 'financial' ? totalIncome.USD >= totalExpense.USD : totalIncome.Mesos >= totalExpense.Mesos) }}
-                    icon="⚖️"
-                    style={{ width: '300px' }}
-                />
-            </div>
+            <div className="finance-kpis-container" style={{ marginBottom: '2rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
+                    <div className="kpi-view-toggle" style={{ display: 'inline-flex', background: 'rgba(30, 41, 59, 0.5)', padding: '4px', borderRadius: '8px', border: '1px solid #334155' }}>
+                        <button
+                            className={`toggle-btn ${kpiMode === 'summary' ? 'active' : ''}`}
+                            onClick={() => setKpiMode('summary')}
+                            style={{
+                                padding: '6px 16px',
+                                borderRadius: '6px',
+                                border: 'none',
+                                background: kpiMode === 'summary' ? '#7c3aed' : 'transparent',
+                                color: 'white',
+                                cursor: 'pointer',
+                                fontSize: '0.85rem',
+                                fontWeight: 500,
+                                transition: 'all 0.2s'
+                            }}
+                        >
+                            General Summary
+                        </button>
+                        <button
+                            className={`toggle-btn ${kpiMode === 'balances' ? 'active' : ''}`}
+                            onClick={() => setKpiMode('balances')}
+                            style={{
+                                padding: '6px 16px',
+                                borderRadius: '6px',
+                                border: 'none',
+                                background: kpiMode === 'balances' ? '#7c3aed' : 'transparent',
+                                color: 'white',
+                                cursor: 'pointer',
+                                fontSize: '0.85rem',
+                                fontWeight: 500,
+                                transition: 'all 0.2s'
+                            }}
+                        >
+                            Account Balances
+                        </button>
+                    </div>
+                </div>
 
-            <div className="filters-container" style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginBottom: '1.5rem', background: 'rgba(26, 32, 44, 0.5)', padding: '1rem', borderRadius: '12px', border: '1px solid #2d3748' }}>
-                <div style={{ width: '250px' }}>
-                    <Input
-                        placeholder="Search description or account..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </div>
-                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                    <Input
-                        type="date"
-                        value={dateRange.start}
-                        onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
-                    />
-                    <span style={{ color: '#718096' }}>to</span>
-                    <Input
-                        type="date"
-                        value={dateRange.end}
-                        onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
-                    />
-                </div>
-                {(searchTerm || dateRange.start || dateRange.end) && (
-                    <Button variant="secondary" size="sm" onClick={() => { setSearchTerm(''); setDateRange({ start: '', end: '' }); }}>
-                        Clear
-                    </Button>
+                {kpiMode === 'summary' ? (
+                    <div className="kpi-grid" style={{ display: 'flex', justifyContent: 'center', gap: '2rem' }}>
+                        <KPICard
+                            title={`Total Income (${viewMode === 'financial' ? 'USD' : 'Mesos'})`}
+                            value={viewMode === 'financial'
+                                ? `$${totalIncome.USD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                                : `${totalIncome.Mesos.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} b`}
+                            trend={{ value: 0, isPositive: true }}
+                            icon="💰"
+                            style={{ width: '300px' }}
+                        />
+                        <KPICard
+                            title={`Total Expense (${viewMode === 'financial' ? 'USD' : 'Mesos'})`}
+                            value={viewMode === 'financial'
+                                ? `$${totalExpense.USD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                                : `${totalExpense.Mesos.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} b`}
+                            trend={{ value: 0, isPositive: false }}
+                            icon="📉"
+                            style={{ width: '300px' }}
+                        />
+                        <KPICard
+                            title={`Net Balance (${viewMode === 'financial' ? 'USD' : 'Mesos'})`}
+                            value={viewMode === 'financial'
+                                ? `$${(totalIncome.USD - totalExpense.USD).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                                : `${(totalIncome.Mesos - totalExpense.Mesos).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} b`}
+                            trend={{ value: 0, isPositive: (viewMode === 'financial' ? totalIncome.USD >= totalExpense.USD : totalIncome.Mesos >= totalExpense.Mesos) }}
+                            icon="⚖️"
+                            style={{ width: '300px' }}
+                        />
+                    </div>
+                ) : (
+                    <div className="balances-grid" style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        justifyContent: 'center',
+                        gap: '1rem',
+                        maxWidth: '1200px',
+                        margin: '0 auto'
+                    }}>
+                        {financialAccounts
+                            .filter(acc => (acc.balance || 0) > 0)
+                            .sort((a, b) => {
+                                const indexA = ACCOUNT_SORT_ORDER.indexOf(a.name);
+                                const indexB = ACCOUNT_SORT_ORDER.indexOf(b.name);
+                                if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+                                if (indexA !== -1) return -1;
+                                if (indexB !== -1) return 1;
+                                return a.name.localeCompare(b.name);
+                            })
+                            .map(acc => (
+                                <div key={acc.id} style={{
+                                    background: 'rgba(30, 41, 59, 0.4)',
+                                    border: '1px solid rgba(148, 163, 184, 0.1)',
+                                    borderRadius: '12px',
+                                    padding: '0.75rem 1.25rem', // Mas compacto
+                                    minWidth: '180px',
+                                    textAlign: 'center',
+                                    backdropFilter: 'blur(8px)',
+                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                                }}>
+                                    <span style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
+                                        {acc.name}
+                                    </span>
+                                    <strong style={{ fontSize: '1.1rem', color: '#fff' }}>
+                                        {acc.currency === 'USD' || acc.currency === '$' ? '$' : ''}
+                                        {formatCurrencyValue(acc.balance || 0)}
+                                        {acc.currency === 'Mesos (b)' ? ' b' : ''}
+                                    </strong>
+                                </div>
+                            ))
+                        }
+                    </div>
                 )}
             </div>
 
-            <div className="view-filters-container" style={{ display: 'flex', justifyContent: 'center', margin: '1rem 0' }}>
-                <div className="view-filters" style={{ display: 'flex', gap: '0.5rem', width: '400px' }}>
+            <div className="view-selector-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', margin: '1rem 0' }}>
+                <div className="view-filters" style={{ display: 'flex', gap: '0.5rem', width: '400px', position: 'relative' }}>
                     <Button
                         variant={viewMode === 'financial' ? 'primary' : 'secondary'}
                         onClick={() => setViewMode('financial')}
@@ -867,7 +926,75 @@ export const Finance: React.FC = () => {
                     >
                         Mesos (b)
                     </Button>
+
+                    <button
+                        onClick={() => setShowFilters(!showFilters)}
+                        style={{
+                            position: 'absolute',
+                            right: '-45px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            background: 'transparent',
+                            border: 'none',
+                            color: showFilters ? '#a78bfa' : '#94a3b8',
+                            cursor: 'pointer',
+                            padding: '8px',
+                            fontSize: '1.2rem',
+                            transition: 'all 0.3s ease',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}
+                        title={showFilters ? "Hide Filters" : "Show Filters"}
+                    >
+                        <span style={{
+                            transform: showFilters ? 'rotate(180deg)' : 'rotate(0deg)',
+                            transition: 'transform 0.3s ease',
+                            display: 'inline-block'
+                        }}>
+                            ▼
+                        </span>
+                    </button>
                 </div>
+
+                {showFilters && (
+                    <div className="filters-collapsible" style={{
+                        display: 'flex',
+                        gap: '1rem',
+                        justifyContent: 'center',
+                        background: 'rgba(26, 32, 44, 0.5)',
+                        padding: '1rem',
+                        borderRadius: '12px',
+                        border: '1px solid #2d3748',
+                        animation: 'fadeInDown 0.3s ease-out'
+                    }}>
+                        <div style={{ width: '250px' }}>
+                            <Input
+                                placeholder="Search description or account..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                            <Input
+                                type="date"
+                                value={dateRange.start}
+                                onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
+                            />
+                            <span style={{ color: '#718096' }}>to</span>
+                            <Input
+                                type="date"
+                                value={dateRange.end}
+                                onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
+                            />
+                        </div>
+                        {(searchTerm || dateRange.start || dateRange.end) && (
+                            <Button variant="secondary" size="sm" onClick={() => { setSearchTerm(''); setDateRange({ start: '', end: '' }); }}>
+                                Clear
+                            </Button>
+                        )}
+                    </div>
+                )}
             </div>
 
             <div className="page-content">
