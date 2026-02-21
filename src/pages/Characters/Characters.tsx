@@ -101,11 +101,20 @@ export const Characters: React.FC = () => {
             if (editingCharacter) {
                 await charactersService.update(editingCharacter.id, formData);
                 await loadData();
-                handleCloseModal();
+                // Instead of closing, deselect the character and clear fields
+                setEditingCharacter(null);
+                setFormData(prev => ({
+                    ...prev,
+                    name: '',
+                    level: 1,
+                    class: '',
+                    job: null,
+                    main: null
+                }));
             } else {
                 await charactersService.create(formData);
                 await loadData();
-                // Instead of closing, clear fields but keep account
+                // Clear fields but keep account
                 setFormData(prev => ({
                     ...prev,
                     name: '',
@@ -352,6 +361,17 @@ export const Characters: React.FC = () => {
                         <div className="character-compact-grid">
                             {characters
                                 .filter(c => c.account_id === formData.account_id)
+                                .sort((a, b) => {
+                                    const isAMain = a.main === 'Main' || a.account?.number === 0;
+                                    const isBMain = b.main === 'Main' || b.account?.number === 0;
+
+                                    // Sort by Main status first (Mains first)
+                                    if (isAMain && !isBMain) return -1;
+                                    if (!isAMain && isBMain) return 1;
+
+                                    // Then sort by Level descending
+                                    return (b.level || 0) - (a.level || 0);
+                                })
                                 .map(c => {
                                     const jobClass = classes.find(cls => cls.class_name === c.class);
                                     const jobIcon = jobClass?.image_1 || jobClass?.image_2;
