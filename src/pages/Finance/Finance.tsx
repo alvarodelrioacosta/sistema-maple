@@ -349,6 +349,11 @@ export const Finance: React.FC = () => {
                     description: `Buy Mesos: ${exchangeData.amount_mesos} b`,
                     is_paid: true
                 } as any);
+
+                if (exchangeData.financial_account_id) {
+                    await financialAccountsService.decrementBalance(exchangeData.financial_account_id, exchangeData.amount_real);
+                }
+
                 // 2. Meso Income
                 await transactionsService.createMeso({
                     account_id: gameAccId,
@@ -387,7 +392,7 @@ export const Finance: React.FC = () => {
                     client_id: exchangeData.is_credit_sale ? exchangeData.client_id : null
                 });
 
-                // 2. Financial Income / Credit
+                // 2. Financial Income / Credit Impact
                 if (exchangeData.is_credit_sale) {
                     await accountsReceivableService.create({
                         client_id: exchangeData.client_id,
@@ -406,6 +411,10 @@ export const Finance: React.FC = () => {
                         description: `Meso Sale: ${exchangeData.amount_mesos} b`,
                         is_paid: true
                     } as any);
+
+                    if (exchangeData.financial_account_id) {
+                        await financialAccountsService.incrementBalance(exchangeData.financial_account_id, exchangeData.amount_real);
+                    }
                 }
 
                 // 3. Update Inventory (Meso stock)

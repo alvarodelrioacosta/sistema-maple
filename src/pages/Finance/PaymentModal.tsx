@@ -250,6 +250,10 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, ar,
                     category: fixedCategory,
                     subcategory: fixedSubcategory
                 });
+
+                if (destinationAccountId) {
+                    await financialAccountsService.incrementBalance(destinationAccountId, amount);
+                }
             }
 
             // 2. If Mesos payment, update the game account's mesos_b balance
