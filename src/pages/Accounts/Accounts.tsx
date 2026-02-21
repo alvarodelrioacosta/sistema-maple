@@ -60,7 +60,19 @@ export const Accounts: React.FC = () => {
             });
         } else {
             setEditingAccount(null);
-            setFormData({ number: 0, email: '', tag: '', bright_cubes: 0, bonus_bright_cubes: 0, reward_points: 0, psok: 0, guardian_scroll: 0, solid_cubes: 0, mesos_b: 0 });
+            const maxNumber = accounts.length > 0 ? Math.max(...accounts.map(a => a.number)) : 0;
+            setFormData({
+                number: maxNumber + 1,
+                email: '',
+                tag: '',
+                bright_cubes: 0,
+                bonus_bright_cubes: 0,
+                reward_points: 0,
+                psok: 0,
+                guardian_scroll: 0,
+                solid_cubes: 0,
+                mesos_b: 0
+            });
         }
         setModalOpen(true);
     };

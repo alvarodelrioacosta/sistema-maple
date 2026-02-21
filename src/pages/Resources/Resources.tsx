@@ -443,7 +443,10 @@ export const Resources: React.FC = () => {
                                     min={0}
                                     step={0.01}
                                     value={editValues.mesos_b}
-                                    onChange={(e) => setEditValues({ ...editValues, mesos_b: parseFloat(e.target.value) || 0 })}
+                                    onChange={(e) => {
+                                        const val = parseFloat(e.target.value) || 0;
+                                        setEditValues({ ...editValues, mesos_b: Math.round(val * 100) / 100 });
+                                    }}
                                 />
                             </div>
                             <span className="input-label-text">Mesos (Billions)</span>
@@ -476,7 +479,10 @@ export const Resources: React.FC = () => {
                                     min={0}
                                     step={0.01}
                                     value={sharedChestValues.mesos_stock}
-                                    onChange={(e) => setSharedChestValues({ ...sharedChestValues, mesos_stock: parseFloat(e.target.value) || 0 })}
+                                    onChange={(e) => {
+                                        const val = parseFloat(e.target.value) || 0;
+                                        setSharedChestValues({ ...sharedChestValues, mesos_stock: Math.round(val * 100) / 100 });
+                                    }}
                                 />
                             </div>
                             <span className="input-label-text">Mesos (Billions)</span>

@@ -227,8 +227,9 @@ export const NewARModal: React.FC<NewARModalProps> = ({ isOpen, onClose, onSucce
                         type="number"
                         min={0}
                         step="0.01"
-                        value={amount}
+                        value={amount === 0 ? '' : amount}
                         onChange={(e) => handleAmountChange(parseFloat(e.target.value) || 0)}
+                        placeholder="0.00"
                         required
                     />
                     <Select

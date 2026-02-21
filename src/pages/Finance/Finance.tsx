@@ -1104,8 +1104,9 @@ export const Finance: React.FC = () => {
                         type="number"
                         min={0}
                         step="0.01"
-                        value={mesoFormData.amount}
+                        value={mesoFormData.amount === 0 ? '' : mesoFormData.amount}
                         onChange={(e) => setMesoFormData({ ...mesoFormData, amount: parseFloat(e.target.value) || 0 })}
+                        placeholder="0.00"
                         required
                     />
 

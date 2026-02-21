@@ -412,11 +412,12 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, ar,
                                 type="number"
                                 min={0}
                                 step="0.01"
-                                value={amount}
+                                value={amount === 0 ? '' : amount}
                                 onChange={(e) => {
                                     const val = parseFloat(e.target.value);
                                     setAmount(isNaN(val) ? 0 : val);
                                 }}
+                                placeholder="0.00"
                             />
                         </div>
                         <Button
