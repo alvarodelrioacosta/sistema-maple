@@ -3,6 +3,8 @@ import { Modal, Input, Select, Button } from '../../components/UI';
 import { transactionsService, financialAccountsService } from '../../services';
 import type { Transaction, TransactionType, FinancialAccount } from '../../types';
 
+import { FINANCE_CATEGORIES, CATEGORY_MAP } from '../../utils/categorization';
+
 interface EditTransactionModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -161,6 +163,28 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     required
                 />
+
+                <div className="form-grid-2">
+                    <Select
+                        label="Category"
+                        value={formData.category || ''}
+                        onChange={(val) => setFormData({ ...formData, category: val, subcategory: '' })}
+                        options={[
+                            { value: '', label: 'Select Category...' },
+                            ...Object.values(FINANCE_CATEGORIES).map(c => ({ value: c, label: c }))
+                        ]}
+                    />
+                    <Select
+                        label="Subcategory"
+                        value={formData.subcategory || ''}
+                        onChange={(val) => setFormData({ ...formData, subcategory: val })}
+                        options={[
+                            { value: '', label: 'Select Subcategory...' },
+                            ...(formData.category ? (CATEGORY_MAP[formData.category] || []).map(s => ({ value: s, label: s })) : [])
+                        ]}
+                        disabled={!formData.category}
+                    />
+                </div>
 
                 <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
                     <Button type="button" variant="secondary" onClick={handleDelete} disabled={isSubmitting} style={{ color: '#ef4444' }}>
