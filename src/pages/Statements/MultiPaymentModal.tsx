@@ -191,7 +191,6 @@ export const MultiPaymentModal: React.FC<MultiPaymentModalProps> = ({ isOpen, on
                                                 value={ar.payment === 0 ? '' : ar.payment}
                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleManualPaymentChange(ar.id, Number(e.target.value))}
                                                 placeholder="0.00"
-                                                size="sm"
                                                 style={{ textAlign: 'right' }}
                                             />
                                         </td>
