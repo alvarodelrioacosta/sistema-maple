@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Header } from '../../components/Layout';
-import { Card, Button, Modal, Input } from '../../components/UI';
+import { Card, Button, Modal, Input, LoadingScreen } from '../../components/UI';
 import {
     accountsService,
     charactersService,
@@ -308,12 +308,7 @@ const DailyCheckUp: React.FC = () => {
     }, [dailyTasks, rows]);
 
     if (loading) {
-        return (
-            <div className="daily-checkup loading">
-                <div className="loading-spinner"></div>
-                <span>Cargando Dashboard Diario...</span>
-            </div>
-        );
+        return <LoadingScreen message="Cargando Dashboard Diario..." />;
     }
 
     if (error) {

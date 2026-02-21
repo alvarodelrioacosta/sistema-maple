@@ -4,7 +4,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Header } from '../../components/Layout';
-import { KPICard, Card } from '../../components/UI';
+import { KPICard, Card, LoadingScreen } from '../../components/UI';
 import { itemsService, financialAccountsService, accountsService, resourcesService, sharedInventoryService, accountsReceivableService, exchangeRatesService, transactionsService, cubeSessionsService, clientsService } from '../../services';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import type { DashboardKPIs, ItemStatus } from '../../types';
@@ -414,6 +414,10 @@ export const Dashboard: React.FC = () => {
         setSelectedKPI(selectedKPI === id ? null : id);
     };
 
+    if (loading) {
+        return <LoadingScreen message="Preparando tu Dashboard..." />;
+    }
+
     return (
         <div className="dashboard">
             <Header
@@ -708,9 +712,7 @@ export const Dashboard: React.FC = () => {
 
                     <Card className="dashboard__chart-card">
                         <h3 className="dashboard__chart-title">Expenses by Category</h3>
-                        {loading ? (
-                            <div className="dashboard__loading">Loading...</div>
-                        ) : details.expensesByCategory.length > 0 ? (
+                        {details.expensesByCategory.length > 0 ? (
                             <div className="dashboard__pie-container">
                                 <ResponsiveContainer width="100%" height={300}>
                                     <PieChart>

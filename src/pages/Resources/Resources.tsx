@@ -4,10 +4,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { Header } from '../../components/Layout';
-import { Button, Card, Table, Modal, KPICard } from '../../components/UI';
+import { Button, Card, Table, Modal, KPICard, LoadingScreen } from '../../components/UI';
 import { resourcesService, accountsService, sharedInventoryService } from '../../services';
-import type { SharedInventory } from '../../types';
-import type { Account } from '../../types';
+import type { SharedInventory, Account } from '../../types';
 import type { Column } from '../../components/UI/Table';
 import './Resources.css';
 
@@ -279,6 +278,10 @@ export const Resources: React.FC = () => {
         }
     ];
 
+    if (loading) {
+        return <LoadingScreen message="Sincronizando Inventario..." />;
+    }
+
     return (
         <div className="resources-page">
             <Header
@@ -343,7 +346,6 @@ export const Resources: React.FC = () => {
                         data={tableData}
                         columns={columns}
                         keyExtractor={(row) => row.accountId}
-                        loading={loading}
                         emptyMessage="No accounts found."
                     />
                 </Card>

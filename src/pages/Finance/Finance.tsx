@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Header } from '../../components/Layout';
-import { Button, Table, Modal, Input, Select, Card, KPICard } from '../../components/UI';
+import { Button, Table, Modal, Input, Select, Card, KPICard, LoadingScreen } from '../../components/UI';
 import { transactionsService, financialAccountsService, exchangeRatesService, accountsService, sharedInventoryService, clientsService, accountsReceivableService } from '../../services';
 import type { Transaction, TransactionInsert, TransactionType, FinancialAccount, ExchangeRate, Account, TransactionMeso, SharedInventory } from '../../types';
 import { CURRENCIES } from '../../constants/currencies';
@@ -899,6 +899,10 @@ export const Finance: React.FC = () => {
             )
         }
     ];
+
+    if (loading) {
+        return <LoadingScreen message="Sincronizando Finanzas..." />;
+    }
 
     return (
         <div className="finance-page">
