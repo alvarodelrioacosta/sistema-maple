@@ -116,7 +116,7 @@ export type ItemInsert = Omit<Item, 'id' | 'created_at'>;
 export type ItemUpdate = Partial<ItemInsert>;
 
 // ===== RESOURCE INVENTORY REMOVED =====
-export type ResourceType = 'bright_cubes' | 'bonus_bright_cubes' | 'reward_points' | 'psok' | 'guardian_scroll' | 'solid_cubes';
+export type ResourceType = 'bright_cubes' | 'bonus_bright_cubes' | 'reward_points' | 'psok' | 'guardian_scroll' | 'solid_cubes' | 'perfect_innoc';
 
 // ===== CLIENTS =====
 export interface Client {

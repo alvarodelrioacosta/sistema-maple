@@ -1,5 +1,5 @@
 -- ========================================================
--- PERMISOS DE ACCESO A CATÁLOGOS PARA WORKERS
+-- PERMISOS DE ACCESO A CATÁLOGOS PARA WORKERS (CORREGIDO)
 -- ========================================================
 
 -- Habilitar lectura SELECT para Workers en tablas de catálogo
@@ -12,7 +12,8 @@ BEGIN
     ('items_db'), 
     ('classes'), 
     ('exchange_rates'), 
-    ('potentials'), 
+    ('main_potential'),
+    ('bonus_potential'),
     ('financial_accounts'), 
     ('shared_inventory'),
     ('clients')
@@ -22,6 +23,7 @@ BEGIN
     EXECUTE format('CREATE POLICY "Worker can view catalog %I" ON public.%I FOR SELECT TO authenticated USING (public.get_my_role() = ''worker'')', t, t);
   END LOOP;
 END $$;
+
 
 -- Asegurar que Workers también puedan leer las tablas que ya tenían, por si acaso
 -- (Accounts, Events, Tasks, Items, Characters ya estaban en la migración anterior)

@@ -60,7 +60,7 @@ export const Dashboard: React.FC = () => {
     const [details, setDetails] = useState<{
         itemsByCategory: { status: string, count: number, mesos: number }[];
         financialAccounts: { name: string, balance: number, currency: string }[];
-        cubesBreakdown: { type: string, count: number, valueMesos: number }[];
+        resourceStock: { type: string, count: number, valueMesos: number }[];
         mesosAccounts: { name: string, mesos: number, isVault?: boolean, isConsolidated?: boolean }[];
         receivableByCurrency: { currency: string, count: number, balance: number }[];
         totalStockMesos: number;
@@ -71,7 +71,7 @@ export const Dashboard: React.FC = () => {
     }>({
         itemsByCategory: [],
         financialAccounts: [],
-        cubesBreakdown: [],
+        resourceStock: [],
         mesosAccounts: [],
         receivableByCurrency: [],
         totalStockMesos: 0,
@@ -157,9 +157,11 @@ export const Dashboard: React.FC = () => {
                 const brightMesoCost = resourceMetadata['bright_cubes']?.mesoCost || 0;
                 const bonusMesoCost = resourceMetadata['bonus_bright_cubes']?.mesoCost || 0;
                 const solidMesoCost = resourceMetadata['solid_cubes']?.mesoCost || 0;
+                const perfectInnocMesoCost = resourceMetadata['perfect_innoc']?.mesoCost || 0;
 
-                const totalCubesValueMesos = (brightCount * brightMesoCost) + (bonusCount * bonusMesoCost) + (solidCount * solidMesoCost);
-                const totalCubesValueUSD = totalCubesValueMesos * mesoToUSDRate;
+                const totalPerfectInnocValueMesos = (sharedInventory?.perfect_innocence_stock || 0) * perfectInnocMesoCost;
+                const totalResourceMesosValue = (brightCount * brightMesoCost) + (bonusCount * bonusMesoCost) + (solidCount * solidMesoCost) + totalPerfectInnocValueMesos;
+                const totalResourceValueUSD = totalResourceMesosValue * mesoToUSDRate;
 
                 // 3. Total Mesos in USD
                 const totalMesosInAccounts = accounts.reduce((sum, acc) => sum + (acc.mesos_b || 0), 0);
@@ -296,11 +298,11 @@ export const Dashboard: React.FC = () => {
                     totalStockValue: stockValueUSD,
                     totalIncome: calculatedTotalIncome,
                     totalExpenses: calculatedTotalExpenses,
-                    totalResourceValue: totalCubesValueUSD,
+                    totalResourceValue: totalResourceValueUSD,
                     totalFinancialBalance: financialBalance,
                     totalMesos: totalMesosValueUSD,
                     accountsReceivable: receivableTotalUSD,
-                    netBalance: financialBalance + receivableTotalUSD + stockValueUSD + totalCubesValueUSD + totalMesosValueUSD,
+                    netBalance: financialBalance + receivableTotalUSD + stockValueUSD + totalResourceValueUSD + totalMesosValueUSD,
                     itemsByStatus: statusCounts
                 });
 
@@ -321,11 +323,17 @@ export const Dashboard: React.FC = () => {
                             if (indexB !== -1) return 1;
                             return a.name.localeCompare(b.name);
                         }),
-                    cubesBreakdown: [
+                    resourceStock: [
                         { type: 'Solid Cubes', count: solidCount, valueMesos: solidCount * solidMesoCost },
                         { type: 'Bright Cubes', count: brightCount, valueMesos: brightCount * brightMesoCost },
-                        { type: 'Bonus Bright Cubes', count: bonusCount, valueMesos: bonusCount * bonusMesoCost }
-                    ].filter(c => c.count > 0),
+                        { type: 'Bonus Bright Cubes', count: bonusCount, valueMesos: bonusCount * bonusMesoCost },
+                        { type: 'Perfect Innocence', count: sharedInventory?.perfect_innocence_stock || 0, valueMesos: totalPerfectInnocValueMesos }
+                    ]
+                        .filter(c => c.count > 0)
+                        .sort((a, b) => {
+                            const order = ['Solid Cubes', 'Bright Cubes', 'Bonus Bright Cubes', 'Perfect Innocence'];
+                            return order.indexOf(a.type) - order.indexOf(b.type);
+                        }),
                     mesosAccounts: mesosAccts,
                     receivableByCurrency: Object.keys(arByCurr).map(curr => ({
                         currency: curr,
@@ -333,7 +341,7 @@ export const Dashboard: React.FC = () => {
                         balance: arByCurr[curr].balance
                     })),
                     totalStockMesos,
-                    totalResourceMesos: totalCubesValueMesos,
+                    totalResourceMesos: totalResourceMesosValue,
                     totalMesosSum,
                     expensesByCategory: expensesByCategoryData,
                     monthlyData
@@ -546,14 +554,14 @@ export const Dashboard: React.FC = () => {
                                             </span>
                                             <span className="dashboard__balance-label">Total in Mesos</span>
                                         </div>
-                                        <h4 className="dashboard__stats-subtitle">Cube Stock</h4>
-                                        {details.cubesBreakdown.map(cube => (
-                                            <div className="dashboard__stat-item" key={cube.type}>
+                                        <h4 className="dashboard__stats-subtitle">Stock</h4>
+                                        {details.resourceStock?.map((res) => (
+                                            <div className="dashboard__stat-item" key={res.type}>
                                                 <span className="dashboard__stat-label">
-                                                    {cube.count} {cube.type}
+                                                    {res.count} {res.type}
                                                 </span>
                                                 <span className="dashboard__stat-value">
-                                                    {cube.valueMesos.toLocaleString()} B
+                                                    {res.valueMesos.toLocaleString()} B
                                                 </span>
                                             </div>
                                         ))}
