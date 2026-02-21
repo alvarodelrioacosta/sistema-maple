@@ -160,15 +160,22 @@ export const autoCategorize = (
         return { category: FINANCE_CATEGORIES.HOUSING, subcategory: FINANCE_SUBCATEGORIES.RENT_UTILITIES };
     }
 
-    if (desc.includes('luz') || desc.includes('agua') || desc.includes('gas') || desc.includes('internet') || desc.includes('teléfono') || desc.includes('celular') || desc.includes('electricity') || desc.includes('water') || desc.includes('phone')) {
+    if (desc.includes('subte') || desc.includes('emova') || desc.includes('luz') || desc.includes('agua') || desc.includes('gas') || desc.includes('internet') || desc.includes('teléfono') || desc.includes('celular') || desc.includes('electricity') || desc.includes('water') || desc.includes('phone')) {
+        // Distinguish Transport from Services if it's Emova/Subte
+        if (desc.includes('subte') || desc.includes('emova')) {
+            return { category: FINANCE_CATEGORIES.TRANSPORT, subcategory: FINANCE_SUBCATEGORIES.PUBLIC_TRANSPORT };
+        }
         return { category: FINANCE_CATEGORIES.HOUSING, subcategory: FINANCE_SUBCATEGORIES.SERVICES };
     }
 
-    if (desc.includes('supermercado') || desc.includes('comida') || desc.includes('dieta') || desc.includes('food') || desc.includes('market') || desc.includes('restaurant')) {
+    if (desc.includes('supermercado') || desc.includes('comida') || desc.includes('dieta') || desc.includes('food') || desc.includes('market') || desc.includes('restaurant') || desc.includes('dia') || desc.includes('sushi')) {
         return { category: FINANCE_CATEGORIES.DAILY_LIFE, subcategory: FINANCE_SUBCATEGORIES.FOOD };
     }
 
-    if (desc.includes('gimnasio') || desc.includes('gym') || desc.includes('peluquería') || desc.includes('beauty') || desc.includes('care') || desc.includes('personal')) {
+    if (desc.includes('extracción') || desc.includes('extraccion') || desc.includes('gimnasio') || desc.includes('gym') || desc.includes('peluquería') || desc.includes('beauty') || desc.includes('care') || desc.includes('personal')) {
+        if (desc.includes('extracción') || desc.includes('extraccion')) {
+            return { category: FINANCE_CATEGORIES.DAILY_LIFE, subcategory: FINANCE_SUBCATEGORIES.MISCELLANEOUS };
+        }
         return { category: FINANCE_CATEGORIES.DAILY_LIFE, subcategory: FINANCE_SUBCATEGORIES.PERSONAL_CARE };
     }
 

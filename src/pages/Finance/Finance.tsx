@@ -7,6 +7,8 @@ import { CURRENCIES } from '../../constants/currencies';
 import { formatCurrencyValue } from '../../utils/format';
 import type { Column } from '../../components/UI/Table';
 import { FINANCE_CATEGORIES, CATEGORY_MAP } from '../../utils/categorization';
+import { ocrUtil } from '../../utils/ocr';
+import Tesseract from 'tesseract.js';
 import { EditTransactionModal } from './EditTransactionModal';
 import './Finance.css';
 
@@ -64,6 +66,8 @@ export const Finance: React.FC = () => {
         category: '',
         subcategory: ''
     });
+    const [scannedExpenses, setScannedExpenses] = useState<Partial<TransactionInsert>[]>([]);
+    const [isScanning, setIsScanning] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
@@ -199,10 +203,14 @@ export const Finance: React.FC = () => {
             category: '',
             subcategory: ''
         });
+        setScannedExpenses([]);
         setModalOpen(true);
     };
 
-    const handleCloseModal = () => setModalOpen(false);
+    const handleCloseModal = () => {
+        setModalOpen(false);
+        setScannedExpenses([]);
+    };
 
     // Meso Modal Logic
     const [mesoFormData, setMesoFormData] = useState<{
@@ -639,6 +647,69 @@ export const Finance: React.FC = () => {
                 return a.name.localeCompare(b.name);
             })
             .map(a => ({ value: a.id, label: `${a.name} (${a.currency} ${formatCurrencyValue(a.balance || 0)})` }));
+    };
+
+
+    const handleScanImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setIsScanning(true);
+        try {
+            const { data: { text } } = await Tesseract.recognize(file, 'spa+eng');
+            const result = ocrUtil.processBankScreenshot(text);
+
+            if (result.success && result.transactions) {
+                setScannedExpenses(result.transactions);
+            } else {
+                alert(result.error || 'No expenses detected');
+            }
+        } catch (error) {
+            console.error('OCR Error:', error);
+            alert('Failed to process image');
+        } finally {
+            setIsScanning(false);
+        }
+    };
+
+    const handleRemoveScannedExpense = (index: number) => {
+        setScannedExpenses(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const handleUpdateScannedExpense = (index: number, field: string, value: any) => {
+        setScannedExpenses(prev => prev.map((item, i) =>
+            i === index ? { ...item, [field]: value } : item
+        ));
+    };
+
+    const handleBulkSave = async () => {
+        if (!scannedExpenses.length || !formData.financial_account_id) {
+            alert('Please select an account and ensure there are scanned expenses to save.');
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            for (const expense of scannedExpenses) {
+                await transactionsService.create({
+                    ...expense,
+                    financial_account_id: formData.financial_account_id,
+                    is_paid: true
+                } as TransactionInsert);
+
+                if (formData.financial_account_id) {
+                    await financialAccountsService.decrementBalance(formData.financial_account_id, expense.amount || 0);
+                }
+            }
+
+            await loadData();
+            handleCloseModal();
+        } catch (error) {
+            console.error('Error saving scanned expenses:', error);
+            alert('Partial failure saving expenses');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
 
@@ -1110,40 +1181,125 @@ export const Finance: React.FC = () => {
                         </>
                     )}
 
-                    <Input
-                        label="Description"
-                        value={formData.description || ''}
-                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        required
-                    />
+                    {formData.type === 'expense' && (
+                        <div className="ocr-upload-section" style={{ marginBottom: '1.5rem', padding: '1rem', border: '2px dashed #475569', borderRadius: '8px', textAlign: 'center' }}>
+                            <p style={{ color: '#94a3b8', marginBottom: '1rem' }}>
+                                Scan Bank Screenshot (OCR)
+                            </p>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleScanImage}
+                                style={{ display: 'none' }}
+                                id="bank-ocr-input"
+                                disabled={isScanning}
+                            />
+                            <label htmlFor="bank-ocr-input">
+                                <div className={`btn btn-secondary ${isScanning ? 'loading' : ''}`} style={{ cursor: isScanning ? 'not-allowed' : 'pointer', display: 'inline-block', padding: '0.5rem 1rem', borderRadius: '6px', border: '1px solid #334155', background: '#1e293b', color: '#e2e8f0' }}>
+                                    {isScanning ? 'Scanning...' : 'Upload Bank Screenshot'}
+                                </div>
+                            </label>
+                        </div>
+                    )}
 
-                    <div className="form-grid-2">
-                        <Select
-                            label="Category (Optional)"
-                            value={formData.category || ''}
-                            onChange={(val) => setFormData({ ...formData, category: val, subcategory: '' })}
-                            options={[
-                                { value: '', label: 'Auto-categorize' },
-                                ...Object.values(FINANCE_CATEGORIES).map(c => ({ value: c, label: c }))
-                            ]}
-                        />
-                        <Select
-                            label="Subcategory"
-                            value={formData.subcategory || ''}
-                            onChange={(val) => setFormData({ ...formData, subcategory: val })}
-                            options={[
-                                { value: '', label: 'Select Subcategory' },
-                                ...(formData.category && CATEGORY_MAP[formData.category]
-                                    ? CATEGORY_MAP[formData.category].map(s => ({ value: s, label: s }))
-                                    : [])
-                            ]}
-                            disabled={!formData.category}
-                        />
-                    </div>
+                    {scannedExpenses.length > 0 && formData.type === 'expense' && (
+                        <div className="scanned-expenses-table" style={{ marginBottom: '1.5rem', maxHeight: '300px', overflowY: 'auto', border: '1px solid #334155', borderRadius: '8px' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                                <thead style={{ position: 'sticky', top: 0, background: '#1e293b', zIndex: 1 }}>
+                                    <tr>
+                                        <th style={{ padding: '8px', borderBottom: '1px solid #334155', textAlign: 'left' }}>Description</th>
+                                        <th style={{ padding: '8px', borderBottom: '1px solid #334155', textAlign: 'right', width: '100px' }}>Amount</th>
+                                        <th style={{ padding: '8px', borderBottom: '1px solid #334155', textAlign: 'left', width: '150px' }}>Category</th>
+                                        <th style={{ padding: '8px', borderBottom: '1px solid #334155', textAlign: 'center', width: '40px' }}></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {scannedExpenses.map((expense, idx) => (
+                                        <tr key={idx}>
+                                            <td style={{ padding: '4px' }}>
+                                                <Input
+                                                    value={expense.description || ''}
+                                                    onChange={(e) => handleUpdateScannedExpense(idx, 'description', e.target.value)}
+                                                />
+                                            </td>
+                                            <td style={{ padding: '4px' }}>
+                                                <Input
+                                                    type="number"
+                                                    value={expense.amount?.toString() || ''}
+                                                    onChange={(e) => handleUpdateScannedExpense(idx, 'amount', parseFloat(e.target.value) || 0)}
+                                                    style={{ textAlign: 'right' }}
+                                                />
+                                            </td>
+                                            <td style={{ padding: '4px' }}>
+                                                <Select
+                                                    value={expense.category || ''}
+                                                    onChange={(val) => handleUpdateScannedExpense(idx, 'category', val)}
+                                                    options={[
+                                                        { value: '', label: 'Select...' },
+                                                        ...Object.values(FINANCE_CATEGORIES).map(c => ({ value: c, label: c }))
+                                                    ]}
+                                                />
+                                            </td>
+                                            <td style={{ padding: '4px', textAlign: 'center' }}>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleRemoveScannedExpense(idx)}
+                                                    style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '1.2rem' }}
+                                                >
+                                                    ×
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+
+                    {!scannedExpenses.length && (
+                        <>
+                            <Input
+                                label="Description"
+                                value={formData.description || ''}
+                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                required
+                            />
+
+                            <div className="form-grid-2">
+                                <Select
+                                    label="Category (Optional)"
+                                    value={formData.category || ''}
+                                    onChange={(val) => setFormData({ ...formData, category: val, subcategory: '' })}
+                                    options={[
+                                        { value: '', label: 'Auto-categorize' },
+                                        ...Object.values(FINANCE_CATEGORIES).map(c => ({ value: c, label: c }))
+                                    ]}
+                                />
+                                <Select
+                                    label="Subcategory"
+                                    value={formData.subcategory || ''}
+                                    onChange={(val) => setFormData({ ...formData, subcategory: val })}
+                                    options={[
+                                        { value: '', label: 'Select Subcategory' },
+                                        ...(formData.category && CATEGORY_MAP[formData.category]
+                                            ? CATEGORY_MAP[formData.category].map(s => ({ value: s, label: s }))
+                                            : [])
+                                    ]}
+                                    disabled={!formData.category}
+                                />
+                            </div>
+                        </>
+                    )}
 
                     <div className="modal-actions">
                         <Button type="button" variant="secondary" onClick={handleCloseModal}>Cancel</Button>
-                        <Button type="submit">{formData.type === 'transfer' ? 'Execute Transfer' : 'Save Transaction'}</Button>
+                        {scannedExpenses.length > 0 ? (
+                            <Button type="button" onClick={handleBulkSave} loading={isSubmitting}>
+                                {isSubmitting ? 'Saving...' : `Save ${scannedExpenses.length} Transactions`}
+                            </Button>
+                        ) : (
+                            <Button type="submit">{formData.type === 'transfer' ? 'Execute Transfer' : 'Save Transaction'}</Button>
+                        )}
                     </div>
                 </form>
             </Modal>

@@ -1,6 +1,13 @@
-import type { ItemInsert, ItemDB, TradeabilityType, PotentialTier } from '../types';
+import type { ItemInsert, ItemDB, TradeabilityType, PotentialTier, TransactionInsert } from '../types';
+import { autoCategorize } from './categorization';
 
 export interface OcrResult extends Partial<ItemInsert> {
+    success: boolean;
+    error?: string;
+}
+
+export interface BankOcrResult {
+    transactions: Partial<TransactionInsert>[];
     success: boolean;
     error?: string;
 }
@@ -215,5 +222,73 @@ export const ocrUtil = {
         }
 
         return { ...updates, success: true };
+    },
+
+    /**
+     * Procesa texto de una captura de pantalla bancaria para extraer transacciones
+     */
+    processBankScreenshot(text: string): BankOcrResult {
+        const lines = text.split('\n').map(l => l.trim()).filter(l => l !== '');
+        const transactions: Partial<TransactionInsert>[] = [];
+
+        // Patrón para detectar montos negativos (gastos): - $ 8.180 o -$8.180
+        const amountRegex = /-?\s?\$?\s?(\d{1,3}(\.\d{3})*(,\d+)?)/;
+
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+
+            // Si la línea contiene un monto negativo
+            if (line.includes('-')) {
+                const match = line.match(amountRegex);
+                if (match) {
+                    let amountStr = match[1].replace(/\./g, '').replace(',', '.');
+                    const amount = parseFloat(amountStr);
+
+                    if (!isNaN(amount) && amount > 0) {
+                        // La descripción suele estar 1 o 2 líneas antes, o en la misma línea
+                        let description = '';
+
+                        // Buscamos hacia atrás para encontrar algo que no sea un label genérico como "Pago" o "Transferencia"
+                        const labelsToSkip = ['pago', 'transferencia enviada', 'extracción de efectivo', 'hoy', 'disponible'];
+
+                        for (let j = 1; j <= 3; j++) {
+                            const prevIdx = i - j;
+                            if (prevIdx >= 0) {
+                                const prevLine = lines[prevIdx];
+                                const lowerPrev = prevLine.toLowerCase();
+                                if (!labelsToSkip.some(label => lowerPrev.includes(label)) && prevLine.length > 3) {
+                                    description = prevLine;
+                                    break;
+                                }
+                            }
+                        }
+
+                        // Fallback: si no encontramos descripción específica, buscamos en la línea de arriba
+                        if (!description && i > 0) {
+                            description = lines[i - 1];
+                        }
+
+                        // Auto-categorización
+                        const { category, subcategory } = autoCategorize('expense', description);
+
+                        transactions.push({
+                            type: 'expense',
+                            amount: amount,
+                            currency: 'ARS',
+                            description: description || 'Scanned Expense',
+                            category,
+                            subcategory,
+                            is_paid: true
+                        });
+                    }
+                }
+            }
+        }
+
+        return {
+            transactions,
+            success: transactions.length > 0,
+            error: transactions.length === 0 ? 'No expenses detected in the image.' : undefined
+        };
     }
 };
