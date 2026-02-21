@@ -44,5 +44,24 @@ export const financialAccountsService = {
 
         if (error) throw error;
         return data;
+    },
+
+    async incrementBalance(id: string, amount: number): Promise<void> {
+        const { error } = await supabase.rpc('increment_financial_balance', {
+            account_id: id,
+            amount_to_add: amount
+        });
+
+        // Fallback si la RPC no existe aún (aunque debería estar en la migración, la añadiremos luego)
+        if (error) {
+            const account = await this.getById(id);
+            if (account) {
+                await this.update(id, { balance: (account.balance || 0) + amount });
+            }
+        }
+    },
+
+    async decrementBalance(id: string, amount: number): Promise<void> {
+        await this.incrementBalance(id, -amount);
     }
 };

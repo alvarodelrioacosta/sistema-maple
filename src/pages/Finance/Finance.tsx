@@ -7,6 +7,7 @@ import { CURRENCIES } from '../../constants/currencies';
 import { formatCurrencyValue } from '../../utils/format';
 import type { Column } from '../../components/UI/Table';
 import { FINANCE_CATEGORIES, CATEGORY_MAP } from '../../utils/categorization';
+import { EditTransactionModal } from './EditTransactionModal';
 import './Finance.css';
 
 const TYPE_OPTIONS = [
@@ -33,6 +34,8 @@ export const Finance: React.FC = () => {
 
     // Modal states
     const [modalOpen, setModalOpen] = useState(false);
+    const [editModalOpen, setEditModalOpen] = useState(false);
+    const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
     const [mesoModalOpen, setMesoModalOpen] = useState(false);
 
     // Financial Summary State
@@ -46,7 +49,7 @@ export const Finance: React.FC = () => {
 
     const [formData, setFormData] = useState<TransactionInsert & { target_financial_account_id?: string | null, actual_amount_received?: number }>({
         type: 'income',
-        amount: 0,
+        amount: undefined as any, // Cambiado a undefined para que el input muestre el placeholder
         currency: 'USD',
         description: '',
         item_id: null,
@@ -181,7 +184,7 @@ export const Finance: React.FC = () => {
     const handleOpenModal = () => {
         setFormData({
             type: 'income',
-            amount: 0,
+            amount: undefined as any,
             currency: 'USD',
             description: '',
             item_id: null,
@@ -190,7 +193,7 @@ export const Finance: React.FC = () => {
             is_paid: true,
             financial_account_id: null,
             target_financial_account_id: null,
-            actual_amount_received: 0,
+            actual_amount_received: undefined as any,
             category: '',
             subcategory: ''
         });
@@ -539,6 +542,8 @@ export const Finance: React.FC = () => {
 
         try {
             setIsSubmitting(true);
+            const amount = formData.amount || 0;
+
             if (formData.type === 'transfer') {
                 const fromAccount = financialAccounts.find(a => a.id === formData.financial_account_id);
                 const toAccount = financialAccounts.find(a => a.id === formData.target_financial_account_id);
@@ -548,15 +553,19 @@ export const Finance: React.FC = () => {
                     return;
                 }
 
+                const transferGroupId = crypto.randomUUID();
+
                 // 1. Withdrawal from source
                 await transactionsService.create({
                     type: 'transfer',
-                    amount: formData.amount,
+                    amount: amount,
                     currency: fromAccount.currency,
                     description: `Transfer to ${toAccount.name}: ${formData.description}`,
                     financial_account_id: fromAccount.id,
-                    is_paid: true
+                    is_paid: true,
+                    transfer_id: transferGroupId
                 });
+                await financialAccountsService.decrementBalance(fromAccount.id, amount);
 
                 // 2. Deposit to target (using suggestedAmount)
                 await transactionsService.create({
@@ -565,11 +574,14 @@ export const Finance: React.FC = () => {
                     currency: toAccount.currency,
                     description: `Transfer from ${fromAccount.name}: ${formData.description}`,
                     financial_account_id: toAccount.id,
-                    is_paid: true
+                    is_paid: true,
+                    transfer_id: transferGroupId
                 });
+                await financialAccountsService.incrementBalance(toAccount.id, suggestedAmount);
 
                 // 3. Exchange rate adjustment
-                const diff = (formData.actual_amount_received || 0) - suggestedAmount;
+                const actualReceived = formData.actual_amount_received || 0;
+                const diff = actualReceived - suggestedAmount;
                 if (Math.abs(diff) > 0.001) {
                     const isGain = diff > 0;
                     await transactionsService.create({
@@ -578,14 +590,16 @@ export const Finance: React.FC = () => {
                         currency: toAccount.currency,
                         description: isGain ? 'Exchange rate gain' : 'Exchange rate loss / fee',
                         financial_account_id: toAccount.id,
-                        is_paid: true
+                        is_paid: true,
+                        transfer_id: transferGroupId
                     });
+                    await financialAccountsService.incrementBalance(toAccount.id, diff);
                 }
 
             } else {
                 await transactionsService.create({
                     type: formData.type as any,
-                    amount: formData.amount,
+                    amount: amount,
                     currency: formData.currency,
                     description: formData.description,
                     financial_account_id: formData.financial_account_id,
@@ -596,6 +610,11 @@ export const Finance: React.FC = () => {
                     category: formData.category || null,
                     subcategory: formData.subcategory || null
                 });
+
+                if (formData.financial_account_id) {
+                    const balanceImpact = formData.type === 'income' ? amount : -amount;
+                    await financialAccountsService.incrementBalance(formData.financial_account_id, balanceImpact);
+                }
             }
             await loadData();
             handleCloseModal();
@@ -672,6 +691,23 @@ export const Finance: React.FC = () => {
                     <span style={{ opacity: 0.7 }}>{t.subcategory || '-'}</span>
                 </div>
             )
+        },
+        {
+            key: 'actions' as any,
+            header: 'Actions',
+            render: (t) => (
+                <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => {
+                        setSelectedTransaction(t);
+                        setEditModalOpen(true);
+                    }}
+                    style={{ padding: '4px 8px', fontSize: '0.8rem' }}
+                >
+                    Edit
+                </Button>
+            )
         }
     ];
 
@@ -717,7 +753,7 @@ export const Finance: React.FC = () => {
 
                 return (
                     <span style={{ color, fontWeight: 'bold' }}>
-                        {sign}{formatCurrencyValue(t.amount)} b
+                        {sign}{formatCurrencyValue(t.amount)}
                     </span>
                 );
             }
@@ -886,7 +922,8 @@ export const Finance: React.FC = () => {
                                 type="number"
                                 min={0}
                                 step="0.01"
-                                value={formData.amount}
+                                placeholder="0.00"
+                                value={formData.amount || ''}
                                 onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })}
                                 required
                             />
@@ -906,7 +943,8 @@ export const Finance: React.FC = () => {
                                 type="number"
                                 min={0}
                                 step="0.01"
-                                value={formData.actual_amount_received}
+                                placeholder="0.00"
+                                value={formData.actual_amount_received || ''}
                                 onChange={(e) => setFormData({ ...formData, actual_amount_received: parseFloat(e.target.value) || 0 })}
                                 required
                             />
@@ -929,7 +967,8 @@ export const Finance: React.FC = () => {
                                     type="number"
                                     min={0}
                                     step="0.01"
-                                    value={formData.amount}
+                                    placeholder="0.00"
+                                    value={formData.amount || ''}
                                     onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })}
                                     required
                                 />
@@ -981,6 +1020,18 @@ export const Finance: React.FC = () => {
                     </div>
                 </form>
             </Modal>
+
+            {selectedTransaction && (
+                <EditTransactionModal
+                    isOpen={editModalOpen}
+                    onClose={() => {
+                        setEditModalOpen(false);
+                        setSelectedTransaction(null);
+                    }}
+                    transaction={selectedTransaction}
+                    onSuccess={loadData}
+                />
+            )}
 
             {/* Meso Transaction Modal */}
             <Modal

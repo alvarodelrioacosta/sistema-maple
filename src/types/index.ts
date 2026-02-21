@@ -178,6 +178,7 @@ export interface Transaction {
     account_receivable_id?: string | null; // Link to AR
     category?: string | null;
     subcategory?: string | null;
+    transfer_id?: string | null; // Corregido el vínculo de transferencias
     financial_account?: FinancialAccount; // Joined
     client?: Client; // Joined
 }
@@ -211,6 +212,7 @@ export interface TransactionMesoInsert {
     session_id?: string | null;
     category?: string | null;
     subcategory?: string | null;
+    transfer_id?: string | null;
 }
 
 export interface TransactionInsert {
@@ -227,6 +229,7 @@ export interface TransactionInsert {
     account_receivable_id?: string | null;
     category?: string | null;
     subcategory?: string | null;
+    transfer_id?: string | null;
 }
 
 export type TransactionUpdate = Partial<TransactionInsert>;

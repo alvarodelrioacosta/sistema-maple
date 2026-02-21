@@ -129,22 +129,7 @@ export const Dashboard: React.FC = () => {
                 const mesoToUSDRate = getToUSDRate('Mesos(b)');
 
                 // 1. Financial Balance in USD
-                const financialAccountsWithBalances = financialAccounts.map(acc => {
-                    const accTransactions = dashboardTransactions.filter(t => t.financial_account_id === acc.id);
-                    const calculatedBalance = accTransactions.reduce((accSum, t) => {
-                        if (t.type === 'income') return accSum + (t.amount || 0);
-                        if (t.type === 'expense') return accSum - (t.amount || 0);
-                        if (t.type === 'transfer') {
-                            const desc = (t.description || '').toLowerCase();
-                            if (desc.includes('transfer from')) return accSum + (t.amount || 0);
-                            if (desc.includes('transfer to')) return accSum - (t.amount || 0);
-                        }
-                        return accSum;
-                    }, 0);
-                    return { ...acc, balance: calculatedBalance };
-                });
-
-                const financialBalance = financialAccountsWithBalances.reduce((sum, acc) => {
+                const financialBalance = financialAccounts.reduce((sum, acc) => {
                     const rate = getToUSDRate(acc.currency);
                     return sum + ((acc.balance || 0) * rate);
                 }, 0);
@@ -308,7 +293,7 @@ export const Dashboard: React.FC = () => {
 
                 setDetails({
                     itemsByCategory,
-                    financialAccounts: financialAccountsWithBalances
+                    financialAccounts: financialAccounts
                         .filter(acc => acc.name !== 'Inventario / Mesos')
                         .map(acc => ({
                             name: acc.name,
