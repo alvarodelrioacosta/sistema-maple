@@ -4,6 +4,7 @@ import { Table, Select, Card, KPICard, Button } from '../../components/UI';
 import { clientsService, transactionsService, accountsReceivableService, exchangeRatesService } from '../../services';
 import { Client, TransactionWithRelations, AccountReceivable, ExchangeRate, TransactionMeso } from '../../types';
 import { AgreementModal } from './AgreementModal';
+import { MultiPaymentModal } from './MultiPaymentModal';
 import '../Finance/Finance.css'; // Reuse finance styles
 
 // Union type for the combined list
@@ -58,6 +59,9 @@ export const Statements: React.FC = () => {
     // Agreement Modal State
     const [isAgreementModalOpen, setIsAgreementModalOpen] = useState(false);
     const [selectedClientForAgreement, setSelectedClientForAgreement] = useState<Client | null>(null);
+
+    // Multi-Payment Modal State
+    const [isMultiPaymentOpen, setIsMultiPaymentOpen] = useState(false);
 
     useEffect(() => {
         loadInitialData();
@@ -441,9 +445,28 @@ export const Statements: React.FC = () => {
                                     </div>
                                 ) : (
                                     <div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                                            <span style={{ fontSize: '1.2em' }}>💎</span>
-                                            <span style={{ fontSize: '0.9em', color: '#94a3b8' }}>Outstanding Balance ({displayCurrency})</span>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                                                <span style={{ fontSize: '1.2em' }}>💎</span>
+                                                <span style={{ fontSize: '0.9em', color: '#94a3b8' }}>Outstanding Balance ({displayCurrency})</span>
+                                            </div>
+                                            {totalBalance > 0 && (
+                                                <Button
+                                                    size="sm"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setIsMultiPaymentOpen(true);
+                                                    }}
+                                                    style={{
+                                                        background: '#7c3aed',
+                                                        borderColor: '#8b5cf6',
+                                                        padding: '4px 12px',
+                                                        fontSize: '0.8rem'
+                                                    }}
+                                                >
+                                                    Pay
+                                                </Button>
+                                            )}
                                         </div>
                                         <div style={{ fontSize: '1.75em', fontWeight: 'bold', color: '#f1f5f9' }}>
                                             {displayCurrency === 'USD' ? '$' : ''}
@@ -552,6 +575,15 @@ export const Statements: React.FC = () => {
                 onClose={() => setIsAgreementModalOpen(false)}
                 onSuccess={loadInitialData}
                 client={selectedClientForAgreement}
+            />
+            <MultiPaymentModal
+                isOpen={isMultiPaymentOpen}
+                onClose={() => setIsMultiPaymentOpen(false)}
+                client={clients.find(c => c.id === selectedClientId) || null}
+                onSuccess={() => {
+                    if (selectedClientId) loadStatementData(selectedClientId);
+                    loadInitialData();
+                }}
             />
         </div>
     );

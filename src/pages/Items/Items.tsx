@@ -119,7 +119,7 @@ export const Items: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [selectedAccountId, setSelectedAccountId] = useState<string>(''); // New state for Account Filter
 
-    const [filterStatus, setFilterStatus] = useState<ItemStatus | 'all'>('all'); // State for Filter
+    const [filterStatus, setFilterStatus] = useState<ItemStatus | 'all'>('in_stock'); // State for Filter
     const [financialAccounts, setFinancialAccounts] = useState<FinancialAccount[]>([]);
     const [sharedChest, setSharedChest] = useState<SharedInventory | null>(null);
     const [modalOpen, setModalOpen] = useState(false);
