@@ -9,6 +9,7 @@ import { charactersService, accountsService, classesService } from '../../servic
 import type { CharacterWithAccount, CharacterInsert, Account, JobType, ClassItem } from '../../types';
 import type { Column } from '../../components/UI/Table';
 import '../Accounts/Accounts.css';
+import './Characters.css';
 
 const JOB_OPTIONS: { value: JobType; label: string; color: string }[] = [
     { value: 'Warrior', label: 'Warrior', color: '#ff4d4f' }, // Red
@@ -36,6 +37,7 @@ export const Characters: React.FC = () => {
 
     const [activeFilter, setActiveFilter] = useState<JobType | null>(null);
     const [showMainsOnly, setShowMainsOnly] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
         loadData();
@@ -78,7 +80,9 @@ export const Characters: React.FC = () => {
             });
         } else {
             setEditingCharacter(null);
-            setFormData({ name: '', level: 1, class: '', job: null, main: null, account_id: accounts[0]?.id || '' });
+            // If we're creating another one, keep the previous account selected if any
+            const lastAccountId = formData.account_id || accounts[0]?.id || '';
+            setFormData({ name: '', level: 1, class: '', job: null, main: null, account_id: lastAccountId });
         }
         setModalOpen(true);
     };
@@ -90,16 +94,31 @@ export const Characters: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (isSaving) return;
+
         try {
+            setIsSaving(true);
             if (editingCharacter) {
                 await charactersService.update(editingCharacter.id, formData);
+                await loadData();
+                handleCloseModal();
             } else {
                 await charactersService.create(formData);
+                await loadData();
+                // Instead of closing, clear fields but keep account
+                setFormData(prev => ({
+                    ...prev,
+                    name: '',
+                    level: 1,
+                    class: '',
+                    job: null,
+                    main: null
+                }));
             }
-            await loadData();
-            handleCloseModal();
         } catch (error) {
             console.error('Error saving character:', error);
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -281,50 +300,98 @@ export const Characters: React.FC = () => {
                 title={editingCharacter ? 'Edit Character' : 'New Character'}
             >
                 <form onSubmit={handleSubmit} className="modal-form">
-                    <Select
-                        label="Account"
-                        value={formData.account_id}
-                        onChange={(value) => setFormData({ ...formData, account_id: value })}
-                        options={accounts
-                            .sort((a, b) => (a.number || 0) - (b.number || 0))
-                            .map(a => ({
-                                value: a.id,
-                                label: `N° ${a.number} - ${a.email || 'No email'}`
-                            }))}
-                    />
-                    <Input
-                        label="Name"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        required
-                    />
-                    <Input
-                        label="Level"
-                        type="number"
-                        min={1}
-                        max={300}
-                        value={formData.level}
-                        onChange={(e) => setFormData({ ...formData, level: parseInt(e.target.value) || 1 })}
-                    />
+                    <div className="modal-form-grid">
+                        <Select
+                            label="Account"
+                            value={formData.account_id}
+                            onChange={(value) => setFormData({ ...formData, account_id: value })}
+                            options={accounts
+                                .sort((a, b) => (a.number || 0) - (b.number || 0))
+                                .map(a => ({
+                                    value: a.id,
+                                    label: `N° ${a.number} - ${a.email || 'No email'}`
+                                }))}
+                        />
+                        <Input
+                            label="Name"
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            required
+                        />
+                        <Input
+                            label="Level"
+                            type="number"
+                            min={1}
+                            max={300}
+                            value={formData.level}
+                            onChange={(e) => setFormData({ ...formData, level: parseInt(e.target.value) || 1 })}
+                        />
 
-                    {/* CUSTOM JOB SELECT WITH ICONS */}
-                    <Select
-                        label="Job"
-                        value={formData.job || ''}
-                        onChange={(value) => setFormData({ ...formData, job: value as JobType, class: '' })}
-                        options={[{ value: '', label: 'Select Job' }, ...JOB_OPTIONS]}
-                    />
+                        <Select
+                            label="Job"
+                            value={formData.job || ''}
+                            onChange={(value) => setFormData({ ...formData, job: value as JobType, class: '' })}
+                            options={[{ value: '', label: 'Select Job' }, ...JOB_OPTIONS]}
+                        />
 
-                    <Select
-                        label="Class"
-                        value={formData.class || ''}
-                        onChange={(value) => setFormData({ ...formData, class: value })}
-                        options={[
-                            { value: '', label: 'Select Class' },
-                            ...classOptions
-                        ]}
-                        disabled={!formData.job}
-                    />
+                        <Select
+                            label="Class"
+                            value={formData.class || ''}
+                            onChange={(value) => setFormData({ ...formData, class: value })}
+                            options={[
+                                { value: '', label: 'Select Class' },
+                                ...classOptions
+                            ]}
+                            disabled={!formData.job}
+                        />
+                    </div>
+
+                    {/* COMPACT CHARACTER LIST (Option B) */}
+                    <div className="modal-characters-list">
+                        <h4>Characters in this account</h4>
+                        <div className="character-compact-grid">
+                            {characters
+                                .filter(c => c.account_id === formData.account_id)
+                                .map(c => {
+                                    const jobClass = classes.find(cls => cls.class_name === c.class);
+                                    const jobIcon = jobClass?.image_1 || jobClass?.image_2;
+                                    const isEditing = editingCharacter?.id === c.id;
+
+                                    return (
+                                        <div
+                                            key={c.id}
+                                            className={`character-compact-card ${isEditing ? 'is-editing' : ''}`}
+                                            onClick={() => handleOpenModal(c)}
+                                        >
+                                            <div className="character-compact-icon">
+                                                {c.class === 'Xenon' ? (
+                                                    <img src="/xenon.png" alt="Xenon" />
+                                                ) : jobIcon ? (
+                                                    <img src={jobIcon} alt={c.job || ''} />
+                                                ) : (
+                                                    <span style={{ fontSize: '12px' }}>?</span>
+                                                )}
+                                            </div>
+                                            <div className="character-compact-info">
+                                                <span className="character-compact-name">{c.name}</span>
+                                                <div className="character-compact-meta">
+                                                    <span className="character-compact-level">Lvl {c.level}</span>
+                                                    <span className="character-compact-class">{c.class}</span>
+                                                </div>
+                                            </div>
+                                            {(c.main === 'Main' || c.account?.number === 0) && (
+                                                <span className="character-compact-type">Main</span>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            {characters.filter(c => c.account_id === formData.account_id).length === 0 && (
+                                <p style={{ fontSize: '0.85rem', color: '#64748b', fontStyle: 'italic', gridColumn: '1 / -1' }}>
+                                    No characters found in this account yet.
+                                </p>
+                            )}
+                        </div>
+                    </div>
 
                     <div className="modal-actions" style={{ justifyContent: 'space-between' }}>
                         {editingCharacter && (
@@ -340,11 +407,11 @@ export const Characters: React.FC = () => {
                             </Button>
                         )}
                         <div style={{ display: 'flex', gap: '10px', marginLeft: 'auto' }}>
-                            <Button type="button" variant="secondary" onClick={handleCloseModal}>
-                                Cancel
+                            <Button type="button" variant="secondary" onClick={handleCloseModal} disabled={isSaving}>
+                                {editingCharacter ? 'Close' : 'Cancel'}
                             </Button>
-                            <Button type="submit">
-                                {editingCharacter ? 'Save Changes' : 'Create Character'}
+                            <Button type="submit" loading={isSaving} disabled={isSaving}>
+                                {isSaving ? 'Processing...' : (editingCharacter ? 'Save Changes' : 'Create Character')}
                             </Button>
                         </div>
                     </div>
