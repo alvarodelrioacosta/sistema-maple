@@ -63,6 +63,7 @@ export const Dashboard: React.FC = () => {
         resourceStock: { type: string, count: number, valueMesos: number }[];
         mesosAccounts: { name: string, mesos: number, isVault?: boolean, isConsolidated?: boolean }[];
         receivableByCurrency: { currency: string, count: number, balance: number }[];
+        receivableByClient: { name: string, balanceUSD: number, count: number, isConsolidated?: boolean }[];
         totalStockMesos: number;
         totalResourceMesos: number;
         totalMesosSum: number;
@@ -74,6 +75,7 @@ export const Dashboard: React.FC = () => {
         resourceStock: [],
         mesosAccounts: [],
         receivableByCurrency: [],
+        receivableByClient: [],
         totalStockMesos: 0,
         totalResourceMesos: 0,
         totalMesosSum: 0,
@@ -222,7 +224,38 @@ export const Dashboard: React.FC = () => {
                     });
                 }
 
-                // 7. Receivable by Currency
+                // 7. Receivable by Client (Top 5 + Rest)
+                const arByClient: Record<string, { count: number, balanceUSD: number }> = {};
+                activeReceivables.forEach(ar => {
+                    const clientName = ar.client?.name || 'Unknown Client';
+                    const curr = ar.currency || ar.client?.currency || 'USD';
+                    const rate = getToUSDRate(curr);
+                    const pendingUSD = (ar.amount - (ar.paid || 0)) * rate;
+
+                    if (!arByClient[clientName]) arByClient[clientName] = { count: 0, balanceUSD: 0 };
+                    arByClient[clientName].count++;
+                    arByClient[clientName].balanceUSD += pendingUSD;
+                });
+
+                const sortedClients = Object.entries(arByClient)
+                    .map(([name, data]) => ({ name, ...data }))
+                    .sort((a, b) => b.balanceUSD - a.balanceUSD);
+
+                const top5Clients = sortedClients.slice(0, 5);
+                const remainingClients = sortedClients.slice(5);
+
+                const receivableByClient: { name: string, balanceUSD: number, count: number, isConsolidated?: boolean }[] = [...top5Clients];
+
+                if (remainingClients.length > 0) {
+                    receivableByClient.push({
+                        name: `${remainingClients.length} Clients`,
+                        balanceUSD: remainingClients.reduce((sum, c) => sum + c.balanceUSD, 0),
+                        count: remainingClients.reduce((sum, c) => sum + c.count, 0),
+                        isConsolidated: true
+                    });
+                }
+
+                // 7.1 Keep by currency for compatibility if needed elsewhere, but mainly use by client
                 const arByCurr: Record<string, { count: number, balance: number }> = {};
                 activeReceivables.forEach(ar => {
                     const curr = ar.currency || ar.client?.currency || 'USD';
@@ -325,6 +358,7 @@ export const Dashboard: React.FC = () => {
                         count: arByCurr[curr].count,
                         balance: arByCurr[curr].balance
                     })),
+                    receivableByClient,
                     totalStockMesos,
                     totalResourceMesos: totalResourceMesosValue,
                     totalMesosSum,
@@ -583,12 +617,14 @@ export const Dashboard: React.FC = () => {
                                             </span>
                                             <span className="dashboard__balance-label">Total in USD</span>
                                         </div>
-                                        <h4 className="dashboard__stats-subtitle">AR by Currency</h4>
-                                        {details.receivableByCurrency.map(ar => (
-                                            <div className="dashboard__stat-item" key={ar.currency}>
-                                                <span className="dashboard__stat-label">{ar.count} Entries ({ar.currency})</span>
-                                                <span className="dashboard__stat-value">
-                                                    {ar.balance.toLocaleString()} {ar.currency.includes('Mesos') ? 'B' : ar.currency}
+                                        <h4 className="dashboard__stats-subtitle">AR by Client (USD)</h4>
+                                        {details.receivableByClient.map((client, i) => (
+                                            <div className="dashboard__stat-item" key={client.name + i}>
+                                                <span className="dashboard__stat-label" style={{ fontWeight: client.isConsolidated ? 'bold' : 'normal' }}>
+                                                    {client.count} Entries ({client.name})
+                                                </span>
+                                                <span className="dashboard__stat-value" style={{ color: client.isConsolidated ? '#a78bfa' : 'inherit' }}>
+                                                    ${client.balanceUSD.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                                                 </span>
                                             </div>
                                         ))}
