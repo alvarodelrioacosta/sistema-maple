@@ -59,6 +59,7 @@ export const Finance: React.FC = () => {
         category: '',
         subcategory: ''
     });
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         loadData();
@@ -261,7 +262,10 @@ export const Finance: React.FC = () => {
 
     const handleExchangeSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (isSubmitting) return;
+
         try {
+            setIsSubmitting(true);
             if (!exchangeData.is_credit_sale && !exchangeData.financial_account_id) {
                 alert('Please select a Financial Account');
                 return;
@@ -367,12 +371,17 @@ export const Finance: React.FC = () => {
         } catch (error: any) {
             console.error('Error exchanging mesos:', error);
             alert(`Error: ${error.message || 'Failed to complete exchange. Please check if you have executed all SQL scripts in Supabase.'}`);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     const handleMesoSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (isSubmitting) return;
+
         try {
+            setIsSubmitting(true);
             if (mesoFormData.type === 'transfer' as any) {
                 const sourceId = mesoFormData.account_id;
                 const destId = mesoFormData.target_account_id;
@@ -487,6 +496,8 @@ export const Finance: React.FC = () => {
             handleCloseMesoModal();
         } catch (error) {
             console.error('Error saving meso transaction:', error);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -524,7 +535,10 @@ export const Finance: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (isSubmitting) return;
+
         try {
+            setIsSubmitting(true);
             if (formData.type === 'transfer') {
                 const fromAccount = financialAccounts.find(a => a.id === formData.financial_account_id);
                 const toAccount = financialAccounts.find(a => a.id === formData.target_financial_account_id);
@@ -587,6 +601,8 @@ export const Finance: React.FC = () => {
             handleCloseModal();
         } catch (error) {
             console.error('Error saving transaction:', error);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -1266,8 +1282,10 @@ export const Finance: React.FC = () => {
                     })()}
 
                     <div className="modal-actions">
-                        <Button type="button" variant="secondary" onClick={handleCloseExchangeModal}>Cancel</Button>
-                        <Button type="submit" variant="primary">Confirm Exchange</Button>
+                        <Button type="button" variant="secondary" onClick={handleCloseExchangeModal} disabled={isSubmitting}>Cancel</Button>
+                        <Button type="submit" variant="primary" loading={isSubmitting} disabled={isSubmitting}>
+                            {isSubmitting ? 'Processing...' : 'Confirm Exchange'}
+                        </Button>
                     </div>
                 </form>
             </Modal>

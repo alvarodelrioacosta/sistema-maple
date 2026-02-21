@@ -50,6 +50,7 @@ export const Resources: React.FC = () => {
         mesos_stock: 0,
         perfect_innocence_stock: 0
     });
+    const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
         loadData();
@@ -126,9 +127,10 @@ export const Resources: React.FC = () => {
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!editingAccount) return;
+        if (!editingAccount || isSaving) return;
 
         try {
+            setIsSaving(true);
             await accountsService.update(editingAccount.accountId, {
                 bright_cubes: editValues.bright_cubes,
                 bonus_bright_cubes: editValues.bonus_bright_cubes,
@@ -142,6 +144,8 @@ export const Resources: React.FC = () => {
             setModalOpen(false);
         } catch (error: any) {
             console.error('Error saving resources:', error);
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -157,13 +161,18 @@ export const Resources: React.FC = () => {
 
     const handleSaveSharedChest = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (isSaving) return;
+
         try {
+            setIsSaving(true);
             await sharedInventoryService.updateMesos(sharedChestValues.mesos_stock);
             await sharedInventoryService.updatePerfectInnocence(sharedChestValues.perfect_innocence_stock);
             await loadData();
             setSharedChestModalOpen(false);
         } catch (error: any) {
             console.error('Error saving shared chest:', error);
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -442,10 +451,12 @@ export const Resources: React.FC = () => {
                     </div>
 
                     <div className="modal-actions">
-                        <Button type="button" variant="secondary" onClick={() => setModalOpen(false)}>
+                        <Button type="button" variant="secondary" onClick={() => setModalOpen(false)} disabled={isSaving}>
                             Cancel
                         </Button>
-                        <Button type="submit">Save Changes</Button>
+                        <Button type="submit" loading={isSaving} disabled={isSaving}>
+                            {isSaving ? 'Saving...' : 'Save Changes'}
+                        </Button>
                     </div>
                 </form>
             </Modal>
@@ -485,10 +496,12 @@ export const Resources: React.FC = () => {
                     </div>
 
                     <div className="modal-actions">
-                        <Button type="button" variant="secondary" onClick={() => setSharedChestModalOpen(false)}>
+                        <Button type="button" variant="secondary" onClick={() => setSharedChestModalOpen(false)} disabled={isSaving}>
                             Cancel
                         </Button>
-                        <Button type="submit">Save Changes</Button>
+                        <Button type="submit" loading={isSaving} disabled={isSaving}>
+                            {isSaving ? 'Saving...' : 'Save Changes'}
+                        </Button>
                     </div>
                 </form>
             </Modal>

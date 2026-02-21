@@ -142,6 +142,7 @@ export const Items: React.FC = () => {
     const [purchaseSourceId, setPurchaseSourceId] = useState<string>(''); // Can be financial account ID, game account ID, or 'shared-vault'
     const [purchaseSourceType, setPurchaseSourceType] = useState<'financial' | 'mesos'>('mesos');
     const [realAmountPaid, setRealAmountPaid] = useState<number>(0);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [formData, setFormData] = useState<ItemInsert>({
         name: '',
         character_id: null,
@@ -181,6 +182,7 @@ export const Items: React.FC = () => {
     const [salePrice, setSalePrice] = useState(0);
     const [saleRate, setSaleRate] = useState(0);
     const [selectedClientId, setSelectedClientId] = useState<string>('');
+    const [isSelling, setIsSelling] = useState(false);
 
     useEffect(() => {
         loadData();
@@ -344,6 +346,7 @@ export const Items: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (isSubmitting) return;
 
         // --- VALIDATION FOR CHARACTER ASSIGNMENT ---
         if (!formData.character_id) {
@@ -359,6 +362,7 @@ export const Items: React.FC = () => {
         // --------------------------------
 
         try {
+            setIsSubmitting(true);
             const { _character, ...cleanData } = formData as any;
             cleanData.costo_total = calculateTotal(cleanData);
 
@@ -428,6 +432,8 @@ export const Items: React.FC = () => {
             handleCloseModal();
         } catch (error) {
             console.error('Error saving item:', error);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -1389,9 +1395,10 @@ export const Items: React.FC = () => {
                             </Button>
                             <Button
                                 type="submit"
-                                disabled={!selectedAccountId || !formData.character_id || !currentItemDBId}
+                                disabled={!selectedAccountId || !formData.character_id || !currentItemDBId || isSubmitting}
+                                loading={isSubmitting}
                             >
-                                {editingItem ? 'Save Changes' : 'Create Item'}
+                                {isSubmitting ? 'Saving...' : editingItem ? 'Save Changes' : 'Create Item'}
                             </Button>
                         </div>
                     </div>
@@ -1510,11 +1517,13 @@ export const Items: React.FC = () => {
                         <Button
                             type="button"
                             variant="primary"
-                            disabled={saleType === 'Client' && !selectedClientId}
+                            disabled={(saleType === 'Client' && !selectedClientId) || isSelling}
+                            loading={isSelling}
                             onClick={async () => {
-                                if (!sellingItem) return;
+                                if (!sellingItem || isSelling) return;
 
                                 try {
+                                    setIsSelling(true);
                                     if (saleType === 'AH') {
                                         // AH Sale: Add mesos to item's account and create transaction
                                         const character = characters.find(c => c.id === sellingItem.character_id);
@@ -1574,6 +1583,8 @@ export const Items: React.FC = () => {
                                     setSellingItem(null);
                                 } catch (error) {
                                     console.error('Error processing sale:', error);
+                                } finally {
+                                    setIsSelling(false);
                                 }
                             }}
                         >
