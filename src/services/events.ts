@@ -482,6 +482,22 @@ export const eventsService = {
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
 
         return Math.ceil(diffDays / 7);
+    },
+
+    async getEventTotalProgress(eventId: string): Promise<Record<string, number>> {
+        const { data, error } = await supabase.rpc('get_event_total_progress', {
+            p_event_id: eventId
+        });
+
+        if (error) throw error;
+
+        // Transform array of {account_id, total_completed} into a record/map
+        const totals: Record<string, number> = {};
+        (data as any[]).forEach(item => {
+            totals[item.account_id] = item.total_completed;
+        });
+
+        return totals;
     }
 };
 

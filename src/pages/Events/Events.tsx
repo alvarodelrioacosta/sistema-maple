@@ -44,6 +44,9 @@ const Events: React.FC = () => {
     const [bossingProgress, setBossingProgress] = useState<EventBossingProgress[]>([]);
     const [shopPurchases, setShopPurchases] = useState<EventShopPurchase[]>([]);
 
+    // Event Totals State
+    const [totalProgressMap, setTotalProgressMap] = useState<Record<string, number>>({});
+
     // Modal State
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [editingEvent, setEditingEvent] = useState<GameEvent | null>(null);
@@ -157,6 +160,10 @@ const Events: React.FC = () => {
                 // Progress and purchases will be loaded by the useEffect on selectedWeek
             }
 
+            // Load Global Totals
+            const totals = await eventsService.getEventTotalProgress(eventId);
+            setTotalProgressMap(totals);
+
             // Set initial week based on current date (UTC)
             const currentWeekNum = eventsService.getWeekNumber(event, new Date());
             const totalWeeks = eventsService.getTotalWeeks(event);
@@ -259,6 +266,10 @@ const Events: React.FC = () => {
                 }
                 return [...prev, newProgress];
             });
+
+            // Refresh global totals
+            const totals = await eventsService.getEventTotalProgress(selectedEventId);
+            setTotalProgressMap(totals);
         } catch (error) {
             console.error('Error toggling progress:', error);
         }
@@ -276,6 +287,10 @@ const Events: React.FC = () => {
             // Refresh progress
             const progress = await eventsService.getDailyProgress(selectedEventId);
             setDailyProgress(progress);
+
+            // Refresh global totals
+            const totals = await eventsService.getEventTotalProgress(selectedEventId);
+            setTotalProgressMap(totals);
         } catch (error) {
             console.error('Error in bulk complete today:', error);
         }
@@ -437,9 +452,7 @@ const Events: React.FC = () => {
 
     // Get account's total days completed
     const getTotalDays = (accountId: string): number => {
-        return dailyProgress.filter(p =>
-            p.account_id === accountId && p.completed
-        ).length;
+        return totalProgressMap[accountId] || 0;
     };
 
     const getWeeklyDays = (accountId: string): number => {
