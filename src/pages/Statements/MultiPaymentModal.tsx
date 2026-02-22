@@ -92,38 +92,39 @@ export const MultiPaymentModal: React.FC<MultiPaymentModalProps> = ({ isOpen, on
         setSaving(true);
         try {
             const account = financialAccounts.find(a => a.id === selectedAccountId);
+            if (!account) throw new Error('Selected account not found');
 
-            // 1. Create a single transaction for the total amount
-            const paidARDescriptions = arPayments
-                .filter(ar => ar.payment > 0)
-                .map(ar => `${ar.description} ($${ar.payment})`)
-                .join(', ');
+            const paymentsToProcess = arPayments.filter(ar => ar.payment > 0);
 
-            await transactionsService.create({
-                financial_account_id: selectedAccountId,
-                type: 'income',
-                amount: totalAmountReceived,
-                currency: account?.currency || 'USD',
-                description: `Bulk Payment from ${client.name}: ${paidARDescriptions}`,
-                client_id: client.id,
-                is_paid: true,
-                category: 'Client Payment',
-                subcategory: 'Multi-AR Settlement'
-            });
+            // 1. Create individual transactions for each AR payment
+            const transactionPromises = paymentsToProcess.map(ar =>
+                transactionsService.create({
+                    financial_account_id: selectedAccountId,
+                    type: 'income',
+                    amount: ar.payment,
+                    currency: account.currency || 'USD',
+                    description: `Payment for: ${ar.description}`,
+                    client_id: client.id,
+                    account_receivable_id: ar.id, // Direct link to AR
+                    is_paid: true,
+                    category: 'Client Payment',
+                    subcategory: 'AR Settlement'
+                })
+            );
+
+            await Promise.all(transactionPromises);
 
             // 2. Update each affected AR
-            const updatePromises = arPayments
-                .filter((ar: ARPayment) => ar.payment > 0)
-                .map((ar: ARPayment) => accountsReceivableService.updatePayment(ar.id, ar.payment));
+            const updatePromises = paymentsToProcess.map(ar =>
+                accountsReceivableService.updatePayment(ar.id, ar.payment)
+            );
 
             await Promise.all(updatePromises);
 
-            // 3. Update financial account balance
-            if (account) {
-                await financialAccountsService.update(account.id, {
-                    balance: (account.balance || 0) + totalAmountReceived
-                });
-            }
+            // 3. Update financial account balance (Total amount)
+            await financialAccountsService.update(account.id, {
+                balance: (account.balance || 0) + totalAmountReceived
+            });
 
             onSuccess();
             onClose();

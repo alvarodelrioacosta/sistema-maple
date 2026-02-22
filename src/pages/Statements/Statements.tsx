@@ -128,10 +128,14 @@ export const Statements: React.FC = () => {
                 accountsReceivableService.getByClient(clientId)
             ]);
 
-            // Transform and combine
+            // Transform and combine - Only show transactions linked to an AR
             const combined: StatementItem[] = [
-                ...transactions.map(t => ({ ...t, recordType: 'transaction' as const })),
-                ...mesoTransactions.map(t => ({ ...t, recordType: 'meso_transaction' as const })),
+                ...transactions
+                    .filter(t => t.account_receivable_id) // Must be linked to an AR
+                    .map(t => ({ ...t, recordType: 'transaction' as const })),
+                ...mesoTransactions
+                    .filter(t => t.account_receivable_id) // Must be linked to an AR
+                    .map(t => ({ ...t, recordType: 'meso_transaction' as const })),
                 ...receivables.map(ar => ({ ...ar, recordType: 'receivable' as const }))
             ];
 
