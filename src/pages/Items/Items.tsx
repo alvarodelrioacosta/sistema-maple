@@ -456,6 +456,18 @@ export const Items: React.FC = () => {
         }
     };
 
+    const handleReturnToService = async (item: ItemWithCharacter) => {
+        try {
+            await itemsService.updateDeliveryStatus(item.id, false);
+            setItems(prev => prev.map(i =>
+                i.id === item.id ? { ...i, delivered: false } : i
+            ));
+        } catch (error) {
+            console.error('Error returning item to service:', error);
+            alert('Failed to return item to service');
+        }
+    };
+
     const handleDelete = async (id: string) => {
         if (window.confirm('¿Estás seguro de eliminar este ítem?')) {
             try {
@@ -943,6 +955,15 @@ export const Items: React.FC = () => {
                             )
                         ) : i.status === 'bulk' && filterStatus === 'bulk' ? (
                             <Button size="sm" variant="secondary" onClick={() => handleCopy(i)}>Copy</Button>
+                        ) : i.delivered ? (
+                            <Button
+                                size="sm"
+                                variant="secondary"
+                                onClick={() => handleReturnToService(i)}
+                                style={{ background: 'rgba(34, 197, 94, 0.1)', color: '#4ade80', borderColor: 'rgba(34, 197, 94, 0.2)' }}
+                            >
+                                Return to Service
+                            </Button>
                         ) : null}
                     </div>
                 );
