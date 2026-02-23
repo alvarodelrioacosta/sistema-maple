@@ -10,6 +10,7 @@ import { FINANCE_CATEGORIES, CATEGORY_MAP } from '../../utils/categorization';
 import { ocrUtil } from '../../utils/ocr';
 import Tesseract from 'tesseract.js';
 import { EditTransactionModal } from './EditTransactionModal';
+import { EditMesoTransactionModal } from './EditMesoTransactionModal';
 import './Finance.css';
 
 const TYPE_OPTIONS = [
@@ -37,7 +38,9 @@ export const Finance: React.FC = () => {
     // Modal states
     const [modalOpen, setModalOpen] = useState(false);
     const [editModalOpen, setEditModalOpen] = useState(false);
+    const [editMesoModalOpen, setEditMesoModalOpen] = useState(false);
     const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+    const [selectedMesoTransaction, setSelectedMesoTransaction] = useState<TransactionMeso | null>(null);
     const [mesoModalOpen, setMesoModalOpen] = useState(false);
 
     // Financial Summary State
@@ -285,7 +288,14 @@ export const Finance: React.FC = () => {
         setMesoModalOpen(true);
     };
 
-    const handleCloseMesoModal = () => setMesoModalOpen(false);
+    const handleCloseMesoModal = () => {
+        setMesoModalOpen(false);
+    };
+
+    const handleCloseEditMesoModal = () => {
+        setEditMesoModalOpen(false);
+        setSelectedMesoTransaction(null);
+    };
 
     // Exchange Modal Logic
     const [exchangeModalOpen, setExchangeModalOpen] = useState(false);
@@ -896,6 +906,23 @@ export const Finance: React.FC = () => {
                     <span style={{ fontWeight: 'bold', color: '#a78bfa' }}>{t.category || '-'}</span>
                     <span style={{ opacity: 0.7 }}>{t.subcategory || '-'}</span>
                 </div>
+            )
+        },
+        {
+            key: 'actions' as any,
+            header: 'Actions',
+            render: (t) => (
+                <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => {
+                        setSelectedMesoTransaction(t);
+                        setEditMesoModalOpen(true);
+                    }}
+                    style={{ padding: '4px 8px', fontSize: '0.8rem' }}
+                >
+                    Edit
+                </Button>
             )
         }
     ];
@@ -1685,6 +1712,26 @@ export const Finance: React.FC = () => {
                     </div>
                 </form>
             </Modal>
+            {selectedTransaction && (
+                <EditTransactionModal
+                    isOpen={editModalOpen}
+                    onClose={() => {
+                        setEditModalOpen(false);
+                        setSelectedTransaction(null);
+                    }}
+                    transaction={selectedTransaction}
+                    onSuccess={loadData}
+                />
+            )}
+
+            {selectedMesoTransaction && (
+                <EditMesoTransactionModal
+                    isOpen={editMesoModalOpen}
+                    onClose={handleCloseEditMesoModal}
+                    transaction={selectedMesoTransaction}
+                    onSuccess={loadData}
+                />
+            )}
         </div>
     );
 };

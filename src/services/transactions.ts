@@ -278,6 +278,27 @@ export const transactionsService = {
         return data;
     },
 
+    async updateMeso(id: string, transaction: Partial<TransactionMeso>): Promise<TransactionMeso> {
+        const { data, error } = await supabase
+            .from('transactions_mesos')
+            .update(transaction)
+            .eq('id', id)
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data;
+    },
+
+    async deleteMeso(id: string): Promise<void> {
+        const { error } = await supabase
+            .from('transactions_mesos')
+            .delete()
+            .eq('id', id);
+
+        if (error) throw error;
+    },
+
     async getMesoTotals(): Promise<{ income: number; expense: number }> {
         const { data, error } = await supabase
             .from('transactions_mesos')
