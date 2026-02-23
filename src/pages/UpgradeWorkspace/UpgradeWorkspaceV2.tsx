@@ -68,6 +68,16 @@ export const UpgradeWorkspaceV2: React.FC = () => {
     const [isFastCubingActive, setIsFastCubingActive] = useState(false);
     const [fastCubingSelection, setFastCubingSelection] = useState<Record<string, { bright_cubes?: boolean, bonus_bright_cubes?: boolean, solid_cubes?: boolean }>>({});
 
+    // Resource Filtering state for Available Accounts table
+    const [resourceFilters, setResourceFilters] = useState<Record<string, boolean>>({
+        solid_cubes: true,
+        bright_cubes: true,
+        bonus_bright_cubes: true,
+        psok: false,
+        reward_points: false,
+        guardian_scroll: false
+    });
+
     useEffect(() => {
         const state = location.state as { itemId?: string; accountId?: string } | null;
         if (state) {
@@ -710,6 +720,13 @@ export const UpgradeWorkspaceV2: React.FC = () => {
                 }
             };
         });
+    };
+
+    const toggleResourceFilter = (resource: string) => {
+        setResourceFilters(prev => ({
+            ...prev,
+            [resource]: !prev[resource]
+        }));
     };
 
     const getFastCubingTotals = () => {
@@ -1406,12 +1423,12 @@ export const UpgradeWorkspaceV2: React.FC = () => {
                                         <tr>
                                             <th>No.</th>
                                             <th>Account</th>
-                                            <th>BC</th>
-                                            <th>BBC</th>
-                                            <th>SC</th>
-                                            <th>RP</th>
-                                            <th>PSOK</th>
-                                            <th>GS</th>
+                                            <th className={`filter-header ${resourceFilters.solid_cubes ? 'active' : ''}`} onClick={() => toggleResourceFilter('solid_cubes')}>SC</th>
+                                            <th className={`filter-header ${resourceFilters.bright_cubes ? 'active' : ''}`} onClick={() => toggleResourceFilter('bright_cubes')}>BC</th>
+                                            <th className={`filter-header ${resourceFilters.bonus_bright_cubes ? 'active' : ''}`} onClick={() => toggleResourceFilter('bonus_bright_cubes')}>BBC</th>
+                                            <th className={`filter-header ${resourceFilters.reward_points ? 'active' : ''}`} onClick={() => toggleResourceFilter('reward_points')}>RP</th>
+                                            <th className={`filter-header ${resourceFilters.psok ? 'active' : ''}`} onClick={() => toggleResourceFilter('psok')}>PSOK</th>
+                                            <th className={`filter-header ${resourceFilters.guardian_scroll ? 'active' : ''}`} onClick={() => toggleResourceFilter('guardian_scroll')}>GS</th>
                                             <th>Mesos (B)</th>
                                             <th>Action</th>
                                         </tr>
@@ -1425,9 +1442,20 @@ export const UpgradeWorkspaceV2: React.FC = () => {
                                                 const psok = acc.psok || 0;
                                                 const rp = acc.reward_points || 0;
                                                 const gs = acc.guardian_scroll || 0;
-                                                const mesos = acc.mesos_b || 0;
                                                 const isCurrent = acc.id === selectedAccountId;
-                                                return isCurrent || bc > 0 || bbc > 0 || sc > 0 || psok > 0 || rp > 0 || gs > 0 || mesos > 0;
+
+                                                // If is the current account, always show
+                                                if (isCurrent) return true;
+
+                                                // Check if it has any of the active filter resources
+                                                const passSC = resourceFilters.solid_cubes && sc > 0;
+                                                const passBC = resourceFilters.bright_cubes && bc > 0;
+                                                const passBBC = resourceFilters.bonus_bright_cubes && bbc > 0;
+                                                const passRP = resourceFilters.reward_points && rp > 0;
+                                                const passPSOK = resourceFilters.psok && psok > 0;
+                                                const passGS = resourceFilters.guardian_scroll && gs > 0;
+
+                                                return passSC || passBC || passBBC || passRP || passPSOK || passGS;
                                             })
                                             .sort((a, b) => {
                                                 // 1. Current account first
@@ -1462,6 +1490,17 @@ export const UpgradeWorkspaceV2: React.FC = () => {
                                                         <td>
                                                             {isFastCubingActive ? (
                                                                 <button
+                                                                    className={`cube-cell-btn ${fastCubingSelection[acc.id]?.solid_cubes ? 'active' : ''}`}
+                                                                    onClick={() => toggleFastCubingSelection(acc.id, 'solid_cubes')}
+                                                                    disabled={sc <= 0}
+                                                                >
+                                                                    {sc}
+                                                                </button>
+                                                            ) : sc}
+                                                        </td>
+                                                        <td>
+                                                            {isFastCubingActive ? (
+                                                                <button
                                                                     className={`cube-cell-btn ${fastCubingSelection[acc.id]?.bright_cubes ? 'active' : ''}`}
                                                                     onClick={() => toggleFastCubingSelection(acc.id, 'bright_cubes')}
                                                                     disabled={bc <= 0}
@@ -1480,17 +1519,6 @@ export const UpgradeWorkspaceV2: React.FC = () => {
                                                                     {bbc}
                                                                 </button>
                                                             ) : bbc}
-                                                        </td>
-                                                        <td>
-                                                            {isFastCubingActive ? (
-                                                                <button
-                                                                    className={`cube-cell-btn ${fastCubingSelection[acc.id]?.solid_cubes ? 'active' : ''}`}
-                                                                    onClick={() => toggleFastCubingSelection(acc.id, 'solid_cubes')}
-                                                                    disabled={sc <= 0}
-                                                                >
-                                                                    {sc}
-                                                                </button>
-                                                            ) : sc}
                                                         </td>
                                                         <td>{rp}</td>
                                                         <td>{psok}</td>
