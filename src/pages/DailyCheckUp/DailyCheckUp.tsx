@@ -189,12 +189,18 @@ const DailyCheckUp: React.FC = () => {
             setTaskProgress(allTaskProgress);
 
             if (filteredEvents.length > 0) {
-                const eventProgressPromises = filteredEvents.map((event: GameEvent) =>
-                    eventsService.getDailyProgress(event.id, todayStr).catch(e => {
-                        console.error(`Failed to load progress for event ${event.id}:`, e);
-                        return [];
-                    })
-                );
+                const eventProgressPromises = filteredEvents.map((event: GameEvent) => {
+                    const currentWeekNum = eventsService.getWeekNumber(event, new Date());
+                    const weekDays = eventsService.getWeekDays(event, currentWeekNum);
+
+                    if (weekDays.length > 0) {
+                        const startDate = weekDays[0];
+                        const endDate = weekDays[weekDays.length - 1];
+                        return eventsService.getDailyProgress(event.id, undefined, startDate, endDate);
+                    }
+
+                    return eventsService.getDailyProgress(event.id, todayStr);
+                });
                 const allEventProgressResults = await Promise.all(eventProgressPromises);
                 setEventProgress(allEventProgressResults.flat());
             }
@@ -255,8 +261,23 @@ const DailyCheckUp: React.FC = () => {
 
                 // Get progress for each active event
                 const eventStates: Record<string, boolean> = {};
+                const eventWeeklyCounts: Record<string, number> = {};
+
                 (activeEvents || []).forEach(event => {
                     eventStates[event.id] = indexedEventProgress.get(`${event.id}-${acc.id}`) || false;
+
+                    // Calculate weekly count for this specific event and account
+                    const currentWeekNum = eventsService.getWeekNumber(event, new Date());
+                    const weekDays = eventsService.getWeekDays(event, currentWeekNum);
+
+                    const count = (eventProgress || []).filter(p =>
+                        p.event_id === event.id &&
+                        p.account_id === acc.id &&
+                        p.completed &&
+                        weekDays.includes(p.date?.split('T')[0])
+                    ).length;
+
+                    eventWeeklyCounts[event.id] = count;
                 });
 
                 // Get progress for each daily task
@@ -270,6 +291,7 @@ const DailyCheckUp: React.FC = () => {
                     mainChar,
                     itemsForSale: accountItems,
                     eventProgress: eventStates,
+                    eventWeeklyCounts,
                     taskProgress: taskStates
                 };
             });
@@ -577,18 +599,34 @@ const DailyCheckUp: React.FC = () => {
                                     <td className="col-char">{row.mainChar?.name || '-'}</td>
 
                                     {/* Events Checks */}
-                                    {activeEvents.map(event => (
-                                        <td key={event.id} className="col-action">
-                                            <label className="daily-checkbox">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={row.eventProgress[event.id]}
-                                                    onChange={(e) => handleToggleEvent(event.id, row.account.id, e.target.checked)}
-                                                />
-                                                <span className="checkmark"></span>
-                                            </label>
-                                        </td>
-                                    ))}
+                                    {activeEvents.map(event => {
+                                        const isCompleted = row.eventProgress[event.id];
+                                        const weeklyCount = row.eventWeeklyCounts[event.id] || 0;
+                                        const maxPerWeek = event.max_per_week || 7;
+                                        const isLimitReached = event.type === 'daily_login' && weeklyCount >= maxPerWeek && !isCompleted;
+
+                                        return (
+                                            <td key={event.id} className="col-action">
+                                                <label
+                                                    className={`daily-checkbox ${isLimitReached ? 'limit-reached' : ''}`}
+                                                    title={isLimitReached ? `Límite alcanzado (${weeklyCount}/${maxPerWeek})` : `${weeklyCount}/${maxPerWeek} esta semana`}
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={isCompleted}
+                                                        disabled={isLimitReached}
+                                                        onChange={(e) => handleToggleEvent(event.id, row.account.id, e.target.checked)}
+                                                    />
+                                                    <span className="checkmark"></span>
+                                                    {maxPerWeek < 7 && (
+                                                        <span className="weekly-mini-counter">
+                                                            {weeklyCount}/{maxPerWeek}
+                                                        </span>
+                                                    )}
+                                                </label>
+                                            </td>
+                                        );
+                                    })}
 
                                     {/* Tasks Checks */}
                                     {dailyTasks.map(task => (

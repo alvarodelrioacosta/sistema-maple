@@ -310,6 +310,40 @@
     display: block;
 }
 
+/* Weekly Limit Styles */
+.daily-checkbox.limit-reached .checkmark {
+    background-color: rgba(239, 68, 68, 0.1) !important;
+    border-color: rgba(239, 68, 68, 0.3) !important;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.daily-checkbox.limit-reached:hover .checkmark {
+    border-color: #ef4444 !important;
+}
+
+.weekly-mini-counter {
+    position: absolute;
+    bottom: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.65rem;
+    color: #64748b;
+    white-space: nowrap;
+    font-weight: 800;
+    pointer-events: none;
+    font-family: 'Courier New', Courier, monospace;
+    transition: color 0.2s;
+}
+
+.daily-checkbox.limit-reached .weekly-mini-counter {
+    color: #ef4444;
+}
+
+.daily-checkbox:hover .weekly-mini-counter {
+    color: #a78bfa;
+}
+
 /* Items Vertical List */
 .cell-items-group {
     padding: 0 !important;
