@@ -648,7 +648,8 @@
 
 .filter-header.active {
     color: var(--color-accent-primary);
-    background: rgba(var(--color-primary-rgb), 0.1) !important;
+    /* Usamos un fondo sólido para evitar que se vea el contenido al hacer scroll */
+    background-color: #1e1b4b !important;
     font-weight: 800;
 }
 
