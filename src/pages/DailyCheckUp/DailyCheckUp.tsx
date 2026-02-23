@@ -314,9 +314,14 @@ const DailyCheckUp: React.FC = () => {
     }, []);
 
     const eventProgressCounts = useMemo(() => {
-        const counts: Record<string, number> = {};
+        const counts: Record<string, { completed: number; total: number }> = {};
         activeEvents.forEach(event => {
-            counts[event.id] = rows.filter(row => row.eventProgress[event.id]).length;
+            const maxPerWeek = event.max_per_week || 7;
+            const completed = rows.filter(row => row.eventProgress[event.id]).length;
+            const total = rows.filter(row =>
+                (row.eventWeeklyCounts[event.id] < maxPerWeek) || row.eventProgress[event.id]
+            ).length;
+            counts[event.id] = { completed, total };
         });
         return counts;
     }, [activeEvents, rows]);
@@ -559,14 +564,17 @@ const DailyCheckUp: React.FC = () => {
                                 <th className="col-mail">MAIL</th>
                                 <th className="col-tag">TAG</th>
                                 <th className="col-char">CHAR</th>
-                                {activeEvents.map(event => (
-                                    <th key={event.id} className="col-action">
-                                        <div className="header-stacked">
-                                            <span>{event.name}</span>
-                                            <span className="header-counter">{eventProgressCounts[event.id] || 0} / {accounts.length}</span>
-                                        </div>
-                                    </th>
-                                ))}
+                                {activeEvents.map(event => {
+                                    const progress = eventProgressCounts[event.id] || { completed: 0, total: 0 };
+                                    return (
+                                        <th key={event.id} className="col-action">
+                                            <div className="header-stacked">
+                                                <span>{event.name}</span>
+                                                <span className="header-counter">{progress.completed} / {progress.total}</span>
+                                            </div>
+                                        </th>
+                                    );
+                                })}
                                 {dailyTasks.map(task => (
                                     <th key={task.id} className="col-action">
                                         <div className="header-stacked">

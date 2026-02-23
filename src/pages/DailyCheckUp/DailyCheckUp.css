@@ -312,14 +312,14 @@
 
 /* Weekly Limit Styles */
 .daily-checkbox.limit-reached .checkmark {
-    background-color: rgba(239, 68, 68, 0.1) !important;
-    border-color: rgba(239, 68, 68, 0.3) !important;
+    background-color: rgba(74, 222, 128, 0.1) !important;
+    border-color: rgba(74, 222, 128, 0.4) !important;
     cursor: not-allowed;
-    opacity: 0.5;
+    opacity: 0.8;
 }
 
 .daily-checkbox.limit-reached:hover .checkmark {
-    border-color: #ef4444 !important;
+    border-color: #4ade80 !important;
 }
 
 .weekly-mini-counter {
@@ -337,7 +337,7 @@
 }
 
 .daily-checkbox.limit-reached .weekly-mini-counter {
-    color: #ef4444;
+    color: #4ade80;
 }
 
 .daily-checkbox:hover .weekly-mini-counter {
