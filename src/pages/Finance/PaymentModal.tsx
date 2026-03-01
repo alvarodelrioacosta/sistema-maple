@@ -252,7 +252,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, ar,
                 });
 
                 if (destinationAccountId) {
-                    await financialAccountsService.incrementBalance(destinationAccountId, amount);
+                    // await financialAccountsService.incrementBalance(destinationAccountId, amount);
                 }
             }
 
