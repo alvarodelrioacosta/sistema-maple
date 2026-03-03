@@ -403,16 +403,16 @@ export const Finance: React.FC = () => {
                         is_paid: true
                     } as any);
                 }
-            }
 
-            // 3. Update Inventory (Meso stock)
-            if (isVault) {
-                const current = sharedChest?.mesos_stock || 0;
-                await sharedInventoryService.updateMesos(current - exchangeData.amount_mesos);
-            } else if (gameAccId) {
-                const gAcc = gameAccounts.find(a => a.id === gameAccId);
-                if (gAcc) {
-                    await accountsService.update(gAcc.id, { mesos_b: (gAcc.mesos_b || 0) - exchangeData.amount_mesos });
+                // 3. Update Inventory (Meso stock)
+                if (isVault) {
+                    const current = sharedChest?.mesos_stock || 0;
+                    await sharedInventoryService.updateMesos(current - exchangeData.amount_mesos);
+                } else if (gameAccId) {
+                    const gAcc = gameAccounts.find(a => a.id === gameAccId);
+                    if (gAcc) {
+                        await accountsService.update(gAcc.id, { mesos_b: (gAcc.mesos_b || 0) - exchangeData.amount_mesos });
+                    }
                 }
             }
 
