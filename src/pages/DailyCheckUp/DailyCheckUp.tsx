@@ -287,7 +287,7 @@ const DailyCheckUp: React.FC = () => {
                     ).length;
 
                     eventWeeklyCounts[event.id] = count;
-                    eventTotalCounts[event.id] = totalAcrossEvent; // Need to defined this map
+                    eventTotalCounts[event.id] = totalAcrossEvent;
                 });
 
                 // Get progress for each daily task
@@ -375,6 +375,24 @@ const DailyCheckUp: React.FC = () => {
 
 
     const handleToggleEvent = async (eventId: string, accountId: string, completed: boolean) => {
+        const event = activeEvents.find(e => e.id === eventId);
+        if (event && event.type === 'daily_login' && completed) {
+            const row = rows.find(r => r.account.id === accountId);
+            if (row) {
+                const weeklyCount = row.eventWeeklyCounts[eventId] || 0;
+                const totalCount = row.eventTotalCounts[eventId] || 0;
+                const maxPerWeek = event.max_per_week || 7;
+                const maxPerEvent = event.max_per_event;
+
+                const isWeeklyLimitReached = weeklyCount >= maxPerWeek;
+                const isEventLimitReached = maxPerEvent !== null && totalCount >= maxPerEvent;
+
+                if (isWeeklyLimitReached || isEventLimitReached) {
+                    return; // Prevent toggle if limit reached
+                }
+            }
+        }
+
         // Optimistic update
         setEventProgress(prev => {
             const existingIndex = prev.findIndex(p => p.event_id === eventId && p.account_id === accountId && p.date === todayStr);
