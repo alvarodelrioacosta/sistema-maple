@@ -760,7 +760,7 @@ const DailyCheckUp: React.FC = () => {
                                                 >
                                                     PSOK
                                                 </button>
-                                                <span className="psok-count">{row.account.psok || 0}</span>
+                                                <span className={`psok-count ${(row.account.psok || 0) > 0 ? 'psok-count--positive' : 'psok-count--zero'}`}>{row.account.psok || 0}</span>
                                             </div>
                                         </td>
                                     )}
