@@ -746,6 +746,7 @@ const DailyCheckUp: React.FC = () => {
                                     {showRP && (
                                         <td className="col-rp">
                                             <Input
+                                                key={row.account.reward_points}
                                                 type="number"
                                                 defaultValue={row.account.reward_points}
                                                 onBlur={(e) => handleRPBlur(row.account.id, parseInt(e.target.value) || 0)}
