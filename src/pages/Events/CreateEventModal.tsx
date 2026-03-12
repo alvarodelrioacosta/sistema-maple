@@ -46,6 +46,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [maxPerWeek, setMaxPerWeek] = useState(5);
+    const [maxPerEvent, setMaxPerEvent] = useState<number | ''>('');
 
     // Daily Login rewards
     const [rewards, setRewards] = useState<RewardField[]>([]);
@@ -68,6 +69,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
                 setStartDate(eventToEdit.start_date.split('T')[0]);
                 setEndDate(eventToEdit.end_date.split('T')[0]);
                 setMaxPerWeek(eventToEdit.max_per_week || 5);
+                setMaxPerEvent(eventToEdit.max_per_event || '');
                 loadRelatedData(eventToEdit.id, eventToEdit.type);
             } else {
                 resetForm();
@@ -168,6 +170,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
                 reset_hour: 21,
                 week_start_day: type === 'daily_login' ? 2 : 3, // Tuesday for daily, Wednesday for bossing
                 max_per_week: type === 'daily_login' ? maxPerWeek : null,
+                max_per_event: type === 'daily_login' ? (maxPerEvent === '' ? null : maxPerEvent) : null,
                 is_active: true
             };
 
@@ -230,6 +233,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
         setStartDate('');
         setEndDate('');
         setMaxPerWeek(5);
+        setMaxPerEvent('');
         setRewards([{ resource_type: 'bright_cubes', quantity: 5, days_required: 4 }]);
         setBosses([{ boss_name: 'Boss A', points: 100 }, { boss_name: 'Boss B', points: 200 }]);
         setShopItems([{ resource_type: 'bright_cubes', price: 100, max_per_week: 3 }]);
@@ -280,6 +284,17 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
                                         type="number"
                                         value={maxPerWeek}
                                         onChange={(e) => setMaxPerWeek(Number(e.target.value))}
+                                    />
+                                </div>
+                            )}
+                            {type === 'daily_login' && (
+                                <div className="form-field">
+                                    <label>Max Completes / Event (Total)</label>
+                                    <Input
+                                        type="number"
+                                        value={maxPerEvent}
+                                        onChange={(e) => setMaxPerEvent(e.target.value === '' ? '' : Number(e.target.value))}
+                                        placeholder="No limit"
                                     />
                                 </div>
                             )}

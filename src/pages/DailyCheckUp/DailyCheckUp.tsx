@@ -47,7 +47,7 @@ const DailyCheckUp: React.FC = () => {
     // Sale Modal Form
     const [salePrice, setSalePrice] = useState(0);
     const [showRP, setShowRP] = useState(false);
-    const [showItems, setShowItems] = useState(true);
+    const [showItems, setShowItems] = useState(false);
 
     const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
 
@@ -262,6 +262,7 @@ const DailyCheckUp: React.FC = () => {
                 // Get progress for each active event
                 const eventStates: Record<string, boolean> = {};
                 const eventWeeklyCounts: Record<string, number> = {};
+                const eventTotalCounts: Record<string, number> = {};
 
                 (activeEvents || []).forEach(event => {
                     eventStates[event.id] = indexedEventProgress.get(`${event.id}-${acc.id}`) || false;
@@ -277,7 +278,15 @@ const DailyCheckUp: React.FC = () => {
                         weekDays.includes(p.date?.split('T')[0])
                     ).length;
 
+                    // Calculate total count for this event and account
+                    const totalAcrossEvent = (eventProgress || []).filter(p =>
+                        p.event_id === event.id &&
+                        p.account_id === acc.id &&
+                        p.completed
+                    ).length;
+
                     eventWeeklyCounts[event.id] = count;
+                    eventTotalCounts[event.id] = totalAcrossEvent; // Need to defined this map
                 });
 
                 // Get progress for each daily task
@@ -292,6 +301,7 @@ const DailyCheckUp: React.FC = () => {
                     itemsForSale: accountItems,
                     eventProgress: eventStates,
                     eventWeeklyCounts,
+                    eventTotalCounts,
                     taskProgress: taskStates
                 };
             });
@@ -610,14 +620,30 @@ const DailyCheckUp: React.FC = () => {
                                     {activeEvents.map(event => {
                                         const isCompleted = row.eventProgress[event.id];
                                         const weeklyCount = row.eventWeeklyCounts[event.id] || 0;
+                                        const totalCount = row.eventTotalCounts[event.id] || 0;
                                         const maxPerWeek = event.max_per_week || 7;
-                                        const isLimitReached = event.type === 'daily_login' && weeklyCount >= maxPerWeek && !isCompleted;
+                                        const maxPerEvent = event.max_per_event;
+                                        
+                                        const isWeeklyLimitReached = event.type === 'daily_login' && weeklyCount >= maxPerWeek && !isCompleted;
+                                        const isEventLimitReached = event.type === 'daily_login' && maxPerEvent !== null && totalCount >= maxPerEvent && !isCompleted;
+                                        const isLimitReached = isWeeklyLimitReached || isEventLimitReached;
+
+                                        let tooltip = `${weeklyCount}/${maxPerWeek} esta semana`;
+                                        if (maxPerEvent !== null) {
+                                            tooltip += ` | ${totalCount}/${maxPerEvent} total evento`;
+                                        }
+                                        
+                                        if (isEventLimitReached) {
+                                            tooltip = `Límite total alcanzado (${totalCount}/${maxPerEvent})`;
+                                        } else if (isWeeklyLimitReached) {
+                                            tooltip = `Límite semanal alcanzado (${weeklyCount}/${maxPerWeek})`;
+                                        }
 
                                         return (
                                             <td key={event.id} className="col-action">
                                                 <label
                                                     className={`daily-checkbox ${isLimitReached ? 'limit-reached' : ''}`}
-                                                    title={isLimitReached ? `Límite alcanzado (${weeklyCount}/${maxPerWeek})` : `${weeklyCount}/${maxPerWeek} esta semana`}
+                                                    title={tooltip}
                                                 >
                                                     <input
                                                         type="checkbox"
@@ -626,9 +652,9 @@ const DailyCheckUp: React.FC = () => {
                                                         onChange={(e) => handleToggleEvent(event.id, row.account.id, e.target.checked)}
                                                     />
                                                     <span className="checkmark"></span>
-                                                    {maxPerWeek < 7 && (
+                                                    {(maxPerWeek < 7 || maxPerEvent !== null) && (
                                                         <span className="weekly-mini-counter">
-                                                            {weeklyCount}/{maxPerWeek}
+                                                            {maxPerEvent !== null ? `${totalCount}/${maxPerEvent}` : `${weeklyCount}/${maxPerWeek}`}
                                                         </span>
                                                     )}
                                                 </label>

@@ -378,6 +378,7 @@ export interface GameEvent {
     reset_hour: number;
     week_start_day: number | null;
     max_per_week: number | null;
+    max_per_event: number | null;
     is_active: boolean;
     is_favorite: boolean;
     is_finished: boolean;
