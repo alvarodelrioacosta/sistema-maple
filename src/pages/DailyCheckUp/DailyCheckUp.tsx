@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Header } from '../../components/Layout';
 import { Card, Button, Modal, Input, LoadingScreen } from '../../components/UI';
-// Deployment trigger: force fresh commit for Vercel permissions check
+// Deployment trigger: force fresh commit after Vercel repository reconnection
 import {
     accountsService,
     charactersService,
