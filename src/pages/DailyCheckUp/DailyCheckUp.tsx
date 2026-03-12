@@ -38,6 +38,7 @@ const DailyCheckUp: React.FC = () => {
 
     // Progress states
     const [eventProgress, setEventProgress] = useState<EventDailyProgress[]>([]);
+    const [eventTotalProgressMap, setEventTotalProgressMap] = useState<Record<string, Record<string, number>>>({});
     const [taskProgress, setTaskProgress] = useState<TaskProgress[]>([]);
 
     // UI States
@@ -191,13 +192,33 @@ const DailyCheckUp: React.FC = () => {
 
             if (filteredEvents.length > 0) {
                 const eventProgressPromises = filteredEvents.map(event => {
-                    if (event.type === 'daily_login' && (event.max_per_week || event.max_per_event)) {
-                        return eventsService.getDailyProgress(event.id);
+                    const currentWeekNum = eventsService.getWeekNumber(event, new Date());
+                    const weekDays = eventsService.getWeekDays(event, currentWeekNum);
+                    
+                    if (weekDays.length > 0) {
+                        const startDate = weekDays[0];
+                        const endDate = weekDays[weekDays.length - 1];
+                        return eventsService.getDailyProgress(event.id, undefined, startDate, endDate);
                     }
                     return eventsService.getDailyProgress(event.id, todayStr);
                 });
-                const allEventProgressResults = await Promise.all(eventProgressPromises);
+
+                const eventTotalsPromises = filteredEvents.map(event => 
+                    eventsService.getEventTotalProgress(event.id)
+                );
+
+                const [allEventProgressResults, allEventTotalsResults] = await Promise.all([
+                    Promise.all(eventProgressPromises),
+                    Promise.all(eventTotalsPromises)
+                ]);
+
                 setEventProgress(allEventProgressResults.flat());
+
+                const newTotalsMap: Record<string, Record<string, number>> = {};
+                filteredEvents.forEach((event, idx) => {
+                    newTotalsMap[event.id] = allEventTotalsResults[idx];
+                });
+                setEventTotalProgressMap(newTotalsMap);
             }
 
         } catch (error: any) {
@@ -273,12 +294,8 @@ const DailyCheckUp: React.FC = () => {
                         weekDays.includes(p.date?.split('T')[0])
                     ).length;
 
-                    // Calculate total count for this event and account
-                    const totalAcrossEvent = (eventProgress || []).filter(p =>
-                        p.event_id === event.id &&
-                        p.account_id === acc.id &&
-                        p.completed
-                    ).length;
+                    // Use external totalCountMap for accurate global total
+                    const totalAcrossEvent = eventTotalProgressMap[event.id]?.[acc.id] || 0;
 
                     eventWeeklyCounts[event.id] = count;
                     eventTotalCounts[event.id] = totalAcrossEvent;
@@ -401,6 +418,14 @@ const DailyCheckUp: React.FC = () => {
 
         try {
             await eventsService.toggleDailyProgress(eventId, accountId, todayStr, completed);
+            
+            // Refresh total count for this event and account
+            setEventTotalProgressMap(prev => {
+                const eventMap = { ...prev[eventId] };
+                const currentTotal = eventMap[accountId] || 0;
+                eventMap[accountId] = completed ? currentTotal + 1 : Math.max(0, currentTotal - 1);
+                return { ...prev, [eventId]: eventMap };
+            });
         } catch (error) {
             console.error('Error toggling event progress:', error);
             // Revert on error could be done here if needed
@@ -641,10 +666,7 @@ const DailyCheckUp: React.FC = () => {
                                         const isEventLimitReached = event.type === 'daily_login' && maxPerEvent !== null && totalCount >= maxPerEvent && !isCompleted;
                                         const isLimitReached = isWeeklyLimitReached || isEventLimitReached;
 
-                                        let tooltip = `${weeklyCount}/${maxPerWeek} esta semana`;
-                                        if (maxPerEvent !== null) {
-                                            tooltip += ` | ${totalCount}/${maxPerEvent} total evento`;
-                                        }
+                                        let tooltip = `${weeklyCount}/${maxPerWeek} esta semana | ${totalCount}/${maxPerEvent || '-'} total`;
                                         
                                         if (isEventLimitReached) {
                                             tooltip = `Límite total alcanzado (${totalCount}/${maxPerEvent})`;
@@ -667,7 +689,7 @@ const DailyCheckUp: React.FC = () => {
                                                     <span className="checkmark"></span>
                                                     {(maxPerWeek < 7 || maxPerEvent !== null) && (
                                                         <span className="weekly-mini-counter">
-                                                            {maxPerEvent !== null ? `${totalCount}/${maxPerEvent}` : `${weeklyCount}/${maxPerWeek}`}
+                                                            {`${weeklyCount}/${maxPerWeek}`}
                                                         </span>
                                                     )}
                                                 </label>
