@@ -190,16 +190,10 @@ const DailyCheckUp: React.FC = () => {
             setTaskProgress(allTaskProgress);
 
             if (filteredEvents.length > 0) {
-                const eventProgressPromises = filteredEvents.map((event: GameEvent) => {
-                    const currentWeekNum = eventsService.getWeekNumber(event, new Date());
-                    const weekDays = eventsService.getWeekDays(event, currentWeekNum);
-
-                    if (weekDays.length > 0) {
-                        const startDate = weekDays[0];
-                        const endDate = weekDays[weekDays.length - 1];
-                        return eventsService.getDailyProgress(event.id, undefined, startDate, endDate);
+                const eventProgressPromises = filteredEvents.map(event => {
+                    if (event.type === 'daily_login' && (event.max_per_week || event.max_per_event)) {
+                        return eventsService.getDailyProgress(event.id);
                     }
-
                     return eventsService.getDailyProgress(event.id, todayStr);
                 });
                 const allEventProgressResults = await Promise.all(eventProgressPromises);
