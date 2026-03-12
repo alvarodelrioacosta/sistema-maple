@@ -529,7 +529,38 @@ const DailyCheckUp: React.FC = () => {
             setAccounts(prev => prev.map(acc => acc.id === accountId ? { ...acc, reward_points: newValue } : acc));
         } catch (error) {
             console.error('Error updating RP:', error);
-            setError('Error al actualizar Reward Points');
+        }
+    };
+
+    const handleBuyPSOK = async (accountId: string) => {
+        const account = accounts.find(a => a.id === accountId);
+        if (!account || account.reward_points < 4000) return;
+
+        const confirmed = window.confirm(
+            `¿Comprar 1 PSOK por 4,000 RP?\n\nRP actual: ${account.reward_points.toLocaleString()}\nRP después: ${(account.reward_points - 4000).toLocaleString()}\nPSOKs actuales: ${account.psok}`
+        );
+        if (!confirmed) return;
+
+        // Optimistic update
+        setAccounts(prev => prev.map(acc =>
+            acc.id === accountId
+                ? { ...acc, reward_points: acc.reward_points - 4000, psok: (acc.psok || 0) + 1 }
+                : acc
+        ));
+
+        try {
+            await accountsService.update(accountId, {
+                reward_points: account.reward_points - 4000,
+                psok: (account.psok || 0) + 1
+            });
+        } catch (error) {
+            console.error('Error buying PSOK:', error);
+            // Revert on error
+            setAccounts(prev => prev.map(acc =>
+                acc.id === accountId
+                    ? { ...acc, reward_points: account.reward_points, psok: account.psok }
+                    : acc
+            ));
         }
     };
 
@@ -631,7 +662,7 @@ const DailyCheckUp: React.FC = () => {
                                         </div>
                                     </th>
                                 ))}
-                                {showRP && <th className="col-rp">RP</th>}
+                                {showRP && <th className="col-rp">RP / PSOK</th>}
                                 {showItems && (
                                     <>
                                         <th className="col-items">Items For Sale</th>
@@ -711,7 +742,7 @@ const DailyCheckUp: React.FC = () => {
                                         </td>
                                     ))}
 
-                                    {/* Reward Points */}
+                                    {/* Reward Points / PSOK */}
                                     {showRP && (
                                         <td className="col-rp">
                                             <Input
@@ -720,6 +751,17 @@ const DailyCheckUp: React.FC = () => {
                                                 onBlur={(e) => handleRPBlur(row.account.id, parseInt(e.target.value) || 0)}
                                                 className="rp-input-table"
                                             />
+                                            <div className="psok-row">
+                                                <button
+                                                    className={`psok-btn ${row.account.reward_points >= 4000 ? 'psok-btn--active' : 'psok-btn--disabled'}`}
+                                                    onClick={() => handleBuyPSOK(row.account.id)}
+                                                    disabled={row.account.reward_points < 4000}
+                                                    title={row.account.reward_points >= 4000 ? `Comprar PSOK por 4,000 RP` : `Necesitas ${(4000 - row.account.reward_points).toLocaleString()} RP más`}
+                                                >
+                                                    PSOK
+                                                </button>
+                                                <span className="psok-count">{row.account.psok || 0}</span>
+                                            </div>
                                         </td>
                                     )}
 

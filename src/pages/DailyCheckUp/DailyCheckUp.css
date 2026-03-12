@@ -546,3 +546,57 @@
     padding-top: 1rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
+
+/* ===== PSOK Button ===== */
+.psok-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.4rem;
+}
+
+.psok-btn {
+    padding: 0.3rem 0.75rem;
+    border-radius: 6px;
+    border: none;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    flex: 1;
+}
+
+.psok-btn--disabled {
+    background: rgba(100, 116, 139, 0.35);
+    color: #64748b;
+    cursor: not-allowed;
+}
+
+.psok-btn--active {
+    background: linear-gradient(135deg, #3b82f6, #6366f1);
+    color: #fff;
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.45);
+}
+
+.psok-btn--active:hover {
+    background: linear-gradient(135deg, #2563eb, #4f46e5);
+    transform: scale(1.04);
+    box-shadow: 0 0 14px rgba(99, 102, 241, 0.6);
+}
+
+.psok-btn--active:active {
+    transform: scale(0.97);
+}
+
+.psok-count {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #a78bfa;
+    min-width: 1.4rem;
+    text-align: center;
+    background: rgba(167, 139, 250, 0.1);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    border: 1px solid rgba(167, 139, 250, 0.25);
+}
