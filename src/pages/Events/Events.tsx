@@ -566,6 +566,7 @@ const Events: React.FC = () => {
                                     const totalDays = getTotalDays(account.id);
                                     const weeklyDays = getWeeklyDays(account.id);
                                     const maxPerWeek = selectedEvent?.max_per_week || 7;
+                                    const maxPerEvent = selectedEvent?.max_per_event;
 
                                     return (
                                         <tr key={account.id}>
@@ -579,7 +580,16 @@ const Events: React.FC = () => {
                                                 );
                                                 const isCompleted = progress?.completed || false;
                                                 const isFuture = date > today;
-                                                const isDisabled = isFuture || (weeklyDays >= maxPerWeek && !isCompleted && selectedEvent?.type === 'daily_login');
+                                                
+                                                const isWeeklyLimitReached = weeklyDays >= maxPerWeek && !isCompleted;
+                                                const isEventLimitReached = maxPerEvent !== null && totalDays >= maxPerEvent && !isCompleted;
+                                                const isLimitReached = isWeeklyLimitReached || isEventLimitReached;
+
+                                                const isDisabled = isFuture || (isLimitReached && selectedEvent?.type === 'daily_login');
+
+                                                let tooltip = '';
+                                                if (isEventLimitReached) tooltip = `Límite total alcanzado (${totalDays}/${maxPerEvent})`;
+                                                else if (isWeeklyLimitReached) tooltip = `Límite semanal alcanzado (${weeklyDays}/${maxPerWeek})`;
 
                                                 return (
                                                     <td key={i} className="day-checkbox-cell">
@@ -588,9 +598,10 @@ const Events: React.FC = () => {
                                                         ) : (
                                                             <input
                                                                 type="checkbox"
-                                                                className="day-checkbox"
+                                                                className={`day-checkbox ${isLimitReached ? 'limit-reached' : ''}`}
                                                                 checked={isCompleted}
                                                                 disabled={isDisabled}
+                                                                title={tooltip}
                                                                 onChange={() => handleDailyToggle(account.id, date, isCompleted)}
                                                             />
                                                         )}
