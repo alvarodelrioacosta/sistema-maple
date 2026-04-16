@@ -27,7 +27,8 @@ const WORLD_NAMES: Record<number, string> = {
 export const nexonApi = {
     async fetchCharacter(characterName: string): Promise<NexonCharacterData | null> {
         try {
-            const url = `https://www.nexon.com/api/maplestory/no-auth/ranking/v2/na?type=overall&id=weekly&reboot_index=0&page_index=1&character_name=${encodeURIComponent(characterName)}`;
+            const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+            const url = `${supabaseUrl}/functions/v1/nexon-proxy?character_name=${encodeURIComponent(characterName)}`;
             const response = await fetch(url);
             if (!response.ok) return null;
 
