@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Card, Table } from '../../components/UI';
-import { clientsService, exchangeRatesService } from '../../services';
+import { clientsService, appSettingsService } from '../../services';
 import type { CubeSession, Client, Item, ResourceUsageHistory } from '../../types';
 import type { Column } from '../../components/UI/Table';
 import supabase from '../../lib/supabase';
@@ -42,18 +42,16 @@ export const ActiveSessions: React.FC = () => {
             const sessionIds = sessions.map(s => s.id);
             const itemIds = [...new Set(sessions.map(s => s.item_id).filter(Boolean))];
 
-            const [clientsData, itemsData, historyData, ratesData] = await Promise.all([
+            const [clientsData, itemsData, historyData, rate] = await Promise.all([
                 clientsService.getAll(),
                 supabase.from('items').select('*').in('id', itemIds).then(res => res.data as Item[]),
                 supabase.from('resource_usage_history').select('*').in('session_id', sessionIds).then(res => res.data as ResourceUsageHistory[]),
-                exchangeRatesService.getAll()
+                appSettingsService.getMesoUsdRate()
             ]);
 
             setClients(clientsData || []);
             setItems(itemsData || []);
             setHistory(historyData || []);
-
-            const rate = ratesData.find(r => r.base_currency === 'Mesos (b)' && r.target_currency === 'USD')?.rate || 0;
             setUsdToMesosRate(rate);
 
         } catch (error) {

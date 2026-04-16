@@ -19,18 +19,13 @@ const managementItems: NavItem[] = [
     { path: '/items', label: 'Items', icon: '🎒' },
     { path: '/items-db', label: 'Items DB', icon: '📚' },
     { path: '/clients', label: 'Clients', icon: '🤝' },
+    { path: '/accounts-receivable', label: 'Accounts Receivable', icon: '📋' },
     { path: '/events', label: 'Events', icon: '📅' },
     { path: '/tasks', label: 'Tasks', icon: '✔️' },
 ];
 
 const resourceItems: NavItem[] = [
     { path: '/resources', label: 'Resources', icon: '💎' },
-];
-
-const financeItems: NavItem[] = [
-    { path: '/finance', label: 'Finance', icon: '💰' },
-    { path: '/accounts-receivable', label: 'Accounts Receivable', icon: '📋' },
-    { path: '/finance/statements', label: 'Statements', icon: '📄' },
 ];
 
 const workspaceItems: NavItem[] = [
@@ -94,11 +89,6 @@ export const Sidebar: React.FC = () => {
                         <div className="sidebar__section">
                             <span className="sidebar__section-title">Resources</span>
                             {resourceItems.map(renderNavItem)}
-                        </div>
-
-                        <div className="sidebar__section">
-                            <span className="sidebar__section-title">Finance</span>
-                            {financeItems.map(renderNavItem)}
                         </div>
 
                         <div className="sidebar__section">

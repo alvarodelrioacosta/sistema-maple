@@ -4,7 +4,7 @@ import { createWorker } from 'tesseract.js';
 import { ocrUtil } from '../../utils/ocr';
 import { Header } from '../../components/Layout';
 import { Button, Card, Select, Input, ItemTooltip, ResourceHistoryPanel } from '../../components/UI';
-import { itemsService, clientsService, accountsService, accountsReceivableService, resourcesService, charactersService, itemsDBService, cubeSessionsService, sharedInventoryService, resourceHistoryService, exchangeRatesService, transactionsService } from '../../services';
+import { itemsService, clientsService, accountsService, accountsReceivableService, resourcesService, charactersService, itemsDBService, cubeSessionsService, sharedInventoryService, resourceHistoryService, appSettingsService, transactionsService } from '../../services';
 import type { Item, Client, Account, ResourceType, Character, ItemDB, CubeSession, SharedInventory } from '../../types';
 import './UpgradeWorkspaceV2.css';
 
@@ -123,8 +123,8 @@ export const UpgradeWorkspaceV2: React.FC = () => {
                 accountsService.getAll(),
                 itemsDBService.getAll(),
                 resourcesService.getResourceMetadata(),
-                sharedInventoryService.get().catch(() => null), // Handle if not initialized yet
-                exchangeRatesService.getAll().catch(() => []) // Fetch exchange rates
+                sharedInventoryService.get().catch(() => null),
+                appSettingsService.getMesoUsdRate().catch(() => 0)
             ]);
 
             const bulkItems = await itemsService.getByStatus('bulk');
@@ -141,10 +141,8 @@ export const UpgradeWorkspaceV2: React.FC = () => {
                 console.warn('Shared Chest data is null');
             }
 
-            // Set exchange rate (USD to Mesos)
-            const usdRate = exchangeRatesData.find((r: any) => r.base_currency === 'USD' && r.target_currency === 'Mesos');
-            if (usdRate) {
-                setUsdToMesosRate(usdRate.rate || 0);
+            if (exchangeRatesData) {
+                setUsdToMesosRate(exchangeRatesData);
             }
 
         } catch (error) {

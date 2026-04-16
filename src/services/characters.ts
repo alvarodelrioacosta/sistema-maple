@@ -4,6 +4,7 @@
 
 import supabase from '../lib/supabase';
 import type { Character, CharacterInsert, CharacterUpdate, CharacterWithAccount } from '../types';
+import { nexonApi } from './nexonApi';
 
 export const charactersService = {
     async getAll(): Promise<CharacterWithAccount[]> {
@@ -151,6 +152,55 @@ export const charactersService = {
             await charactersService.recalculateCategorization(char.account_id);
         }
         console.log('--- DELETE COMPLETED ---');
+    },
+
+    async syncFromNexon(characterId: string): Promise<boolean> {
+        const char = await charactersService.getById(characterId);
+        if (!char) return false;
+
+        const searchName = char.nexon_name || char.name;
+        const nexonData = await nexonApi.fetchCharacter(searchName);
+        if (!nexonData) return false;
+
+        const { error } = await supabase
+            .from('characters')
+            .update({
+                level: nexonData.level,
+                exp: nexonData.exp,
+                avatar_url: nexonData.avatarUrl,
+                world: nexonData.world,
+                rank_position: nexonData.rankPosition,
+                last_synced_at: new Date().toISOString()
+            })
+            .eq('id', characterId);
+
+        if (error) throw error;
+
+        await charactersService.recalculateCategorization(char.account_id);
+        return true;
+    },
+
+    async syncAllFromNexon(accountId?: string): Promise<{ synced: number; failed: number }> {
+        let query = supabase.from('characters').select('id, name, nexon_name, account_id');
+        if (accountId) query = query.eq('account_id', accountId);
+
+        const { data: chars, error } = await query;
+        if (error) throw error;
+        if (!chars) return { synced: 0, failed: 0 };
+
+        let synced = 0;
+        let failed = 0;
+
+        for (const char of chars) {
+            try {
+                const ok = await charactersService.syncFromNexon(char.id);
+                if (ok) synced++; else failed++;
+            } catch {
+                failed++;
+            }
+        }
+
+        return { synced, failed };
     },
 
     async recalculateCategorization(accountId: string): Promise<void> {

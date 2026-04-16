@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Header } from '../../components/Layout';
 import { Button, Card, Table, ResourceHistoryPanel } from '../../components/UI';
-import { cubeSessionsService, clientsService, itemsService, accountsService, exchangeRatesService } from '../../services';
+import { cubeSessionsService, clientsService, itemsService, accountsService, appSettingsService } from '../../services';
 import type { Column } from '../../components/UI/Table';
 import './CubingHistory.css';
 
@@ -35,16 +35,13 @@ export const CubingHistory: React.FC = () => {
     const loadSessions = async () => {
         setLoading(true);
         try {
-            const [sessionsData, clientsData, itemsData, accountsData, ratesData] = await Promise.all([
+            const [sessionsData, clientsData, itemsData, accountsData, fallbackRate] = await Promise.all([
                 cubeSessionsService.getAll(),
                 clientsService.getAll(),
                 itemsService.getAll(),
                 accountsService.getAll(),
-                exchangeRatesService.getAll()
+                appSettingsService.getMesoUsdRate()
             ]);
-
-            // Get Fallback Rate (USD to Mesos) for sessions without stored rate
-            const fallbackRate = ratesData.find(r => r.base_currency === 'Mesos' && r.target_currency === 'USD')?.rate || 0;
 
             const rows: SessionRow[] = sessionsData.map(session => {
                 const client = clientsData.find(c => c.id === session.client_id);

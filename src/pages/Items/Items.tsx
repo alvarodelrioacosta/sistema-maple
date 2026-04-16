@@ -5,8 +5,8 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Header } from '../../components/Layout';
 import { Button, Table, Modal, Input, Select, Card } from '../../components/UI';
-import { itemsService, charactersService, itemsDBService, accountsService, clientsService, accountsReceivableService, transactionsService, financialAccountsService, sharedInventoryService, exchangeRatesService, potentialsService } from '../../services';
-import type { ItemWithCharacter, ItemInsert, Character, ItemStatus, PotentialTier, ItemDB, TradeabilityType, Account, Client, FinancialAccount, SharedInventory, ExchangeRate, Potential } from '../../types';
+import { itemsService, charactersService, itemsDBService, accountsService, clientsService, accountsReceivableService, transactionsService, sharedInventoryService, appSettingsService, potentialsService } from '../../services';
+import type { ItemWithCharacter, ItemInsert, Character, ItemStatus, PotentialTier, ItemDB, TradeabilityType, Account, Client, SharedInventory, Potential } from '../../types';
 import { formatCurrencyValue } from '../../utils/format';
 import type { Column } from '../../components/UI/Table';
 import './Items.css';
@@ -120,11 +120,10 @@ export const Items: React.FC = () => {
     const [selectedAccountId, setSelectedAccountId] = useState<string>(''); // New state for Account Filter
 
     const [filterStatus, setFilterStatus] = useState<ItemStatus | 'all'>('in_stock'); // State for Filter
-    const [financialAccounts, setFinancialAccounts] = useState<FinancialAccount[]>([]);
     const [sharedChest, setSharedChest] = useState<SharedInventory | null>(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<ItemWithCharacter | null>(null);
-    const [exchangeRates, setExchangeRates] = useState<ExchangeRate[]>([]);
+    const [mesoUsdRate, setMesoUsdRate] = useState<number>(0);
     const [mainPotentials, setMainPotentials] = useState<Potential[]>([]);
     const [bonusPotentials, setBonusPotentials] = useState<Potential[]>([]);
 
@@ -139,9 +138,8 @@ export const Items: React.FC = () => {
 
     // Acquisition state (transient for creation)
     const [acquisitionType, setAcquisitionType] = useState<'Drop' | 'Purchase'>('Drop');
-    const [purchaseSourceId, setPurchaseSourceId] = useState<string>(''); // Can be financial account ID, game account ID, or 'shared-vault'
-    const [purchaseSourceType, setPurchaseSourceType] = useState<'financial' | 'mesos'>('mesos');
-    const [realAmountPaid, setRealAmountPaid] = useState<number>(0);
+    const [purchaseSourceId, setPurchaseSourceId] = useState<string>('');
+    const purchaseSourceType = 'mesos';
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [formData, setFormData] = useState<ItemInsert>({
         name: '',
@@ -190,15 +188,14 @@ export const Items: React.FC = () => {
 
     const loadData = async () => {
         try {
-            const [itemsData, charsData, itemsDBData, accountsData, clientsData, finData, sharedData, ratesData, mainPots, bonusPots] = await Promise.all([
+            const [itemsData, charsData, itemsDBData, accountsData, clientsData, sharedData, rate, mainPots, bonusPots] = await Promise.all([
                 itemsService.getAll(),
                 charactersService.getAll(),
                 itemsDBService.getAll(),
                 accountsService.getAll(),
                 clientsService.getAll(),
-                financialAccountsService.getAll(),
                 sharedInventoryService.get().catch(() => null),
-                exchangeRatesService.getAll(),
+                appSettingsService.getMesoUsdRate(),
                 potentialsService.getMainPotentials(),
                 potentialsService.getBonusPotentials()
             ]);
@@ -207,9 +204,8 @@ export const Items: React.FC = () => {
             setItemsDB(itemsDBData);
             setAccounts(accountsData);
             setClients(clientsData);
-            setFinancialAccounts(finData);
             setSharedChest(sharedData);
-            setExchangeRates(ratesData);
+            setMesoUsdRate(rate);
             setMainPotentials(mainPots);
             setBonusPotentials(bonusPots);
         } catch (error) {
@@ -219,38 +215,12 @@ export const Items: React.FC = () => {
         }
     };
 
-    // Auto-calculate Item Cost when paying in real money
-    useEffect(() => {
-        if (acquisitionType === 'Purchase' && purchaseSourceType === 'financial' && purchaseSourceId && realAmountPaid > 0) {
-            const finAcc = financialAccounts.find(a => a.id === purchaseSourceId);
-            if (finAcc) {
-                // Try case-insensitive comparison
-                const rateObj = exchangeRates.find(r =>
-                    r.base_currency.toLowerCase() === finAcc.currency.toLowerCase() &&
-                    r.target_currency.toLowerCase().includes('mesos')
-                );
-
-                if (rateObj) {
-                    const result = realAmountPaid * rateObj.rate;
-                    setFormData(prev => ({ ...prev, costo_item: result, estimated_value: result }));
-                } else {
-                    console.log('No exchange rate found for:', finAcc.currency, 'to mesos');
-                }
-            }
-        }
-    }, [realAmountPaid, purchaseSourceId, purchaseSourceType, acquisitionType, financialAccounts, exchangeRates]);
-
     // Auto-set Sale Rate when Sale Type is Client
     useEffect(() => {
-        if (saleType === 'Client') {
-            const rateObj = exchangeRates.find(r =>
-                r.base_currency === 'Mesos (b)' && r.target_currency === 'USD'
-            );
-            if (rateObj) {
-                setSaleRate(rateObj.rate);
-            }
+        if (saleType === 'Client' && mesoUsdRate > 0) {
+            setSaleRate(mesoUsdRate);
         }
-    }, [saleType, exchangeRates]);
+    }, [saleType, mesoUsdRate]);
 
     const handleOpenModal = (item?: ItemWithCharacter) => {
         if (item) {
@@ -293,8 +263,6 @@ export const Items: React.FC = () => {
             setSelectedAccountId(''); // Reset account select
             setAcquisitionType('Drop');
             setPurchaseSourceId('');
-            setPurchaseSourceType('mesos');
-            setRealAmountPaid(0);
             setFormData({
                 name: '',
                 character_id: null,
@@ -378,52 +346,24 @@ export const Items: React.FC = () => {
                         if (purchaseSourceType === 'mesos') {
                             const isVault = purchaseSourceId === 'shared-vault';
 
-                            // 1. Log meso transaction
                             await transactionsService.createMeso({
                                 account_id: isVault ? null : purchaseSourceId,
                                 type: 'expense',
                                 amount: costToLog,
                                 description: `Purchase: - ${formData.name}`,
                                 item_id: createdItem.id,
-                                category: 'Mesos',
+                                category: 'Maple',
                                 subcategory: 'Items / Cubes'
                             });
 
-                            // 2. Update balance
                             if (isVault) {
-                                const current = sharedChest?.mesos_stock || 0;
-                                await sharedInventoryService.updateMesos(current - costToLog);
+                                await sharedInventoryService.updateMesos((sharedChest?.mesos_stock || 0) - costToLog);
                             } else {
                                 const acc = accounts.find(a => a.id === purchaseSourceId);
                                 if (acc) {
                                     await accountsService.update(acc.id, { mesos_b: (acc.mesos_b || 0) - costToLog });
                                 }
                             }
-                        } else if (purchaseSourceType === 'financial') {
-                            const finAcc = financialAccounts.find(a => a.id === purchaseSourceId);
-                            // 1. Log financial transaction
-                            await transactionsService.create({
-                                financial_account_id: purchaseSourceId,
-                                type: 'expense',
-                                amount: realAmountPaid,
-                                currency: finAcc?.currency || 'USD',
-                                description: `Purchase Item: ${formData.name} (${costToLog} b)`,
-                                item_id: createdItem.id,
-                                is_paid: true
-                            } as any);
-
-                            // 2. Update balance
-                            if (finAcc) {
-                                await financialAccountsService.update(finAcc.id, { balance: (finAcc.balance || 0) - realAmountPaid });
-                            }
-
-                            // 3. Log meso income (since we "bought" it with real money, it's like a meso expense for the item)
-                            // But wait, if it's a purchase from a financial account, we only log the financial transaction.
-                            // The item itself tracks costo_item.
-                            //- **Personalización de Tabla**: En la pestaña "In Use", la columna "Email" cambia automáticamente a "Char" y se simplifica para mostrar solo el nombre del personaje.
-                            //- **Columna Value Editable**: Los ítems "In Use" ahora muestran la columna **Value**, que permite editar el valor estimado directamente en la tabla.
-                            //- **Desglose de Costos (Hover)**: Al pasar el ratón sobre el costo total de cualquier ítem, se muestra una ventana emergente con el desglose detallado (Item, Cubes, SF, etc.), ocultando automáticamente los valores en cero.
-                            // But if it's a direct money purchase, the item is just added with that cost.
                         }
                     }
                 }
@@ -517,34 +457,19 @@ export const Items: React.FC = () => {
 
         setFormData(baseData);
 
-        // Try to fetch acquisition details from transactions
+        // Try to infer acquisition from meso transactions
         try {
-            // Find transactions associated with this item
-            const allTransactions = await transactionsService.getAll();
-            const itemTransaction = allTransactions.find(t => t.item_id === item.id && t.type === 'expense');
-
-            if (itemTransaction) {
+            const mesoTransactions = await transactionsService.getAllMesos();
+            const mesoTx = mesoTransactions.find(t => t.item_id === item.id && t.type === 'expense');
+            if (mesoTx) {
                 setAcquisitionType('Purchase');
-                if (itemTransaction.financial_account_id) {
-                    setPurchaseSourceType('financial');
-                    setPurchaseSourceId(itemTransaction.financial_account_id);
-                    setRealAmountPaid(itemTransaction.amount);
-                } else {
-                    // Check meso transactions if not financial
-                    const mesoTransactions = await transactionsService.getAllMesos();
-                    const mesoTx = mesoTransactions.find(t => t.item_id === item.id && t.type === 'expense');
-
-                    if (mesoTx) {
-                        setPurchaseSourceType('mesos');
-                        setPurchaseSourceId(mesoTx.account_id || 'shared-vault');
-                    }
-                }
+                setPurchaseSourceId(mesoTx.account_id || 'shared-vault');
             } else {
                 setAcquisitionType('Drop');
             }
         } catch (error) {
             console.error('Error fetching acquisition details for copy:', error);
-            setAcquisitionType('Drop'); // Fallback
+            setAcquisitionType('Drop');
         }
 
         setModalOpen(true);
@@ -1177,55 +1102,21 @@ export const Items: React.FC = () => {
 
                             {acquisitionType === 'Purchase' && (
                                 <div className="purchase-details" style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1.25rem' }}>
-                                    <div style={{ flex: '1', minWidth: '200px' }}>
-                                        <Select
-                                            label="Payment"
-                                            value={purchaseSourceType}
-                                            onChange={(val) => {
-                                                setPurchaseSourceType(val as any);
-                                                setPurchaseSourceId('');
-                                                setRealAmountPaid(0);
-                                            }}
-                                            options={[
-                                                { value: 'mesos', label: 'Mesos' },
-                                                { value: 'financial', label: 'Real Money' }
-                                            ]}
-                                        />
-                                    </div>
-
                                     <div style={{ flex: '1.5', minWidth: '250px' }}>
                                         <Select
-                                            label="Deduct from Account"
+                                            label="Deduct Mesos From"
                                             value={purchaseSourceId}
                                             onChange={(val) => setPurchaseSourceId(val)}
                                             options={[
                                                 { value: '', label: 'Select Account...' },
-                                                ...(purchaseSourceType === 'mesos' ? [
-                                                    { value: 'shared-vault', label: `Shared Vault (${formatCurrencyValue(sharedChest?.mesos_stock || 0)} b)` },
-                                                    ...accounts
-                                                        .filter(a => (a.mesos_b || 0) > 0)
-                                                        .map(a => ({ value: a.id, label: `Acc ${a.number} (${formatCurrencyValue(a.mesos_b || 0)} b)` }))
-                                                ] : [
-                                                    ...financialAccounts.map(a => ({ value: a.id, label: `${a.name} (${a.currency} ${formatCurrencyValue(a.balance || 0)})` }))
-                                                ])
+                                                { value: 'shared-vault', label: `Shared Vault (${formatCurrencyValue(sharedChest?.mesos_stock || 0)} b)` },
+                                                ...accounts
+                                                    .filter(a => (a.mesos_b || 0) > 0)
+                                                    .map(a => ({ value: a.id, label: `Acc ${a.number} (${formatCurrencyValue(a.mesos_b || 0)} b)` }))
                                             ]}
                                             required
                                         />
                                     </div>
-
-                                    {purchaseSourceType === 'financial' && (
-                                        <div style={{ flex: '1', minWidth: '150px' }}>
-                                            <Input
-                                                label={`Amount [${financialAccounts.find(a => a.id === purchaseSourceId)?.currency || ''}]`}
-                                                type="number"
-                                                min={0}
-                                                step="0.01"
-                                                value={realAmountPaid}
-                                                onChange={(e) => setRealAmountPaid(parseFloat(e.target.value) || 0)}
-                                                required
-                                            />
-                                        </div>
-                                    )}
 
                                     <div style={{ flex: '1', minWidth: '150px' }}>
                                         <Input
@@ -1239,13 +1130,7 @@ export const Items: React.FC = () => {
                                                 setFormData({ ...formData, costo_item: val, estimated_value: val });
                                             }}
                                             required
-                                            disabled={purchaseSourceType === 'financial'}
                                         />
-                                        {purchaseSourceType === 'financial' && realAmountPaid > 0 && purchaseSourceId && (
-                                            <span style={{ fontSize: '0.75rem', color: '#9ca3af', display: 'block', marginTop: '4px' }}>
-                                                Auto-calculated from rate
-                                            </span>
-                                        )}
                                     </div>
                                 </div>
                             )}

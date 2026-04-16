@@ -5,21 +5,17 @@
 import React, { useEffect, useState } from 'react';
 import { Header } from '../../components/Layout';
 import { KPICard, Card, LoadingScreen } from '../../components/UI';
-import { itemsService, financialAccountsService, accountsService, resourcesService, sharedInventoryService, accountsReceivableService, exchangeRatesService, transactionsService, cubeSessionsService, clientsService } from '../../services';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { itemsService, accountsService, resourcesService, sharedInventoryService, accountsReceivableService, appSettingsService, cubeSessionsService, clientsService } from '../../services';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import type { DashboardKPIs, ItemStatus } from '../../types';
 import './Dashboard.css';
 
 const COLORS = ['#7c3aed', '#06b6d4', '#f59e0b', '#22c55e', '#ec4899'];
 
 const formatCurrency = (value: number): string => {
-    if (value >= 1_000_000_000) {
-        return `${(value / 1_000_000_000).toFixed(1)}B`;
-    } else if (value >= 1_000_000) {
-        return `${(value / 1_000_000).toFixed(1)}M`;
-    } else if (value >= 1_000) {
-        return `${(value / 1_000).toFixed(1)}K`;
-    }
+    if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)}B`;
+    if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
+    if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
     return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
@@ -46,11 +42,8 @@ const CustomTooltip = ({ active, payload }: any) => {
 export const Dashboard: React.FC = () => {
     const [kpis, setKpis] = useState<DashboardKPIs>({
         totalStockValue: 0,
-        totalIncome: 0,
-        totalExpenses: 0,
         accountsReceivable: 0,
         totalResourceValue: 0,
-        totalFinancialBalance: 0,
         totalMesos: 0,
         netBalance: 0,
         itemsByStatus: { bulk: 0, in_stock: 0, for_sale: 0, sold: 0 }
@@ -59,28 +52,20 @@ export const Dashboard: React.FC = () => {
     const [selectedKPI, setSelectedKPI] = useState<string | null>(null);
     const [details, setDetails] = useState<{
         itemsByCategory: { status: string, count: number, mesos: number }[];
-        financialAccounts: { name: string, balance: number, currency: string }[];
         resourceStock: { type: string, count: number, valueMesos: number }[];
         mesosAccounts: { name: string, mesos: number, isVault?: boolean, isConsolidated?: boolean }[];
-        receivableByCurrency: { currency: string, count: number, balance: number }[];
         receivableByClient: { name: string, balanceUSD: number, count: number, isConsolidated?: boolean }[];
         totalStockMesos: number;
         totalResourceMesos: number;
         totalMesosSum: number;
-        expensesByCategory: { name: string, value: number }[];
-        monthlyData: { month: string, income: number, expense: number }[];
     }>({
         itemsByCategory: [],
-        financialAccounts: [],
         resourceStock: [],
         mesosAccounts: [],
-        receivableByCurrency: [],
         receivableByClient: [],
         totalStockMesos: 0,
         totalResourceMesos: 0,
         totalMesosSum: 0,
-        expensesByCategory: [],
-        monthlyData: []
     });
     const [loading, setLoading] = useState(true);
 
@@ -89,58 +74,25 @@ export const Dashboard: React.FC = () => {
             try {
                 const [
                     itemsForBreakdown,
-                    financialAccounts,
                     accounts,
                     resourceMetadata,
                     sharedInventory,
                     receivables,
-                    rates,
-                    dashboardTransactions,
+                    mesoUsdRate,
                     cubeSessions,
                     clients
                 ] = await Promise.all([
                     itemsService.getItemBreakdown(),
-                    financialAccountsService.getAll(),
                     accountsService.getAll(),
                     resourcesService.getResourceMetadata(),
                     sharedInventoryService.get(),
                     accountsReceivableService.getAll(),
-                    exchangeRatesService.getAll(),
-                    transactionsService.getDashboardData(),
+                    appSettingsService.getMesoUsdRate(),
                     cubeSessionsService.getAll(),
                     clientsService.getAll()
                 ]);
 
-                // Helper to get rate to USD
-                const getToUSDRate = (currency: string) => {
-                    if (!currency) return 0;
-                    if (currency === 'USD' || currency === '$' || currency.toLowerCase() === 'usd') return 1;
-
-                    const directRate = rates.find(r => r.base_currency === currency && r.target_currency === 'USD');
-                    if (directRate) return directRate.rate;
-
-                    const inverseRate = rates.find(r => r.base_currency === 'USD' && r.target_currency === currency);
-                    if (inverseRate && inverseRate.rate !== 0) return 1 / inverseRate.rate;
-
-                    const cleanCurrency = currency.replace(/\s+/g, '').toLowerCase();
-                    const fuzzyRate = rates.find(r =>
-                        r.base_currency.replace(/\s+/g, '').toLowerCase() === cleanCurrency &&
-                        r.target_currency === 'USD'
-                    );
-                    if (fuzzyRate) return fuzzyRate.rate;
-
-                    return 0;
-                };
-
-                const mesoToUSDRate = getToUSDRate('Mesos(b)');
-
-                // 1. Financial Balance in USD
-                const financialBalance = financialAccounts.reduce((sum, acc) => {
-                    const rate = getToUSDRate(acc.currency);
-                    return sum + ((acc.balance || 0) * rate);
-                }, 0);
-
-                // 2. Resource Value (Cubes) in USD
+                // Resource Value (Cubes) in USD
                 const brightCount = accounts.reduce((sum, acc) => sum + (acc.bright_cubes || 0), 0);
                 const bonusCount = accounts.reduce((sum, acc) => sum + (acc.bonus_bright_cubes || 0), 0);
                 const solidCount = accounts.reduce((sum, acc) => sum + (acc.solid_cubes || 0), 0);
@@ -152,48 +104,43 @@ export const Dashboard: React.FC = () => {
 
                 const totalPerfectInnocValueMesos = (sharedInventory?.perfect_innocence_stock || 0) * perfectInnocMesoCost;
                 const totalResourceMesosValue = (brightCount * brightMesoCost) + (bonusCount * bonusMesoCost) + (solidCount * solidMesoCost) + totalPerfectInnocValueMesos;
-                const totalResourceValueUSD = totalResourceMesosValue * mesoToUSDRate;
+                const totalResourceValueUSD = totalResourceMesosValue * mesoUsdRate;
 
-                // 3. Total Mesos in USD
+                // Total Mesos in USD
                 const totalMesosInAccounts = accounts.reduce((sum, acc) => sum + (acc.mesos_b || 0), 0);
-                const totalMesosValueUSD = (totalMesosInAccounts + (sharedInventory?.mesos_stock || 0)) * mesoToUSDRate;
+                const totalMesosSum = totalMesosInAccounts + (sharedInventory?.mesos_stock || 0);
+                const totalMesosValueUSD = totalMesosSum * mesoUsdRate;
 
-                // 4. Accounts Receivable in USD (Invoices + Ongoing Cube Sessions)
+                // Accounts Receivable in USD (AR + Ongoing Cube Sessions)
                 const activeReceivables = receivables.filter(ar => ar.status !== 'paid' && (ar.amount - (ar.paid || 0)) > 0);
                 const activeCubeSessions = cubeSessions.filter(s => s.cubing_session_status === 'Ongoing');
 
                 const arTotalUSD = activeReceivables.reduce((sum, ar) => {
-                    const currency = ar.currency || ar.client?.currency || 'USD';
-                    const rate = getToUSDRate(currency);
-                    return sum + ((ar.amount - (ar.paid || 0)) * rate);
+                    return sum + (ar.amount - (ar.paid || 0));
                 }, 0);
 
                 const cubingTotalUSD = activeCubeSessions.reduce((sum, s) => {
-                    const rate = getToUSDRate(s.currency || 'USD');
+                    const rate = s.meso_rate && s.currency === 'Mesos (b)' ? s.meso_rate : 1;
                     return sum + ((s.cubing_session_total || 0) * rate);
                 }, 0);
 
                 const receivableTotalUSD = arTotalUSD + cubingTotalUSD;
 
-                // 5. Item Breakdown (Count and Mesos)
+                // Item Breakdown
                 const itemsByCategory = [
                     { status: 'bulk', count: 0, mesos: 0 },
                     { status: 'in_stock', count: 0, mesos: 0 },
                     { status: 'for_sale', count: 0, mesos: 0 }
                 ];
-
                 const statusCounts = { bulk: 0, in_stock: 0, for_sale: 0, sold: 0 };
 
                 itemsForBreakdown.forEach(item => {
                     const status = item.status as ItemStatus;
-
-                    // KPI mappings
                     if (status === 'bulk') statusCounts.bulk++;
                     else if (status === 'in_stock' || status === 'in_progress') statusCounts.in_stock++;
                     else if (status === 'for_sale') statusCounts.for_sale++;
                     else if (status === 'sold') statusCounts.sold++;
 
-                    // Chart mappings
                     const isStockPart = status === 'in_stock' || status === 'in_progress';
                     const targetStatus = isStockPart ? 'in_stock' : status;
                     const cat = itemsByCategory.find(c => c.status === targetStatus);
@@ -205,8 +152,9 @@ export const Dashboard: React.FC = () => {
                 });
 
                 const totalStockMesos = itemsByCategory.reduce((sum, cat) => sum + cat.mesos, 0);
-                const stockValueUSD = totalStockMesos * mesoToUSDRate;
-                // 6. Mesos Account Sorting & Grouping
+                const stockValueUSD = totalStockMesos * mesoUsdRate;
+
+                // Mesos Accounts
                 const individualAccts = accounts
                     .map(acc => ({ name: `${acc.number} - ${acc.email}`, mesos: acc.mesos_b || 0 }))
                     .filter(a => a.mesos > 0);
@@ -218,8 +166,6 @@ export const Dashboard: React.FC = () => {
                 const mesosAccts: { name: string, mesos: number, isVault?: boolean, isConsolidated?: boolean }[] = [
                     { name: 'Vault (Shared)', mesos: sharedInventory?.mesos_stock || 0, isVault: true }
                 ];
-
-                // Add high value accounts sorted
                 mesosAccts.push(...highValueAccts.sort((a, b) => {
                     const isAlvaroA = a.name.includes('alvarodelrioacosta@gmail.com');
                     const isAlvaroB = b.name.includes('alvarodelrioacosta@gmail.com');
@@ -227,8 +173,6 @@ export const Dashboard: React.FC = () => {
                     if (!isAlvaroA && isAlvaroB) return 1;
                     return b.mesos - a.mesos;
                 }));
-
-                // Add consolidated entry for low value accounts
                 if (lowValueAccts.length > 0) {
                     mesosAccts.push({
                         name: `${lowValueAccts.length} Accounts < 0.5 B`,
@@ -237,28 +181,20 @@ export const Dashboard: React.FC = () => {
                     });
                 }
 
-                // 7. Receivable by Client (Top 5 + Rest)
+                // Receivable by Client
                 const arByClient: Record<string, { count: number, balanceUSD: number }> = {};
-
-                // Add regular AR
                 activeReceivables.forEach(ar => {
                     const clientName = ar.client?.name || 'Unknown Client';
-                    const curr = ar.currency || ar.client?.currency || 'USD';
-                    const rate = getToUSDRate(curr);
-                    const pendingUSD = (ar.amount - (ar.paid || 0)) * rate;
-
+                    const pending = ar.amount - (ar.paid || 0);
                     if (!arByClient[clientName]) arByClient[clientName] = { count: 0, balanceUSD: 0 };
                     arByClient[clientName].count++;
-                    arByClient[clientName].balanceUSD += pendingUSD;
+                    arByClient[clientName].balanceUSD += pending;
                 });
-
-                // Add Ongoing Cube Sessions
                 activeCubeSessions.forEach(s => {
                     const client = clients.find(c => c.id === s.client_id);
                     const clientName = client?.name || 'Unknown Client';
-                    const rate = getToUSDRate(s.currency || 'USD');
+                    const rate = s.meso_rate && s.currency === 'Mesos (b)' ? s.meso_rate : 1;
                     const pendingUSD = (s.cubing_session_total || 0) * rate;
-
                     if (!arByClient[clientName]) arByClient[clientName] = { count: 0, balanceUSD: 0 };
                     arByClient[clientName].count++;
                     arByClient[clientName].balanceUSD += pendingUSD;
@@ -267,12 +203,9 @@ export const Dashboard: React.FC = () => {
                 const sortedClients = Object.entries(arByClient)
                     .map(([name, data]) => ({ name, ...data }))
                     .sort((a, b) => b.balanceUSD - a.balanceUSD);
-
                 const top5Clients = sortedClients.slice(0, 5);
                 const remainingClients = sortedClients.slice(5);
-
-                const receivableByClient: { name: string, balanceUSD: number, count: number, isConsolidated?: boolean }[] = [...top5Clients];
-
+                const receivableByClient = [...top5Clients] as { name: string, balanceUSD: number, count: number, isConsolidated?: boolean }[];
                 if (remainingClients.length > 0) {
                     receivableByClient.push({
                         name: `${remainingClients.length} Clients`,
@@ -282,115 +215,28 @@ export const Dashboard: React.FC = () => {
                     });
                 }
 
-                // 7.1 Keep by currency for compatibility if needed elsewhere, but mainly use by client
-                const arByCurr: Record<string, { count: number, balance: number }> = {};
-                activeReceivables.forEach(ar => {
-                    const curr = ar.currency || ar.client?.currency || 'USD';
-                    if (!arByCurr[curr]) arByCurr[curr] = { count: 0, balance: 0 };
-                    arByCurr[curr].count++;
-                    arByCurr[curr].balance += (ar.amount - (ar.paid || 0));
-                });
-
-                const totalMesosSum = mesosAccts.reduce((sum, a) => sum + a.mesos, 0);
-
-                // 8. Transactions Aggregation
-                const expensesByCat: Record<string, number> = {};
-                const currentYear = new Date().getFullYear();
-                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                const monthlyMap: Record<string, { income: number, expense: number }> = {};
-
-                months.forEach(m => {
-                    monthlyMap[m] = { income: 0, expense: 0 };
-                });
-
-                let calculatedTotalIncome = 0;
-                let calculatedTotalExpenses = 0;
-
-                dashboardTransactions.forEach((t: any) => {
-                    const date = new Date(t.created_at);
-                    const rate = getToUSDRate(t.currency || 'USD');
-                    const amountUSD = (t.amount || 0) * rate;
-
-                    if (t.type === 'income') {
-                        calculatedTotalIncome += amountUSD;
-                    } else if (t.type === 'expense') {
-                        calculatedTotalExpenses += amountUSD;
-                        const cat = t.category || 'Uncategorized';
-                        expensesByCat[cat] = (expensesByCat[cat] || 0) + amountUSD;
-                    }
-
-                    if (date.getFullYear() === currentYear) {
-                        const monthName = months[date.getMonth()];
-                        if (monthlyMap[monthName]) {
-                            if (t.type === 'income') monthlyMap[monthName].income += amountUSD;
-                            if (t.type === 'expense') monthlyMap[monthName].expense += amountUSD;
-                        }
-                    }
-                });
-
-                const expensesByCategoryData = Object.entries(expensesByCat)
-                    .map(([name, value]) => ({ name, value }))
-                    .sort((a, b) => b.value - a.value);
-
-                const monthlyData = months.map(month => ({
-                    month,
-                    ...monthlyMap[month]
-                }));
-
-                const financialSortOrder = ['Binance', 'PPFF', 'PayPal', 'Efectivo Dolares', 'Mercado Pago', 'Efectivo', 'Soles', 'BCP'];
-
                 setKpis({
                     totalStockValue: stockValueUSD,
-                    totalIncome: calculatedTotalIncome,
-                    totalExpenses: calculatedTotalExpenses,
                     totalResourceValue: totalResourceValueUSD,
-                    totalFinancialBalance: financialBalance,
                     totalMesos: totalMesosValueUSD,
                     accountsReceivable: receivableTotalUSD,
-                    netBalance: financialBalance + receivableTotalUSD + stockValueUSD + totalResourceValueUSD + totalMesosValueUSD,
+                    netBalance: stockValueUSD + totalResourceValueUSD + totalMesosValueUSD + receivableTotalUSD,
                     itemsByStatus: statusCounts
                 });
 
                 setDetails({
                     itemsByCategory,
-                    financialAccounts: financialAccounts
-                        .filter(acc => acc.name !== 'Inventario / Mesos')
-                        .map(acc => ({
-                            name: acc.name,
-                            balance: acc.balance || 0,
-                            currency: acc.currency
-                        }))
-                        .sort((a, b) => {
-                            const indexA = financialSortOrder.indexOf(a.name);
-                            const indexB = financialSortOrder.indexOf(b.name);
-                            if (indexA !== -1 && indexB !== -1) return indexA - indexB;
-                            if (indexA !== -1) return -1;
-                            if (indexB !== -1) return 1;
-                            return a.name.localeCompare(b.name);
-                        }),
                     resourceStock: [
                         { type: 'Solid Cubes', count: solidCount, valueMesos: solidCount * solidMesoCost },
                         { type: 'Bright Cubes', count: brightCount, valueMesos: brightCount * brightMesoCost },
                         { type: 'Bonus Bright Cubes', count: bonusCount, valueMesos: bonusCount * bonusMesoCost },
                         { type: 'Perfect Innocence', count: sharedInventory?.perfect_innocence_stock || 0, valueMesos: totalPerfectInnocValueMesos }
-                    ]
-                        .filter(c => c.count > 0)
-                        .sort((a, b) => {
-                            const order = ['Solid Cubes', 'Bright Cubes', 'Bonus Bright Cubes', 'Perfect Innocence'];
-                            return order.indexOf(a.type) - order.indexOf(b.type);
-                        }),
+                    ].filter(c => c.count > 0),
                     mesosAccounts: mesosAccts,
-                    receivableByCurrency: Object.keys(arByCurr).map(curr => ({
-                        currency: curr,
-                        count: arByCurr[curr].count,
-                        balance: arByCurr[curr].balance
-                    })),
                     receivableByClient,
                     totalStockMesos,
                     totalResourceMesos: totalResourceMesosValue,
                     totalMesosSum,
-                    expensesByCategory: expensesByCategoryData,
-                    monthlyData
                 });
             } catch (error) {
                 console.error('Error loading KPIs:', error);
@@ -404,7 +250,6 @@ export const Dashboard: React.FC = () => {
 
     const netWorthData = [
         { name: 'Stock', value: kpis.totalStockValue },
-        { name: 'Cash', value: kpis.totalFinancialBalance },
         { name: 'Cubes', value: kpis.totalResourceValue },
         { name: 'Mesos', value: kpis.totalMesos },
         { name: 'AR', value: kpis.accountsReceivable },
@@ -414,16 +259,11 @@ export const Dashboard: React.FC = () => {
         setSelectedKPI(selectedKPI === id ? null : id);
     };
 
-    if (loading) {
-        return <LoadingScreen message="Preparando tu Dashboard..." />;
-    }
+    if (loading) return <LoadingScreen message="Preparando tu Dashboard..." />;
 
     return (
         <div className="dashboard">
-            <Header
-                title="Welcome back! 👋 (v2)"
-                subtitle="Overview of your inventory and finances"
-            />
+            <Header title="Welcome back! 👋" subtitle="Overview of your game inventory" />
 
             <div className="dashboard__content">
                 <div className="dashboard__kpis">
@@ -463,23 +303,12 @@ export const Dashboard: React.FC = () => {
                             className={selectedKPI === 'receivable' ? 'kpi-card--active' : ''}
                         />
                     </div>
-                    <div onClick={() => handleKPIClick('finance')} style={{ cursor: 'pointer' }}>
-                        <KPICard
-                            title="Financial Balance"
-                            value={`$${formatCurrency(kpis.totalFinancialBalance)}`}
-                            icon="🏦"
-                            color="success"
-                            className={selectedKPI === 'finance' ? 'kpi-card--active' : ''}
-                        />
-                    </div>
                 </div>
 
                 <div className="dashboard__charts">
                     <Card className="dashboard__chart-card">
                         <h3 className="dashboard__chart-title">Net Worth Distribution</h3>
-                        {loading ? (
-                            <div className="dashboard__loading">Loading...</div>
-                        ) : netWorthData.length > 0 ? (
+                        {netWorthData.length > 0 ? (
                             <div className="dashboard__pie-container">
                                 <ResponsiveContainer width="100%" height={280}>
                                     <PieChart>
@@ -501,9 +330,7 @@ export const Dashboard: React.FC = () => {
                                     </PieChart>
                                 </ResponsiveContainer>
                                 <div className="dashboard__pie-center">
-                                    <span className="dashboard__pie-total">
-                                        ${formatCurrency(kpis.netBalance)}
-                                    </span>
+                                    <span className="dashboard__pie-total">${formatCurrency(kpis.netBalance)}</span>
                                     <span className="dashboard__pie-label">Total USD</span>
                                 </div>
                             </div>
@@ -521,20 +348,13 @@ export const Dashboard: React.FC = () => {
                                     <span className={`dashboard__balance-value ${kpis.netBalance >= 0 ? 'positive' : 'negative'}`}>
                                         ${Math.round(Math.abs(kpis.netBalance)).toLocaleString()}
                                     </span>
-                                    <span className="dashboard__balance-label">
-                                        {kpis.netBalance >= 0 ? 'Total Net Worth (USD)' : 'Net Loss'}
-                                    </span>
+                                    <span className="dashboard__balance-label">Total Net Worth (USD)</span>
                                 </div>
-
                                 <div className="dashboard__stats-list">
                                     <h4 className="dashboard__stats-subtitle">Main Categories (USD)</h4>
                                     <div className="dashboard__stat-item">
                                         <span className="dashboard__stat-label">Stock Value</span>
                                         <span className="dashboard__stat-value">${formatCurrency(kpis.totalStockValue)}</span>
-                                    </div>
-                                    <div className="dashboard__stat-item">
-                                        <span className="dashboard__stat-label">Financial Balance</span>
-                                        <span className="dashboard__stat-value">${formatCurrency(kpis.totalFinancialBalance)}</span>
                                     </div>
                                     <div className="dashboard__stat-item">
                                         <span className="dashboard__stat-label">Resource Value</span>
@@ -555,9 +375,7 @@ export const Dashboard: React.FC = () => {
                                 {selectedKPI === 'stock' && (
                                     <>
                                         <div className="dashboard__balance">
-                                            <span className="dashboard__balance-value positive">
-                                                {details.totalStockMesos.toLocaleString()} B
-                                            </span>
+                                            <span className="dashboard__balance-value positive">{details.totalStockMesos.toLocaleString()} B</span>
                                             <span className="dashboard__balance-label">Total in Mesos</span>
                                         </div>
                                         <h4 className="dashboard__stats-subtitle">Items by Status</h4>
@@ -567,30 +385,8 @@ export const Dashboard: React.FC = () => {
                                                     {cat.count} {cat.status.replace('_', ' ')}
                                                 </span>
                                                 {cat.status !== 'bulk' && (
-                                                    <span className="dashboard__stat-value">
-                                                        {cat.mesos.toLocaleString()} B
-                                                    </span>
+                                                    <span className="dashboard__stat-value">{cat.mesos.toLocaleString()} B</span>
                                                 )}
-                                            </div>
-                                        ))}
-                                    </>
-                                )}
-
-                                {selectedKPI === 'finance' && (
-                                    <>
-                                        <div className="dashboard__balance">
-                                            <span className="dashboard__balance-value positive">
-                                                {Math.round(kpis.totalFinancialBalance).toLocaleString()}$
-                                            </span>
-                                            <span className="dashboard__balance-label">Total in USD</span>
-                                        </div>
-                                        <h4 className="dashboard__stats-subtitle">Financial Accounts</h4>
-                                        {details.financialAccounts.map((acc, i) => (
-                                            <div className="dashboard__stat-item" key={acc.name + i}>
-                                                <span className="dashboard__stat-label">{acc.name}</span>
-                                                <span className="dashboard__stat-value">
-                                                    {acc.balance.toLocaleString()} {acc.currency.includes('Mesos') ? 'B' : acc.currency}
-                                                </span>
                                             </div>
                                         ))}
                                     </>
@@ -599,20 +395,14 @@ export const Dashboard: React.FC = () => {
                                 {selectedKPI === 'resource' && (
                                     <>
                                         <div className="dashboard__balance">
-                                            <span className="dashboard__balance-value positive">
-                                                {details.totalResourceMesos.toLocaleString()} B
-                                            </span>
+                                            <span className="dashboard__balance-value positive">{details.totalResourceMesos.toLocaleString()} B</span>
                                             <span className="dashboard__balance-label">Total in Mesos</span>
                                         </div>
                                         <h4 className="dashboard__stats-subtitle">Stock</h4>
-                                        {details.resourceStock?.map((res) => (
+                                        {details.resourceStock.map(res => (
                                             <div className="dashboard__stat-item" key={res.type}>
-                                                <span className="dashboard__stat-label">
-                                                    {res.count} {res.type}
-                                                </span>
-                                                <span className="dashboard__stat-value">
-                                                    {res.valueMesos.toLocaleString()} B
-                                                </span>
+                                                <span className="dashboard__stat-label">{res.count} {res.type}</span>
+                                                <span className="dashboard__stat-value">{res.valueMesos.toLocaleString()} B</span>
                                             </div>
                                         ))}
                                     </>
@@ -621,9 +411,7 @@ export const Dashboard: React.FC = () => {
                                 {selectedKPI === 'mesos' && (
                                     <>
                                         <div className="dashboard__balance">
-                                            <span className="dashboard__balance-value positive">
-                                                {details.totalMesosSum.toFixed(2)} B
-                                            </span>
+                                            <span className="dashboard__balance-value positive">{details.totalMesosSum.toFixed(2)} B</span>
                                             <span className="dashboard__balance-label">Total in Mesos</span>
                                         </div>
                                         <h4 className="dashboard__stats-subtitle">Meso Distribution</h4>
@@ -643,9 +431,7 @@ export const Dashboard: React.FC = () => {
                                 {selectedKPI === 'receivable' && (
                                     <>
                                         <div className="dashboard__balance">
-                                            <span className="dashboard__balance-value positive">
-                                                {Math.round(kpis.accountsReceivable).toLocaleString()}$
-                                            </span>
+                                            <span className="dashboard__balance-value positive">{Math.round(kpis.accountsReceivable).toLocaleString()}$</span>
                                             <span className="dashboard__balance-label">Total in USD</span>
                                         </div>
                                         <h4 className="dashboard__stats-subtitle">AR by Client (USD)</h4>
@@ -680,62 +466,6 @@ export const Dashboard: React.FC = () => {
                                     ← Back to Net Worth
                                 </button>
                             </div>
-                        )}
-                    </Card>
-                </div>
-
-                <div className="dashboard__charts" style={{ gridTemplateColumns: 'minmax(0, 1.5fr) minmax(0, 1fr)', marginTop: 'var(--spacing-lg)' }}>
-                    <Card className="dashboard__chart-card" style={{ height: 'auto' }}>
-                        <h3 className="dashboard__chart-title">Monthly Income vs Expenses</h3>
-                        {loading ? (
-                            <div className="dashboard__loading">Loading...</div>
-                        ) : details.monthlyData.length > 0 ? (
-                            <ResponsiveContainer width="100%" height={300}>
-                                <BarChart data={details.monthlyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                                    <XAxis dataKey="month" stroke="rgba(255,255,255,0.5)" tickLine={false} axisLine={false} />
-                                    <YAxis hide stroke="rgba(255,255,255,0.5)" tickLine={false} axisLine={false} />
-                                    <Tooltip
-                                        cursor={{ fill: 'rgba(255,255,255,0.05)' }}
-                                        contentStyle={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px' }}
-                                        formatter={(value: number) => value.toFixed(2)}
-                                    />
-                                    <Legend />
-                                    <Bar dataKey="income" name="Income" fill="#4ade80" radius={[4, 4, 0, 0]} />
-                                    <Bar dataKey="expense" name="Expense" fill="#f87171" radius={[4, 4, 0, 0]} />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        ) : (
-                            <div className="dashboard__empty">No transaction history yet</div>
-                        )}
-                    </Card>
-
-                    <Card className="dashboard__chart-card">
-                        <h3 className="dashboard__chart-title">Expenses by Category</h3>
-                        {details.expensesByCategory.length > 0 ? (
-                            <div className="dashboard__pie-container">
-                                <ResponsiveContainer width="100%" height={300}>
-                                    <PieChart>
-                                        <Pie
-                                            data={details.expensesByCategory}
-                                            cx="50%"
-                                            cy="50%"
-                                            innerRadius={60}
-                                            outerRadius={90}
-                                            paddingAngle={5}
-                                            dataKey="value"
-                                        >
-                                            {details.expensesByCategory.map((_, index) => (
-                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                            ))}
-                                        </Pie>
-                                        <Tooltip content={<CustomTooltip />} />
-                                        <Legend verticalAlign="bottom" wrapperStyle={{ paddingTop: '20px' }} />
-                                    </PieChart>
-                                </ResponsiveContainer>
-                            </div>
-                        ) : (
-                            <div className="dashboard__empty">No expenses categorized yet</div>
                         )}
                     </Card>
                 </div>

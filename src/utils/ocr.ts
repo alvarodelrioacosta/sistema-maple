@@ -1,13 +1,6 @@
-import type { ItemInsert, ItemDB, TradeabilityType, PotentialTier, TransactionInsert } from '../types';
-import { autoCategorize } from './categorization';
+import type { ItemInsert, ItemDB, TradeabilityType, PotentialTier } from '../types';
 
 export interface OcrResult extends Partial<ItemInsert> {
-    success: boolean;
-    error?: string;
-}
-
-export interface BankOcrResult {
-    transactions: Partial<TransactionInsert>[];
     success: boolean;
     error?: string;
 }
@@ -224,91 +217,4 @@ export const ocrUtil = {
         return { ...updates, success: true };
     },
 
-    /**
-     * Procesa texto de una captura de pantalla bancaria para extraer transacciones
-     */
-    processBankScreenshot(text: string): BankOcrResult {
-        const lines = text.split('\n').map(l => l.trim()).filter(l => l !== '');
-        const transactions: Partial<TransactionInsert>[] = [];
-
-        // Nuevo regex para capturar el monto completo con sus separadores de miles y decimales
-        const amountRegex = /-\s?\$?\s?(\d+([.,]\d+)*)/;
-        const timeRegex = /\d{1,2}:\d{2}/;
-        const usedIndices = new Set<number>();
-
-        // Primero identificamos todos los montos negativos y sus posiciones originales
-        const amountsFound: { index: number, amount: number }[] = [];
-        for (let i = 0; i < lines.length; i++) {
-            if (lines[i].includes('-')) {
-                const match = lines[i].match(amountRegex);
-                if (match) {
-                    const cleanAmount = match[1].replace(/\./g, '').replace(',', '.');
-                    const val = parseFloat(cleanAmount);
-                    if (!isNaN(val) && val > 0) {
-                        amountsFound.push({ index: i, amount: val });
-                        usedIndices.add(i); // El monto en sí ya está usado
-                    }
-                }
-            }
-        }
-
-        const labelsToSkip = [
-            'pago', 'transferencia enviada', 'transferencia recibida', 'extracción', 'extraccion',
-            'efectivo', 'disponible', 'movimientos', 'saldo', 'hoy', 'ayer', 'pedido de', 'productos',
-            'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
-        ];
-
-        for (const amt of amountsFound) {
-            let description = '';
-
-            // Prioridad 1: Buscar en el entorno cercano (-1 a +1) líneas que parezcan comercios
-            const primaryCandidates = [amt.index - 1, amt.index + 1, amt.index - 2, amt.index + 2];
-
-            for (const idx of primaryCandidates) {
-                if (idx >= 0 && idx < lines.length && !usedIndices.has(idx)) {
-                    const cand = lines[idx].replace(timeRegex, '').trim();
-                    const lowerCand = cand.toLowerCase();
-
-                    // Si la línea es sustanciosa y no es un label genérico
-                    if (cand.length > 2 && !labelsToSkip.some(l => lowerCand === l || (lowerCand.includes(l) && cand.length < 15))) {
-                        description = cand;
-                        usedIndices.add(idx); // Marcar como usada para que no se repita
-                        break;
-                    }
-                }
-            }
-
-            // Prioridad 2: Si no se encontró nada limpio, tomar el primer vecino disponible que no sea un label genérico corto
-            if (!description) {
-                for (const idx of primaryCandidates) {
-                    if (idx >= 0 && idx < lines.length && !usedIndices.has(idx)) {
-                        const cand = lines[idx].trim();
-                        if (cand.length > 2) {
-                            description = cand;
-                            usedIndices.add(idx);
-                            break;
-                        }
-                    }
-                }
-            }
-
-            const { category, subcategory } = autoCategorize('expense', description || 'Gasto Escaneado');
-
-            transactions.push({
-                type: 'expense',
-                amount: amt.amount,
-                currency: 'Pesos Arg',
-                description: description || 'Gasto Escaneado',
-                category,
-                subcategory,
-                is_paid: true
-            });
-        }
-
-        return {
-            transactions,
-            success: transactions.length > 0,
-            error: transactions.length === 0 ? 'No se detectaron gastos en la imagen.' : undefined
-        };
-    }
 };

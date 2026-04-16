@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Button, Select, CustomSelect, Input, Modal } from '../../components/UI'; // Added Modal
-import { clientsService, itemsService, cubeSessionsService, charactersService, itemsDBService, accountsService, resourcesService, exchangeRatesService } from '../../services';
+import { clientsService, itemsService, cubeSessionsService, charactersService, itemsDBService, accountsService, resourcesService, appSettingsService } from '../../services';
 import type { Client, Item, ItemDB, Character, Account, PotentialTier, TradeabilityType, ItemInsert } from '../../types'; // Added types
 import { CURRENCIES } from '../../constants/currencies'; // Added CURRENCIES
 import { createWorker } from 'tesseract.js';
@@ -86,18 +86,17 @@ export const NewSession: React.FC = () => {
     useEffect(() => {
         const loadInitial = async () => {
             try {
-                const [clientsData, itemsData, dbData, accountsData, charsData, metaData, ratesData, activeItemIds] = await Promise.all([
+                const [clientsData, itemsData, dbData, accountsData, charsData, metaData, mesoUsdRate, activeItemIds] = await Promise.all([
                     clientsService.getAll(),
-                    itemsService.getAll(), // Get ALL items to filter later
+                    itemsService.getAll(),
                     itemsDBService.getAll(),
                     accountsService.getAll(),
                     charactersService.getAll(),
-                    resourcesService.getResourceMetadata(), // Fetch metadata
-                    exchangeRatesService.getAll(), // Fetch exchange rates
-                    cubeSessionsService.getItemIdsInActiveSessions() // Get items in active sessions
+                    resourcesService.getResourceMetadata(),
+                    appSettingsService.getMesoUsdRate(),
+                    cubeSessionsService.getItemIdsInActiveSessions()
                 ]);
                 setClients(clientsData);
-                // Split items, excluding those in active sessions OR already delivered
                 const availableItems = itemsData.filter(i => !activeItemIds.includes(i.id) && !i.delivered);
                 setStockItems(availableItems.filter(i => i.status === 'in_stock'));
                 setServiceItems(availableItems.filter(i => i.status === 'Service'));
@@ -105,18 +104,8 @@ export const NewSession: React.FC = () => {
                 setItemDBs(dbData);
                 setAccounts(accountsData);
                 setCharacters(charsData);
-                setResourceMetadata(metaData); // Set metadata
-
-                // Find default Meso Rate (Mesos (b) -> USD)
-                const defaultRate = ratesData.find(r => r.base_currency === 'Mesos (b)' && r.target_currency === 'USD');
-                if (defaultRate) {
-                    setMesoRate(defaultRate.rate);
-                } else {
-                    // Fallback or inverse?
-                    // If rate meant USD -> Mesos? Usually rate is scalar.
-                    // Let's assume 0 if not found, or user can edit.
-                    setMesoRate(0);
-                }
+                setResourceMetadata(metaData);
+                setMesoRate(mesoUsdRate);
 
             } catch (err) {
                 console.error("Error loading initial data", err);

@@ -28,9 +28,9 @@ export const accountsReceivableService = {
         // Apply auto-categorization if not provided
         if (!ar.category || !ar.subcategory) {
             const { category, subcategory } = autoCategorize(
-                'income', // AR is always income or potential income
+                'income',
                 ar.description || '',
-                { isAR: true, isInterest: ar.description?.toLowerCase().includes('interés') || ar.description?.toLowerCase().includes('interest') }
+                { isAR: true }
             );
             ar.category = ar.category || category;
             ar.subcategory = ar.subcategory || subcategory;

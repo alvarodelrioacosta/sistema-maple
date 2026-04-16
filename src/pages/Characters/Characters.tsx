@@ -11,6 +11,11 @@ import type { Column } from '../../components/UI/Table';
 import '../Accounts/Accounts.css';
 import './Characters.css';
 
+const WORLD_COLORS: Record<string, string> = {
+    'Reboot': '#a78bfa', 'Reboot 2': '#c084fc', 'Heroic': '#fbbf24',
+    'Scania': '#60a5fa', 'Bera': '#4ade80'
+};
+
 const JOB_OPTIONS: { value: JobType; label: string; color: string }[] = [
     { value: 'Warrior', label: 'Warrior', color: '#ff4d4f' }, // Red
     { value: 'Bowman', label: 'Bowman', color: '#4ade80' },   // Green
@@ -32,12 +37,15 @@ export const Characters: React.FC = () => {
         class: '',
         job: null,
         main: null,
-        account_id: ''
+        account_id: '',
+        nexon_name: null
     });
 
     const [activeFilter, setActiveFilter] = useState<JobType | null>(null);
     const [showMainsOnly, setShowMainsOnly] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [syncingId, setSyncingId] = useState<string | null>(null);
+    const [syncingAll, setSyncingAll] = useState(false);
 
     useEffect(() => {
         loadData();
@@ -76,13 +84,13 @@ export const Characters: React.FC = () => {
                 class: character.class || '',
                 job: character.job || null,
                 main: character.main || null,
-                account_id: character.account_id
+                account_id: character.account_id,
+                nexon_name: character.nexon_name || null
             });
         } else {
             setEditingCharacter(null);
-            // If we're creating another one, keep the previous account selected if any
             const lastAccountId = formData.account_id || accounts[0]?.id || '';
-            setFormData({ name: '', level: 1, class: '', job: null, main: null, account_id: lastAccountId });
+            setFormData({ name: '', level: 1, class: '', job: null, main: null, account_id: lastAccountId, nexon_name: null });
         }
         setModalOpen(true);
     };
@@ -142,11 +150,55 @@ export const Characters: React.FC = () => {
         }
     };
 
+    const handleSync = async (id: string) => {
+        setSyncingId(id);
+        try {
+            const ok = await charactersService.syncFromNexon(id);
+            if (!ok) alert('Character not found in Nexon rankings. Check the nexon_name field.');
+            await loadData();
+        } catch (error) {
+            console.error('Error syncing character:', error);
+            alert('Sync failed. The Nexon API may be unavailable (CORS) — check console.');
+        } finally {
+            setSyncingId(null);
+        }
+    };
+
+    const handleSyncAll = async () => {
+        setSyncingAll(true);
+        try {
+            const { synced, failed } = await charactersService.syncAllFromNexon();
+            alert(`Sync complete: ${synced} updated, ${failed} failed.`);
+            await loadData();
+        } catch (error) {
+            console.error('Error syncing all:', error);
+        } finally {
+            setSyncingAll(false);
+        }
+    };
+
     const columns: Column<CharacterWithAccount>[] = [
-        { key: 'account', header: 'Account N°', render: (c) => c.account?.number !== undefined ? `N° ${c.account.number}` : '-' },
-        { key: 'account_email', header: 'Email', render: (c) => c.account?.email || '-' },
+        { key: 'account', header: 'Acc.', render: (c) => c.account?.number !== undefined ? `N° ${c.account.number}` : '-' },
+        {
+            key: 'avatar',
+            header: '',
+            render: (c) => c.avatar_url ? (
+                <img src={c.avatar_url} alt={c.name} style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
+            ) : (
+                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>?</div>
+            )
+        },
         { key: 'name', header: 'Name' },
-        { key: 'level', header: 'Level' },
+        {
+            key: 'level',
+            header: 'Level',
+            render: (c) => (
+                <div>
+                    <div style={{ fontWeight: 600 }}>{c.level}</div>
+                    {c.rank_position && <div style={{ fontSize: '0.7rem', color: '#fbbf24' }}>#{c.rank_position}</div>}
+                </div>
+            )
+        },
         {
             key: 'job',
             header: 'Job',
@@ -186,6 +238,22 @@ export const Characters: React.FC = () => {
         },
         { key: 'class', header: 'Class', render: (c) => c.class || '-' },
         {
+            key: 'world',
+            header: 'World',
+            render: (c) => c.world ? (
+                <span style={{ color: WORLD_COLORS[c.world] || '#94a3b8', fontSize: '0.8rem', fontWeight: 500 }}>{c.world}</span>
+            ) : <span style={{ color: '#475569' }}>-</span>
+        },
+        {
+            key: 'last_synced',
+            header: 'Synced',
+            render: (c) => c.last_synced_at ? (
+                <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                    {new Date(c.last_synced_at).toLocaleDateString('es-CL', { day: '2-digit', month: 'short' })}
+                </span>
+            ) : <span style={{ color: '#475569', fontSize: '0.75rem' }}>Never</span>
+        },
+        {
             key: 'main',
             header: 'Type',
             render: (c) => {
@@ -211,6 +279,14 @@ export const Characters: React.FC = () => {
             render: (c) => (
                 <div className="table-actions">
                     <Button size="sm" variant="ghost" onClick={() => handleOpenModal(c)}>Edit</Button>
+                    <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => handleSync(c.id)}
+                        disabled={syncingId === c.id}
+                    >
+                        {syncingId === c.id ? '...' : 'Sync'}
+                    </Button>
                 </div>
             )
         }
@@ -255,7 +331,12 @@ export const Characters: React.FC = () => {
                 title="Characters"
                 subtitle="Manage your game characters"
                 actions={
-                    <Button onClick={() => handleOpenModal()}>+ New Character</Button>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                        <Button variant="secondary" onClick={handleSyncAll} disabled={syncingAll}>
+                            {syncingAll ? 'Syncing...' : 'Sync All'}
+                        </Button>
+                        <Button onClick={() => handleOpenModal()}>+ New Character</Button>
+                    </div>
                 }
 
             />
@@ -326,6 +407,12 @@ export const Characters: React.FC = () => {
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                             required
+                        />
+                        <Input
+                            label="Nexon Name"
+                            value={formData.nexon_name || ''}
+                            onChange={(e) => setFormData({ ...formData, nexon_name: e.target.value || null })}
+                            placeholder="Exact in-game name for Nexon API sync"
                         />
                         <Input
                             label="Level"

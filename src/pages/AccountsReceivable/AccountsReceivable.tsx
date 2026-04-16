@@ -1,17 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Header } from '../../components/Layout';
 import { Button, Table, Card, Select } from '../../components/UI';
-import { PaymentModal } from '../Finance/PaymentModal'; // Using existing Modal
+import { PaymentModal } from './PaymentModal';
 import { NewARModal } from './NewARModal';
 import { EditARModal } from './EditARModal';
 import { accountsReceivableService, itemsService } from '../../services';
 import type { AccountReceivable } from '../../types';
 import type { Column } from '../../components/UI/Table';
-import '../Finance/Finance.css'; // Use Finance CSS for consistency? Or create AccountsReceivable.css
 
 const formatCurrency = (value: number): string => {
     return `$${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value)}`;
 };
+
+const formatMesos = (value: number): string => {
+    return `${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value)}B`;
+};
+
+interface ClientDebtSummary {
+    clientId: string;
+    clientName: string;
+    pendingUSD: number;
+    pendingMesos: number;
+    recordCount: number;
+}
 
 export const AccountsReceivable: React.FC = () => {
     const [arList, setArList] = useState<AccountReceivable[]>([]);
@@ -51,11 +62,34 @@ export const AccountsReceivable: React.FC = () => {
 
     const filteredList = arList.filter(ar => {
         const balance = ar.amount - (ar.paid || 0);
-        // Use a small epsilon for float comparison
         return activeTab === 'active'
             ? balance > 0.01
             : balance <= 0.01;
     });
+
+    const clientDebtSummary = useMemo<ClientDebtSummary[]>(() => {
+        const map = new Map<string, ClientDebtSummary>();
+
+        for (const ar of arList) {
+            const balance = ar.amount - (ar.paid || 0);
+            if (balance <= 0.01) continue;
+
+            const clientId = ar.client_id || 'unknown';
+            const clientName = ar.client?.name || 'Unknown';
+            const isMesos = ar.currency === 'Mesos (b)' || ar.currency === 'mesos' || ar.currency === 'Mesos';
+
+            if (!map.has(clientId)) {
+                map.set(clientId, { clientId, clientName, pendingUSD: 0, pendingMesos: 0, recordCount: 0 });
+            }
+
+            const entry = map.get(clientId)!;
+            if (isMesos) entry.pendingMesos += balance;
+            else entry.pendingUSD += balance;
+            entry.recordCount += 1;
+        }
+
+        return [...map.values()].sort((a, b) => b.pendingUSD - a.pendingUSD || b.pendingMesos - a.pendingMesos);
+    }, [arList]);
 
     const handleDeliveryChange = async (ar: AccountReceivable, value: string) => {
         const isDelivered = value === 'delivered';
@@ -236,6 +270,48 @@ export const AccountsReceivable: React.FC = () => {
                 title="Accounts Receivable"
                 subtitle="Track pending payments from credit sales"
             />
+
+            {/* Client Debt Summary */}
+            {clientDebtSummary.length > 0 && (
+                <div style={{ padding: '0 2rem 1.5rem' }}>
+                    <h3 style={{ fontSize: '0.8rem', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.75rem' }}>
+                        Outstanding by Client
+                    </h3>
+                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                        {clientDebtSummary.map(s => (
+                            <div key={s.clientId} style={{
+                                background: 'rgba(255,255,255,0.04)',
+                                border: '1px solid rgba(255,255,255,0.08)',
+                                borderRadius: '10px',
+                                padding: '14px 18px',
+                                minWidth: '180px',
+                                flex: '1 1 180px',
+                                maxWidth: '260px'
+                            }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                                    <span style={{ fontWeight: 700, fontSize: '0.95rem', color: '#f1f5f9' }}>{s.clientName}</span>
+                                    <span style={{
+                                        fontSize: '0.7rem', fontWeight: 600, padding: '2px 6px',
+                                        borderRadius: '20px', background: 'rgba(239,68,68,0.15)', color: '#f87171'
+                                    }}>
+                                        {s.recordCount} pending
+                                    </span>
+                                </div>
+                                {s.pendingUSD > 0 && (
+                                    <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#4ade80' }}>
+                                        {formatCurrency(s.pendingUSD)}
+                                    </div>
+                                )}
+                                {s.pendingMesos > 0 && (
+                                    <div style={{ fontSize: '1.0rem', fontWeight: 700, color: '#fbbf24' }}>
+                                        {formatMesos(s.pendingMesos)}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             <div style={{ display: 'flex', gap: '1rem', padding: '0 2rem', borderBottom: '1px solid #374151', marginBottom: '1rem', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', gap: '1rem' }}>

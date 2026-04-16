@@ -3,16 +3,6 @@
 // Mapean las tablas de Supabase
 // =============================================
 
-// ===== FINANCIAL ACCOUNTS =====
-export interface FinancialAccount {
-    id: string;
-    name: string;
-    currency: string;
-    type: 'Bank' | 'Wallet' | 'Cash' | 'Game';
-    balance?: number;
-    created_at: string;
-}
-
 // ===== ACCOUNTS =====
 export interface Account {
     id: string;
@@ -52,9 +42,22 @@ export interface Character {
     job: JobType | null;
     main: 'Main' | 'Mule' | null;
     created_at: string;
+    nexon_name: string | null;
+    exp: number | null;
+    avatar_url: string | null;
+    world: string | null;
+    rank_position: number | null;
+    last_synced_at: string | null;
 }
 
-export type CharacterInsert = Omit<Character, 'id' | 'created_at'>;
+export type CharacterInsert = Omit<Character, 'id' | 'created_at' | 'nexon_name' | 'exp' | 'avatar_url' | 'world' | 'rank_position' | 'last_synced_at'> & {
+    nexon_name?: string | null;
+    exp?: number | null;
+    avatar_url?: string | null;
+    world?: string | null;
+    rank_position?: number | null;
+    last_synced_at?: string | null;
+};
 export type CharacterUpdate = Partial<CharacterInsert>;
 
 // ===== ITEMS DB (Catálogo de ítems) =====
@@ -147,42 +150,7 @@ export type ClientInsert = Omit<Client, 'id' | 'created_at' | 'next_payment_date
 };
 export type ClientUpdate = Partial<ClientInsert>;
 
-// ===== EXCHANGE RATES =====
-export interface ExchangeRate {
-    id: string;
-    base_currency: string;
-    target_currency: string;
-    rate: number;
-    last_update: string;
-}
-
-export type ExchangeRateInsert = Omit<ExchangeRate, 'id' | 'last_update'>;
-export type ExchangeRateUpdate = Partial<ExchangeRateInsert>;
-
 // ===== TRANSACTIONS =====
-export type TransactionType = 'income' | 'expense' | 'transfer';
-
-export interface Transaction {
-    id: string;
-    type: TransactionType;
-    amount: number;
-    currency: string;
-    description: string | null;
-    item_id: string | null;
-    client_id: string | null;
-    session_id?: string | null; // Added linkage
-    is_credit_sale: boolean;
-    is_paid: boolean; // Computed or status flag
-    created_at: string;
-    financial_account_id?: string | null;
-    account_receivable_id?: string | null; // Link to AR
-    category?: string | null;
-    subcategory?: string | null;
-    transfer_id?: string | null; // Corregido el vínculo de transferencias
-    financial_account?: FinancialAccount; // Joined
-    client?: Client; // Joined
-}
-
 export interface TransactionMeso {
     id: string;
     account_id: string | null;
@@ -214,25 +182,6 @@ export interface TransactionMesoInsert {
     subcategory?: string | null;
     transfer_id?: string | null;
 }
-
-export interface TransactionInsert {
-    type: TransactionType;
-    amount: number;
-    currency: string;
-    description: string;
-    item_id?: string | null;
-    client_id?: string | null;
-    is_credit_sale?: boolean;
-    is_paid?: boolean;
-    session_id?: string | null;
-    financial_account_id?: string | null;
-    account_receivable_id?: string | null;
-    category?: string | null;
-    subcategory?: string | null;
-    transfer_id?: string | null;
-}
-
-export type TransactionUpdate = Partial<TransactionInsert>;
 
 // ===== CUBE SESSIONS =====
 export type CubingSessionStatus = 'Ongoing' | 'Finished';
@@ -280,20 +229,11 @@ export interface ItemWithCharacter extends Item {
     character?: Character;
 }
 
-export interface TransactionWithRelations extends Transaction {
-    item?: Item;
-    client?: Client;
-    session?: CubeSession;
-}
-
 // ===== KPI TYPES =====
 export interface DashboardKPIs {
     totalStockValue: number;
-    totalIncome: number;
-    totalExpenses: number;
     accountsReceivable: number;
     totalResourceValue: number;
-    totalFinancialBalance: number;
     totalMesos: number;
     netBalance: number;
     itemsByStatus: {
