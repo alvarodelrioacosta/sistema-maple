@@ -4,7 +4,7 @@ interface NexonRankEntry {
     exp: number;
     jobName: string;
     worldID: number;
-    ranking: number;
+    rank: number;
     characterImgURL: string;
 }
 
@@ -40,7 +40,7 @@ export const nexonApi = {
         }
 
         const data = await response.json();
-        const top: NexonRankEntry[] = data?.rankingtop || [];
+        const top: NexonRankEntry[] = data?.ranks || data?.rankingtop || [];
         if (top.length === 0) return null;
 
         const entry = top.find(e => e.characterName.toLowerCase() === characterName.toLowerCase()) || top[0];
@@ -50,7 +50,7 @@ export const nexonApi = {
             exp: entry.exp,
             jobName: entry.jobName,
             world: WORLD_NAMES[entry.worldID] ?? `World ${entry.worldID}`,
-            rankPosition: entry.ranking,
+            rankPosition: entry.rank,
             avatarUrl: entry.characterImgURL
         };
     }

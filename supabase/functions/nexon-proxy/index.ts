@@ -21,25 +21,34 @@ Deno.serve(async (req: Request) => {
     });
   }
 
-  const nexonUrl = `https://www.nexon.com/api/maplestory/no-auth/ranking/v2/na?type=overall&id=weekly&reboot_index=0&page_index=1&character_name=${encodeURIComponent(characterName)}`;
+  const encoded = encodeURIComponent(characterName);
+  const BASE = 'https://www.nexon.com/api/maplestory/no-auth/ranking/v2/na';
+  const fetchHeaders = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+    'Accept': 'application/json',
+    'Referer': 'https://www.nexon.com/microsite/maplestory/rank'
+  };
+
+  const urls = [
+    `${BASE}?type=overall&id=weekly&reboot_index=0&page_index=1&character_name=${encoded}`,
+    `${BASE}?type=overall&id=overall&reboot_index=0&page_index=1&character_name=${encoded}`,
+  ];
 
   try {
-    const response = await fetch(nexonUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Referer': 'https://www.nexon.com/'
+    for (const nexonUrl of urls) {
+      const response = await fetch(nexonUrl, { headers: fetchHeaders });
+      if (!response.ok) continue;
+      const data = await response.json();
+      // API returns either "ranks" or "rankingtop" depending on version
+      const entries = data?.ranks || data?.rankingtop || [];
+      if (entries.length > 0) {
+        return new Response(JSON.stringify(data), {
+          headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+        });
       }
-    });
-
-    if (!response.ok) {
-      return new Response(JSON.stringify({ error: `Nexon API returned ${response.status}` }), {
-        status: response.status,
-        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
-      });
     }
 
-    const data = await response.json();
-    return new Response(JSON.stringify(data), {
+    return new Response(JSON.stringify({ ranks: [] }), {
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
     });
   } catch (err) {
