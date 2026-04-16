@@ -26,28 +26,32 @@ const WORLD_NAMES: Record<number, string> = {
 
 export const nexonApi = {
     async fetchCharacter(characterName: string): Promise<NexonCharacterData | null> {
-        try {
-            const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-            const url = `${supabaseUrl}/functions/v1/nexon-proxy?character_name=${encodeURIComponent(characterName)}`;
-            const response = await fetch(url);
-            if (!response.ok) return null;
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+        const url = `${supabaseUrl}/functions/v1/nexon-proxy?character_name=${encodeURIComponent(characterName)}`;
 
-            const data = await response.json();
-            const top: NexonRankEntry[] = data?.rankingtop || [];
-            if (top.length === 0) return null;
+        const response = await fetch(url, {
+            headers: { 'Authorization': `Bearer ${anonKey}` }
+        });
 
-            const entry = top.find(e => e.characterName.toLowerCase() === characterName.toLowerCase()) || top[0];
-
-            return {
-                level: entry.level,
-                exp: entry.exp,
-                jobName: entry.jobName,
-                world: WORLD_NAMES[entry.worldID] ?? `World ${entry.worldID}`,
-                rankPosition: entry.ranking,
-                avatarUrl: entry.characterImgURL
-            };
-        } catch {
-            return null;
+        if (!response.ok) {
+            const text = await response.text().catch(() => response.status.toString());
+            throw new Error(`Edge Function error ${response.status}: ${text}`);
         }
+
+        const data = await response.json();
+        const top: NexonRankEntry[] = data?.rankingtop || [];
+        if (top.length === 0) return null;
+
+        const entry = top.find(e => e.characterName.toLowerCase() === characterName.toLowerCase()) || top[0];
+
+        return {
+            level: entry.level,
+            exp: entry.exp,
+            jobName: entry.jobName,
+            world: WORLD_NAMES[entry.worldID] ?? `World ${entry.worldID}`,
+            rankPosition: entry.ranking,
+            avatarUrl: entry.characterImgURL
+        };
     }
 };

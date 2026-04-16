@@ -154,11 +154,11 @@ export const Characters: React.FC = () => {
         setSyncingId(id);
         try {
             const ok = await charactersService.syncFromNexon(id);
-            if (!ok) alert('Character not found in Nexon rankings. Check the nexon_name field.');
-            await loadData();
-        } catch (error) {
+            if (!ok) alert('Character not found in Nexon rankings. Make sure the name is spelled exactly as in-game (case-sensitive).');
+            else await loadData();
+        } catch (error: any) {
             console.error('Error syncing character:', error);
-            alert('Sync failed. The Nexon API may be unavailable (CORS) — check console.');
+            alert(`Sync failed: ${error?.message || error}`);
         } finally {
             setSyncingId(null);
         }
