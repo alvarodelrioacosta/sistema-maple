@@ -409,17 +409,32 @@ const DailyCheckUp: React.FC = () => {
     };
 
     const handleToggleShowInDaily = async (unlockId: string, show: boolean) => {
+        // Guardar estados originales para revertir en caso de error
+        const originalAllUnlocks = [...allUnlocks];
+        const originalDailyUnlocks = [...dailyUnlocks];
+
+        // Actualización Optimista de estados locales
+        setAllUnlocks(prev => prev.map(u => u.id === unlockId ? { ...u, show_in_daily: show } : u));
+        
+        if (show) {
+            setDailyUnlocks(prev => {
+                const exists = prev.some(u => u.id === unlockId);
+                if (exists) return prev;
+                const item = allUnlocks.find(u => u.id === unlockId);
+                return item ? [...prev, { ...item, show_in_daily: true }] : prev;
+            });
+        } else {
+            setDailyUnlocks(prev => prev.filter(u => u.id !== unlockId));
+        }
+
         try {
+            // Sincronizar con DB
             await contentUnlocksService.setShowInDaily(unlockId, show);
-            setAllUnlocks(prev => prev.map(u => u.id === unlockId ? { ...u, show_in_daily: show } : u));
-            if (show) {
-                const updated = allUnlocks.find(u => u.id === unlockId);
-                if (updated) setDailyUnlocks(prev => [...prev, { ...updated, show_in_daily: true }]);
-            } else {
-                setDailyUnlocks(prev => prev.filter(u => u.id !== unlockId));
-            }
         } catch (error) {
             console.error('Error toggling show_in_daily:', error);
+            // Revertir a estados originales si falla la DB
+            setAllUnlocks(originalAllUnlocks);
+            setDailyUnlocks(originalDailyUnlocks);
         }
     };
 

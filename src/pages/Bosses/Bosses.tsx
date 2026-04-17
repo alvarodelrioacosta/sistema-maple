@@ -7,6 +7,12 @@ import './Bosses.css';
 const formatMesos = (value: number) =>
     new Intl.NumberFormat('en-US').format(value);
 
+const BOSS_ORDER = [
+    'Zakum', 'Hilla', 'Papulatus', 'Cygnus', 'Pink Bean', 'Magnus',
+    'Crimson Queen', 'Pierre', 'Von Bon', 'Vellum', 'Princess No', 'Akechi Mitsuhide',
+    'Lotus', 'Damien', 'Guardian Angel Slime', 'Lucid'
+];
+
 const BossCard: React.FC<{ boss: Boss; onSaveMesos: (id: string, value: number | null) => void }> = ({ boss, onSaveMesos }) => {
     const [editing, setEditing] = useState(false);
     const [inputValue, setInputValue] = useState(boss.crystal_mesos?.toString() ?? '');
@@ -62,7 +68,7 @@ const BossCard: React.FC<{ boss: Boss; onSaveMesos: (id: string, value: number |
                             onClick={() => setEditing(true)}
                             title="Click to edit"
                         >
-                            {boss.crystal_mesos != null ? `${formatMesos(boss.crystal_mesos)} M` : '—'}
+                            {boss.crystal_mesos != null ? `${formatMesos(boss.crystal_mesos)}` : '—'}
                         </span>
                     )}
                 </div>
@@ -76,7 +82,18 @@ const Bosses: React.FC = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        bossesService.getAll().then(setBosses).finally(() => setLoading(false));
+        bossesService.getAll().then(data => {
+            // Sort bosses according to the requested order
+            const sorted = [...data].sort((a, b) => {
+                const indexA = BOSS_ORDER.indexOf(a.name);
+                const indexB = BOSS_ORDER.indexOf(b.name);
+                if (indexA === -1 && indexB === -1) return 0;
+                if (indexA === -1) return 1;
+                if (indexB === -1) return -1;
+                return indexA - indexB;
+            });
+            setBosses(sorted);
+        }).finally(() => setLoading(false));
     }, []);
 
     const handleSaveMesos = async (id: string, value: number | null) => {
