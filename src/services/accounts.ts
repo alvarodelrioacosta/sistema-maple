@@ -68,19 +68,6 @@ export const accountsService = {
         return data?.reduce((sum, acc) => sum + (acc.mesos_b || 0), 0) || 0;
     },
 
-    async getTotalCubes(): Promise<{ bright: number, bonus: number, solid: number }> {
-        const { data, error } = await supabase
-            .from('accounts')
-            .select('bright_cubes, bonus_bright_cubes, solid_cubes');
-
-        if (error) throw error;
-
-        return data?.reduce((acc, curr) => ({
-            bright: acc.bright + (curr.bright_cubes || 0),
-            bonus: acc.bonus + (curr.bonus_bright_cubes || 0),
-            solid: acc.solid + (curr.solid_cubes || 0)
-        }), { bright: 0, bonus: 0, solid: 0 }) || { bright: 0, bonus: 0, solid: 0 };
-    }
 };
 
 export default accountsService;

@@ -9,12 +9,6 @@ export interface Account {
     number: number;
     email: string | null;
     tag: string | null;
-    bright_cubes: number;
-    bonus_bright_cubes: number;
-    reward_points: number;
-    psok: number;
-    guardian_scroll: number;
-    solid_cubes: number;
     mesos_b: number; // Billions of mesos usually, or just raw? User said "mesos_b". implied billion? Or just a key.
     // Assuming big integer mapping to number (might need care with JS Number safety > 2^53, but mesos usually < 9 quadrillion?)
     // Maplestory mesos cap is ~100b or 1000b? JS safe integer is 9 quadrillion.

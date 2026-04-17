@@ -44,6 +44,7 @@ export const Resources: React.FC = () => {
     const [resourceImages, setResourceImages] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(true);
     const [sharedChest, setSharedChest] = useState<SharedInventory | null>(null);
+    const [accountBalances, setAccountBalances] = useState<Record<string, Record<string, number>>>({});
 
     // Batch modal state
     const [modalOpen, setModalOpen] = useState(false);
@@ -81,6 +82,13 @@ export const Resources: React.FC = () => {
             const imagesMap: Record<string, string> = {};
             Object.keys(imagesData).forEach(key => { imagesMap[key] = imagesData[key].image; });
             setResourceImages(imagesMap);
+
+            const balancesArr = await Promise.all(accountsData.map(acc => resourcesService.getAllBalances(acc.id)));
+            const newBalances: Record<string, Record<string, number>> = {};
+            accountsData.forEach((acc, i) => {
+                newBalances[acc.id] = balancesArr[i];
+            });
+            setAccountBalances(newBalances);
         } catch (error) {
             console.error('Error loading data:', error);
         } finally {
@@ -93,9 +101,9 @@ export const Resources: React.FC = () => {
         setBatches(updated);
     };
 
-    const totalBrightCubes = accounts.reduce((sum, a) => sum + (a.bright_cubes || 0), 0);
-    const totalBonusCubes = accounts.reduce((sum, a) => sum + (a.bonus_bright_cubes || 0), 0);
-    const totalSolidCubes = accounts.reduce((sum, a) => sum + (a.solid_cubes || 0), 0);
+    const totalBrightCubes = accounts.reduce((sum, a) => sum + ((accountBalances[a.id]?.bright_cubes) || 0), 0);
+    const totalBonusCubes = accounts.reduce((sum, a) => sum + ((accountBalances[a.id]?.bonus_bright_cubes) || 0), 0);
+    const totalSolidCubes = accounts.reduce((sum, a) => sum + ((accountBalances[a.id]?.solid_cubes) || 0), 0);
 
     const brightCubeUrl = resourceImages['bright_cubes'] || '';
     const bonusCubeUrl = resourceImages['bonus_bright_cubes'] || '';
@@ -110,12 +118,12 @@ export const Resources: React.FC = () => {
         accountNumber: account.number,
         accountEmail: account.email,
         tag: account.tag,
-        brightCubes: account.bright_cubes || 0,
-        bonusCubes: account.bonus_bright_cubes || 0,
-        solid_cubes: account.solid_cubes || 0,
-        rewardPoints: account.reward_points || 0,
-        psok: account.psok || 0,
-        guardianScroll: account.guardian_scroll || 0,
+        brightCubes: accountBalances[account.id]?.bright_cubes || 0,
+        bonusCubes: accountBalances[account.id]?.bonus_bright_cubes || 0,
+        solid_cubes: accountBalances[account.id]?.solid_cubes || 0,
+        rewardPoints: accountBalances[account.id]?.reward_points || 0,
+        psok: accountBalances[account.id]?.psok || 0,
+        guardianScroll: accountBalances[account.id]?.guardian_scroll || 0,
         mesosB: account.mesos_b || 0
     })).sort((a, b) => a.accountNumber - b.accountNumber);
 

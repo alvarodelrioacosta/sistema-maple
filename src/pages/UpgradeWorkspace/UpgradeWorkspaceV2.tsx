@@ -97,6 +97,9 @@ export const UpgradeWorkspaceV2: React.FC = () => {
     // History Panel State
     const [historyPanelOpen, setHistoryPanelOpen] = useState(false);
 
+    // Track real balances for each account from resource batches
+    const [accountBalances, setAccountBalances] = useState<Record<string, Record<string, number>>>({});
+
     // Exchange Rate State (USD to Mesos rate)
     const [usdToMesosRate, setUsdToMesosRate] = useState<number>(0);
 
@@ -140,6 +143,14 @@ export const UpgradeWorkspaceV2: React.FC = () => {
             } else {
                 console.warn('Shared Chest data is null');
             }
+
+            // Fetch balances for all accounts via Promises
+            const balancesArr = await Promise.all(accountsData.map(acc => resourcesService.getAllBalances(acc.id)));
+            const newBalances: Record<string, Record<string, number>> = {};
+            accountsData.forEach((acc, i) => {
+                newBalances[acc.id] = balancesArr[i];
+            });
+            setAccountBalances(newBalances);
 
             if (exchangeRatesData) {
                 setUsdToMesosRate(exchangeRatesData);
@@ -218,8 +229,9 @@ export const UpgradeWorkspaceV2: React.FC = () => {
                 }
             } else if (method === 'RP') {
                 if (rpPrice > 0) {
-                    if (account.reward_points < rpPrice) {
-                        throw new Error(`Insufficient Reward Points. Cost: ${rpPrice}, Available: ${account.reward_points}`);
+                    const balRP = accountBalances[selectedAccountId]?.reward_points || 0;
+                    if (balRP < rpPrice) {
+                        throw new Error(`Insufficient Reward Points. Cost: ${rpPrice}, Available: ${balRP}`);
                     }
                     await resourcesService.deductCubes(selectedAccountId, 'reward_points', rpPrice);
                 }
@@ -735,9 +747,10 @@ export const UpgradeWorkspaceV2: React.FC = () => {
         Object.entries(fastCubingSelection).forEach(([accId, selection]) => {
             const acc = accounts.find(a => a.id === accId);
             if (!acc) return;
-            if (selection.bright_cubes) bc += (acc.bright_cubes || 0);
-            if (selection.bonus_bright_cubes) bbc += (acc.bonus_bright_cubes || 0);
-            if (selection.solid_cubes) sc += (acc.solid_cubes || 0);
+            const bal = accountBalances[accId] || {};
+            if (selection.bright_cubes) bc += (bal.bright_cubes || 0);
+            if (selection.bonus_bright_cubes) bbc += (bal.bonus_bright_cubes || 0);
+            if (selection.solid_cubes) sc += (bal.solid_cubes || 0);
         });
 
         return { bc, bbc, sc };
@@ -804,11 +817,10 @@ export const UpgradeWorkspaceV2: React.FC = () => {
                 // --- FAST CUBING LOGIC ---
                 const deductions: { accId: string, type: ResourceType, qty: number }[] = [];
                 Object.entries(fastCubingSelection).forEach(([accId, selection]) => {
-                    const acc = accounts.find(a => a.id === accId);
-                    if (!acc) return;
-                    if (selection.bright_cubes && (acc.bright_cubes || 0) > 0) deductions.push({ accId, type: 'bright_cubes', qty: acc.bright_cubes! });
-                    if (selection.bonus_bright_cubes && (acc.bonus_bright_cubes || 0) > 0) deductions.push({ accId, type: 'bonus_bright_cubes', qty: acc.bonus_bright_cubes! });
-                    if (selection.solid_cubes && (acc.solid_cubes || 0) > 0) deductions.push({ accId, type: 'solid_cubes', qty: acc.solid_cubes! });
+                    const bal = accountBalances[accId] || {};
+                    if (selection.bright_cubes && (bal.bright_cubes || 0) > 0) deductions.push({ accId, type: 'bright_cubes', qty: bal.bright_cubes });
+                    if (selection.bonus_bright_cubes && (bal.bonus_bright_cubes || 0) > 0) deductions.push({ accId, type: 'bonus_bright_cubes', qty: bal.bonus_bright_cubes });
+                    if (selection.solid_cubes && (bal.solid_cubes || 0) > 0) deductions.push({ accId, type: 'solid_cubes', qty: bal.solid_cubes });
                 });
 
                 if (deductions.length > 0) {
@@ -1434,12 +1446,13 @@ export const UpgradeWorkspaceV2: React.FC = () => {
                                     <tbody>
                                         {accounts
                                             .filter(acc => {
-                                                const bc = acc.bright_cubes || 0;
-                                                const bbc = acc.bonus_bright_cubes || 0;
-                                                const sc = acc.solid_cubes || 0;
-                                                const psok = acc.psok || 0;
-                                                const rp = acc.reward_points || 0;
-                                                const gs = acc.guardian_scroll || 0;
+                                                const balances = accountBalances[acc.id] || {};
+                                                const bc = balances.bright_cubes || 0;
+                                                const bbc = balances.bonus_bright_cubes || 0;
+                                                const sc = balances.solid_cubes || 0;
+                                                const psok = balances.psok || 0;
+                                                const rp = balances.reward_points || 0;
+                                                const gs = balances.guardian_scroll || 0;
                                                 const isCurrent = acc.id === selectedAccountId;
 
                                                 // If is the current account, always show
@@ -1466,12 +1479,13 @@ export const UpgradeWorkspaceV2: React.FC = () => {
                                                 return (a.number || 0) - (b.number || 0);
                                             })
                                             .map(acc => {
-                                                const bc = acc.bright_cubes || 0;
-                                                const bbc = acc.bonus_bright_cubes || 0;
-                                                const sc = acc.solid_cubes || 0;
-                                                const psok = acc.psok || 0;
-                                                const rp = acc.reward_points || 0;
-                                                const gs = acc.guardian_scroll || 0;
+                                                const balances = accountBalances[acc.id] || {};
+                                                const bc = balances.bright_cubes || 0;
+                                                const bbc = balances.bonus_bright_cubes || 0;
+                                                const sc = balances.solid_cubes || 0;
+                                                const psok = balances.psok || 0;
+                                                const rp = balances.reward_points || 0;
+                                                const gs = balances.guardian_scroll || 0;
                                                 const mesos = acc.mesos_b || 0;
                                                 const isCurrent = acc.id === selectedAccountId;
 
@@ -1619,11 +1633,11 @@ export const UpgradeWorkspaceV2: React.FC = () => {
                                                 <Button
                                                     variant="secondary"
                                                     onClick={() => handleConfirmResourceUsage('RP')}
-                                                    disabled={account.reward_points < rpCost}
+                                                    disabled={(accountBalances[selectedAccountId]?.reward_points || 0) < rpCost}
                                                     style={{ height: 'auto', padding: '1rem', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-start' }}
                                                 >
                                                     <strong>Reward Points</strong>
-                                                    <span style={{ fontSize: '0.85rem' }}>Available: {account.reward_points.toLocaleString()}</span>
+                                                    <span style={{ fontSize: '0.85rem' }}>Available: {(accountBalances[selectedAccountId]?.reward_points || 0).toLocaleString()}</span>
                                                     <span style={{ fontSize: '0.85rem', color: '#c084fc' }}>Cost: {rpCost.toLocaleString()} RP</span>
                                                 </Button>
                                             )}

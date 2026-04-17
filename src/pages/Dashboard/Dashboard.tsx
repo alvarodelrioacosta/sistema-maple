@@ -92,10 +92,14 @@ export const Dashboard: React.FC = () => {
                     clientsService.getAll()
                 ]);
 
+                const balancesArr = await Promise.all(accounts.map(acc => resourcesService.getAllBalances(acc.id)));
+                const accountBalances: Record<string, Record<string, number>> = {};
+                accounts.forEach((acc, i) => { accountBalances[acc.id] = balancesArr[i]; });
+
                 // Resource Value (Cubes) in USD
-                const brightCount = accounts.reduce((sum, acc) => sum + (acc.bright_cubes || 0), 0);
-                const bonusCount = accounts.reduce((sum, acc) => sum + (acc.bonus_bright_cubes || 0), 0);
-                const solidCount = accounts.reduce((sum, acc) => sum + (acc.solid_cubes || 0), 0);
+                const brightCount = accounts.reduce((sum, acc) => sum + (accountBalances[acc.id]?.bright_cubes || 0), 0);
+                const bonusCount = accounts.reduce((sum, acc) => sum + (accountBalances[acc.id]?.bonus_bright_cubes || 0), 0);
+                const solidCount = accounts.reduce((sum, acc) => sum + (accountBalances[acc.id]?.solid_cubes || 0), 0);
 
                 const brightMesoCost = resourceMetadata['bright_cubes']?.mesoCost || 0;
                 const bonusMesoCost = resourceMetadata['bonus_bright_cubes']?.mesoCost || 0;

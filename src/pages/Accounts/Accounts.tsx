@@ -19,12 +19,6 @@ export const Accounts: React.FC = () => {
         number: 0,
         email: '',
         tag: '',
-        bright_cubes: 0,
-        bonus_bright_cubes: 0,
-        reward_points: 0,
-        psok: 0,
-        guardian_scroll: 0,
-        solid_cubes: 0,
         mesos_b: 0
     });
 
@@ -50,12 +44,6 @@ export const Accounts: React.FC = () => {
                 number: account.number,
                 email: account.email || '',
                 tag: account.tag || '',
-                bright_cubes: account.bright_cubes || 0,
-                bonus_bright_cubes: account.bonus_bright_cubes || 0,
-                reward_points: account.reward_points || 0,
-                psok: account.psok || 0,
-                guardian_scroll: account.guardian_scroll || 0,
-                solid_cubes: account.solid_cubes || 0,
                 mesos_b: account.mesos_b || 0
             });
         } else {
@@ -65,12 +53,6 @@ export const Accounts: React.FC = () => {
                 number: maxNumber + 1,
                 email: '',
                 tag: '',
-                bright_cubes: 0,
-                bonus_bright_cubes: 0,
-                reward_points: 0,
-                psok: 0,
-                guardian_scroll: 0,
-                solid_cubes: 0,
                 mesos_b: 0
             });
         }
@@ -80,7 +62,7 @@ export const Accounts: React.FC = () => {
     const handleCloseModal = () => {
         setModalOpen(false);
         setEditingAccount(null);
-        setFormData({ number: 0, email: '', tag: '', bright_cubes: 0, bonus_bright_cubes: 0, reward_points: 0, psok: 0, guardian_scroll: 0, solid_cubes: 0, mesos_b: 0 });
+        setFormData({ number: 0, email: '', tag: '', mesos_b: 0 });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {

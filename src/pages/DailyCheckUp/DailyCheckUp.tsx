@@ -96,8 +96,12 @@ const DailyCheckUp: React.FC = () => {
     const [allPrequests, setAllPrequests] = useState<{ account_id: string; boss_id: string }[]>([]);
     // bossStates: accountId → bossId → 0=unselected 1=cleared 2=failed
     const [bossStates, setBossStates] = useState<Record<string, Record<string, 0 | 1 | 2>>>({});
+
+    const [accountBalances, setAccountBalances] = useState<Record<string, Record<string, number>>>({});
     const [rpOverrides, setRpOverrides] = useState<Record<string, number | null>>({});
+    const [bossDrops, setBossDrops] = useState<Record<string, { solidCubes?: number, papMark?: number }>>({});
     const [registeringAccounts, setRegisteringAccounts] = useState<Set<string>>(new Set());
+    const [resourceImages, setResourceImages] = useState<Record<string, string>>({});
 
     const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
     const weekStart = useMemo(() => bossingService.getWeekStart(), []);
@@ -181,7 +185,8 @@ const DailyCheckUp: React.FC = () => {
                 itemsDBData,
                 bossesData,
                 weekSessionsData,
-                prequestsData
+                prequestsData,
+                resourcesMetadataData
             ] = await Promise.all([
                 accountsService.getAll().catch(e => { console.error('Failed to load accounts:', e); return []; }),
                 charactersService.getAll().catch(e => { console.error('Failed to load characters:', e); return []; }),
@@ -193,7 +198,8 @@ const DailyCheckUp: React.FC = () => {
                 itemsDBService.getAll().catch(e => { console.error('Failed to load itemsDB:', e); return []; }),
                 bossesService.getAll().catch(e => { console.error('Failed to load bosses:', e); return []; }),
                 bossingService.getWeekSessions(bossingService.getWeekStart()).catch(e => { console.error('Failed to load week sessions:', e); return []; }),
-                bossingService.getAllPrequests().catch(e => { console.error('Failed to load prequests:', e); return []; })
+                bossingService.getAllPrequests().catch(e => { console.error('Failed to load prequests:', e); return []; }),
+                resourcesService.getResourceMetadata().catch(e => { console.error('Failed to load itemsDB:', e); return {}; })
             ]);
 
             console.log('DailyCheckUp Data Loaded:', {
@@ -207,6 +213,13 @@ const DailyCheckUp: React.FC = () => {
             setAccounts(accountsData.sort((a: Account, b: Account) => a.number - b.number));
             setAllChars(charsData);
             setMainChars(charsData.filter((c: Character) => c.main === 'Main'));
+
+            const balancesArr = await Promise.all(accountsData.map((acc: Account) => resourcesService.getAllBalances(acc.id)));
+            const newBalances: Record<string, Record<string, number>> = {};
+            accountsData.forEach((acc: Account, i: number) => {
+                newBalances[acc.id] = balancesArr[i];
+            });
+            setAccountBalances(newBalances);
 
             // Filter events that are currently active (today between start and end date)
             const filteredEvents = eventsData.filter(event => {
@@ -224,6 +237,11 @@ const DailyCheckUp: React.FC = () => {
             setAllBosses(bossesData);
             setWeekSessions(weekSessionsData);
             setAllPrequests(prequestsData);
+
+            const mapImages: Record<string, string> = {};
+            Object.keys(resourcesMetadataData).forEach(k => mapImages[k] = (resourcesMetadataData as any)[k]?.image);
+            setResourceImages(mapImages);
+
             // Load persisted boss states from localStorage (preserves failed state 2)
             let initialBossStates: Record<string, Record<string, 0 | 1 | 2>> = {};
             const lsStored = localStorage.getItem(LS_KEY);
@@ -628,42 +646,44 @@ const DailyCheckUp: React.FC = () => {
 
     const handleRPBlur = async (accountId: string, newValue: number) => {
         try {
-            await accountsService.update(accountId, { reward_points: newValue });
-            setAccounts(prev => prev.map(acc => acc.id === accountId ? { ...acc, reward_points: newValue } : acc));
+            await resourcesService.setAbsoluteBalance(accountId, 'reward_points', newValue);
+            setAccountBalances(prev => ({
+                ...prev,
+                [accountId]: { ...prev[accountId], reward_points: newValue }
+            }));
         } catch (error) {
             console.error('Error updating RP:', error);
         }
     };
 
     const handleBuyPSOK = async (accountId: string) => {
-        const account = accounts.find(a => a.id === accountId);
-        if (!account || account.reward_points < 4000) return;
+        const bal = accountBalances[accountId] || {};
+        const currentRP = bal.reward_points || 0;
+        const currentPSOK = bal.psok || 0;
+        
+        if (currentRP < 4000) return;
 
         const confirmed = window.confirm(
-            `¿Comprar 1 PSOK por 4,000 RP?\n\nRP actual: ${account.reward_points.toLocaleString()}\nRP después: ${(account.reward_points - 4000).toLocaleString()}\nPSOKs actuales: ${account.psok}`
+            `¿Comprar 1 PSOK por 4,000 RP?\n\nRP actual: ${currentRP.toLocaleString()}\nRP después: ${(currentRP - 4000).toLocaleString()}\nPSOKs actuales: ${currentPSOK}`
         );
         if (!confirmed) return;
 
         // Optimistic update
-        setAccounts(prev => prev.map(acc =>
-            acc.id === accountId
-                ? { ...acc, reward_points: acc.reward_points - 4000, psok: (acc.psok || 0) + 1 }
-                : acc
-        ));
+        setAccountBalances(prev => ({
+            ...prev,
+            [accountId]: { ...prev[accountId], reward_points: currentRP - 4000, psok: currentPSOK + 1 }
+        }));
 
         try {
-            await accountsService.update(accountId, {
-                reward_points: account.reward_points - 4000,
-                psok: (account.psok || 0) + 1
-            });
+            await resourcesService.addBatch(accountId, 'psok', 1, null);
+            await resourcesService.addBatch(accountId, 'reward_points', -4000, null);
         } catch (error) {
             console.error('Error buying PSOK:', error);
             // Revert on error
-            setAccounts(prev => prev.map(acc =>
-                acc.id === accountId
-                    ? { ...acc, reward_points: account.reward_points, psok: account.psok }
-                    : acc
-            ));
+            setAccountBalances(prev => ({
+                ...prev,
+                [accountId]: { ...prev[accountId], reward_points: currentRP, psok: currentPSOK }
+            }));
         }
     };
 
@@ -710,8 +730,63 @@ const DailyCheckUp: React.FC = () => {
                 await resourcesService.deductCubes(accountId, 'reward_points', Math.abs(delta));
             }
 
+            const drops = bossDrops[accountId];
+            if (drops?.solidCubes && drops.solidCubes > 0) {
+                // Expire in exactly 7 days natively
+                const d = new Date();
+                d.setDate(d.getDate() + 7);
+                const expiry = d.toISOString().split('T')[0] + 'T23:59:59';
+                await resourcesService.addBatch(accountId, 'solid_cubes', drops.solidCubes, expiry);
+            }
+            if (drops?.papMark && drops.papMark > 0) {
+                const papDb = itemsDB.find(i => i.name.toLowerCase().includes('papulatus mark'));
+                const mainChar = mainChars.find(c => c.account_id === accountId);
+                if (papDb && mainChar) {
+                    for(let i = 0; i < drops.papMark; i++) {
+                        await itemsService.create({
+                            character_id: mainChar.id,
+                            name: papDb.name,
+                            status: 'in_stock',
+                            star_force: 0,
+                            tradeability: 'Untradeable',
+                            remaining_trade_slots: 0,
+                            estimated_value: 0,
+                            costo_item: 0,
+                            costo_cubos: 0,
+                            costo_psok: 0,
+                            costo_sf: 0,
+                            costo_perfect_innoc: 0,
+                            costo_guardian_scroll: 0,
+                            costo_replacement: 0,
+                            costo_total: 0,
+                            main_potential_tier: null,
+                            main_potential_1: null,
+                            main_potential_2: null,
+                            main_potential_3: null,
+                            bonus_potential_tier: null,
+                            bonus_potential_1: null,
+                            bonus_potential_2: null,
+                            bonus_potential_3: null,
+                            delivered: false,
+                            ah_listed_at: null
+                        });
+                    }
+                }
+            }
+
+            if (delta !== 0) {
+                setAccountBalances(prev => ({
+                    ...prev,
+                    [accountId]: {
+                        ...prev[accountId],
+                        reward_points: (prev[accountId]?.reward_points || 0) + delta
+                    }
+                }));
+            }
+
             setWeekSessions(prev => [...prev.filter(s => s.account_id !== accountId), session]);
             setRpOverrides(prev => ({ ...prev, [accountId]: 0 }));
+            setBossDrops(prev => { const n = { ...prev }; delete n[accountId]; return n; });
         } catch (err: any) {
             console.error('Error registering bossing:', err);
             alert(`Error al registrar bossing: ${err?.message || 'Error desconocido'}`);
@@ -932,22 +1007,22 @@ const DailyCheckUp: React.FC = () => {
                                     {showRP && (
                                         <td className="col-rp">
                                             <Input
-                                                key={row.account.reward_points}
+                                                key={accountBalances[row.account.id]?.reward_points || 0}
                                                 type="number"
-                                                defaultValue={row.account.reward_points}
+                                                defaultValue={accountBalances[row.account.id]?.reward_points || 0}
                                                 onBlur={(e) => handleRPBlur(row.account.id, parseInt(e.target.value) || 0)}
                                                 className="rp-input-table"
                                             />
                                             <div className="psok-row">
                                                 <button
-                                                    className={`psok-btn ${row.account.reward_points >= 4000 ? 'psok-btn--active' : 'psok-btn--disabled'}`}
+                                                    className={`psok-btn ${(accountBalances[row.account.id]?.reward_points || 0) >= 4000 ? 'psok-btn--active' : 'psok-btn--disabled'}`}
                                                     onClick={() => handleBuyPSOK(row.account.id)}
-                                                    disabled={row.account.reward_points < 4000}
-                                                    title={row.account.reward_points >= 4000 ? `Comprar PSOK por 4,000 RP` : `Necesitas ${(4000 - row.account.reward_points).toLocaleString()} RP más`}
+                                                    disabled={(accountBalances[row.account.id]?.reward_points || 0) < 4000}
+                                                    title={(accountBalances[row.account.id]?.reward_points || 0) >= 4000 ? `Comprar PSOK por 4,000 RP` : `Necesitas ${(4000 - (accountBalances[row.account.id]?.reward_points || 0)).toLocaleString()} RP más`}
                                                 >
                                                     PSOK
                                                 </button>
-                                                <span className={`psok-count ${(row.account.psok || 0) > 0 ? 'psok-count--positive' : 'psok-count--zero'}`}>{row.account.psok || 0}</span>
+                                                <span className={`psok-count ${(accountBalances[row.account.id]?.psok || 0) > 0 ? 'psok-count--positive' : 'psok-count--zero'}`}>{accountBalances[row.account.id]?.psok || 0}</span>
                                             </div>
                                         </td>
                                     )}
@@ -1001,7 +1076,7 @@ const DailyCheckUp: React.FC = () => {
 
                                                     {/* RP + Register row */}
                                                     <div className="bossing-action-row">
-                                                        <span className="bossing-current-rp">{row.account.reward_points.toLocaleString()} RP</span>
+                                                        <span className="bossing-current-rp">{(accountBalances[row.account.id]?.reward_points || 0).toLocaleString()} RP</span>
                                                         {isDone && <span className="bossing-done-badge">✓ DONE</span>}
                                                         <input
                                                             type="number"
@@ -1019,6 +1094,36 @@ const DailyCheckUp: React.FC = () => {
                                                         >
                                                             {isRegistering ? '...' : isDone ? '↺' : 'Register'}
                                                         </button>
+                                                    </div>
+                                                    <div className="bossing-action-row" style={{ marginTop: '4px', display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.02)', padding: '4px 8px', borderRadius: '4px' }}>
+                                                        <span style={{ fontSize: '10px', color: '#94a3b8', textTransform: 'uppercase' }}>Drops:</span>
+                                                        <div 
+                                                            style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', background: 'rgba(34, 197, 94, 0.1)', padding: '2px 6px', borderRadius: '4px', gap: '4px' }}
+                                                            onClick={() => setBossDrops(prev => ({ ...prev, [accountId]: { ...prev[accountId], solidCubes: (prev[accountId]?.solidCubes || 0) + 1 } }))}
+                                                            title="Add Solid Cube (Expires in 7 Days)"
+                                                        >
+                                                            {resourceImages['solid_cubes'] ? <img src={resourceImages['solid_cubes']} alt="SC" style={{ width: 14, height: 14 }} /> : <span>📦</span>}
+                                                            <span style={{ fontSize: '11px', color: '#22c55e', fontWeight: 600 }}>x{bossDrops[accountId]?.solidCubes || 0}</span>
+                                                        </div>
+                                                        <div 
+                                                            style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', background: 'rgba(239, 68, 68, 0.1)', padding: '2px 6px', borderRadius: '4px', gap: '4px' }}
+                                                            onClick={() => setBossDrops(prev => ({ ...prev, [accountId]: { ...prev[accountId], papMark: (prev[accountId]?.papMark || 0) + 1 } }))}
+                                                            title="Add Papulatus Mark (In Stock)"
+                                                        >
+                                                            {(() => {
+                                                                const url = itemsDB.find(i => i.name.toLowerCase().includes('papulatus mark'))?.image_url;
+                                                                return url ? <img src={url} alt="Pap" style={{ width: 14, height: 14 }} /> : <span>⚙️</span>;
+                                                            })()}
+                                                            <span style={{ fontSize: '11px', color: '#ef4444', fontWeight: 600 }}>x{bossDrops[accountId]?.papMark || 0}</span>
+                                                        </div>
+                                                        {(bossDrops[accountId]?.solidCubes || bossDrops[accountId]?.papMark) ? (
+                                                            <span 
+                                                                style={{ fontSize: '10px', color: '#f87171', cursor: 'pointer', marginLeft: 'auto' }}
+                                                                onClick={() => setBossDrops(prev => { const n = { ...prev }; delete n[accountId]; return n; })}
+                                                            >
+                                                                Reset
+                                                            </span>
+                                                        ) : null}
                                                     </div>
                                                 </div>
                                             </td>

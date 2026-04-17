@@ -1,57 +1,26 @@
 -- =============================================
--- RESOURCE BATCHES - Expiration-aware inventory
+-- EXPIRED-BASED RESOURCES MIGRATION
 -- =============================================
--- Replaces flat integer columns on accounts with a
--- batch-per-lot system supporting per-batch expiry dates.
--- FIFO consumption: earliest-expiring batches deducted first;
--- non-expiring batches (expires_at IS NULL) deducted last.
 
-CREATE TABLE IF NOT EXISTS account_resource_batches (
-    id           UUID         DEFAULT gen_random_uuid() PRIMARY KEY,
-    account_id   UUID         NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
-    resource_type TEXT        NOT NULL,
-    quantity     INTEGER      NOT NULL DEFAULT 0 CHECK (quantity >= 0),
-    expires_at   DATE         NULL,     -- NULL = never expires
-    created_at   TIMESTAMPTZ  DEFAULT NOW() NOT NULL
+-- 1. Create the new table for expiration-based resource batches
+CREATE TABLE IF NOT EXISTS resource_batches (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    account_id UUID NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
+    resource_type VARCHAR(255) NOT NULL, -- e.g. 'solid_cubes', 'reward_points', 'papulatus_mark'
+    quantity INTEGER NOT NULL DEFAULT 0,
+    expiration_date TIMESTAMPTZ,         -- NULL means it never expires
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_arb_account
-    ON account_resource_batches(account_id);
+-- Index for fast queries by account and finding unexpired resources
+CREATE INDEX IF NOT EXISTS idx_rb_account ON resource_batches(account_id);
+CREATE INDEX IF NOT EXISTS idx_rb_expiration ON resource_batches(expiration_date);
 
-CREATE INDEX IF NOT EXISTS idx_arb_account_resource
-    ON account_resource_batches(account_id, resource_type);
-
-CREATE INDEX IF NOT EXISTS idx_arb_expires
-    ON account_resource_batches(expires_at)
-    WHERE expires_at IS NOT NULL;
-
--- =============================================
--- MIGRATE existing flat quantities as non-expiring batches
--- =============================================
-INSERT INTO account_resource_batches (account_id, resource_type, quantity, expires_at)
-SELECT id, 'solid_cubes', solid_cubes, NULL
-FROM accounts WHERE COALESCE(solid_cubes, 0) > 0;
-
-INSERT INTO account_resource_batches (account_id, resource_type, quantity, expires_at)
-SELECT id, 'bright_cubes', bright_cubes, NULL
-FROM accounts WHERE COALESCE(bright_cubes, 0) > 0;
-
-INSERT INTO account_resource_batches (account_id, resource_type, quantity, expires_at)
-SELECT id, 'bonus_bright_cubes', bonus_bright_cubes, NULL
-FROM accounts WHERE COALESCE(bonus_bright_cubes, 0) > 0;
-
-INSERT INTO account_resource_batches (account_id, resource_type, quantity, expires_at)
-SELECT id, 'reward_points', reward_points, NULL
-FROM accounts WHERE COALESCE(reward_points, 0) > 0;
-
-INSERT INTO account_resource_batches (account_id, resource_type, quantity, expires_at)
-SELECT id, 'psok', psok, NULL
-FROM accounts WHERE COALESCE(psok, 0) > 0;
-
-INSERT INTO account_resource_batches (account_id, resource_type, quantity, expires_at)
-SELECT id, 'guardian_scroll', guardian_scroll, NULL
-FROM accounts WHERE COALESCE(guardian_scroll, 0) > 0;
-
--- NOTE: mesos_b and perfect_innoc are NOT batch-managed.
--- mesos_b stays as a plain column on accounts.
--- perfect_innoc stays in shared_inventory.
+-- 2. Drop the old direct columns from accounts (we are starting from 0)
+ALTER TABLE accounts
+DROP COLUMN IF EXISTS bright_cubes,
+DROP COLUMN IF EXISTS bonus_bright_cubes,
+DROP COLUMN IF EXISTS reward_points,
+DROP COLUMN IF EXISTS psok,
+DROP COLUMN IF EXISTS guardian_scroll,
+DROP COLUMN IF EXISTS solid_cubes;

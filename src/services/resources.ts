@@ -47,6 +47,18 @@ export const resourcesService = {
 
     // Returns all active (non-expired, quantity > 0) batches for an account,
     // ordered so earliest-expiring comes first (nulls last).
+    // Helper to quickly correct an absolute balance without knowing the current one.
+    // Useful for UI inputs that represent the total available amount (like RP).
+    async setAbsoluteBalance(accountId: string, resourceType: ExpiringResourceType, newAbsoluteBalance: number): Promise<void> {
+        const balances = await this.getAllBalances(accountId);
+        const currentBalance = balances[resourceType] || 0;
+        const diff = newAbsoluteBalance - currentBalance;
+        
+        if (diff !== 0) {
+            await this.addBatch(accountId, resourceType, diff, null);
+        }
+    },
+
     async getBatches(accountId: string, resourceType?: ExpiringResourceType): Promise<ResourceBatch[]> {
         let query = supabase
             .from('account_resource_batches')
@@ -114,23 +126,14 @@ export const resourcesService = {
                 expires_at: expiresAt || null
             });
         if (error) throw error;
-        await this._syncAggregate(accountId, resourceType);
     },
 
     async deleteBatch(batchId: string): Promise<void> {
-        const { data: batch, error: fetchErr } = await supabase
-            .from('account_resource_batches')
-            .select('account_id, resource_type')
-            .eq('id', batchId)
-            .single();
-        if (fetchErr) throw fetchErr;
-
         const { error } = await supabase
             .from('account_resource_batches')
             .delete()
             .eq('id', batchId);
         if (error) throw error;
-        await this._syncAggregate(batch.account_id, batch.resource_type as ExpiringResourceType);
     },
 
     // ---- Expiry cleanup ----
@@ -158,13 +161,7 @@ export const resourcesService = {
             .in('id', ids);
         if (delErr) throw delErr;
 
-        // Sync aggregates for every (account, resource) pair that was affected
-        const pairs = new Set(expired.map(b => `${b.account_id}:${b.resource_type}`));
-        for (const key of pairs) {
-            const [aId, rType] = key.split(':');
-            await this._syncAggregate(aId, rType as ExpiringResourceType);
-        }
-
+        // We no longer sync aggregates back to the accounts table.
         return expired.length;
     },
 
@@ -205,8 +202,6 @@ export const resourcesService = {
             if (updateErr) throw updateErr;
             remaining -= deduct;
         }
-
-        await this._syncAggregate(accountId, resourceType as ExpiringResourceType);
     },
 
     // Legacy addCubes kept for any callers outside the Resources page.
@@ -216,18 +211,7 @@ export const resourcesService = {
         await this.addBatch(accountId, cubeType as ExpiringResourceType, amount, null);
     },
 
-    // ---- Internal ----
-
-    // Recalculates the resource total from batches and writes it back to
-    // the accounts row so that all existing reads stay correct.
-    async _syncAggregate(accountId: string, resourceType: ExpiringResourceType): Promise<void> {
-        const balance = await this.getBalance(accountId, resourceType);
-        const { error } = await supabase
-            .from('accounts')
-            .update({ [resourceType]: balance })
-            .eq('id', accountId);
-        if (error) throw error;
-    },
+// Removed _syncAggregate function as fields are dropped from accounts.
 
     // Kept only for mesos_b (non-batch field) or emergency overrides.
     async updateQuantity(accountId: string, resourceType: ResourceType, quantity: number): Promise<void> {
