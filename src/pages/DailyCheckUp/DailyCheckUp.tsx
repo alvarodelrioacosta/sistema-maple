@@ -23,6 +23,21 @@ import type {
 } from '../../types';
 import './DailyCheckUp.css';
 
+const BOSS_IMAGE_ALIAS: Record<string, string> = {
+    'Slime': 'Guardian Angel Slime',
+};
+
+const BOSS_IMAGE_URL = (bossName: string) => {
+    const imgName = BOSS_IMAGE_ALIAS[bossName] ?? bossName;
+    return `https://media.maplestorywiki.net/yetidb/Maple_Guide_-_${imgName.replace(/ /g, '_')}.png`;
+};
+
+const CATEGORY_COLORS = {
+    event: '#4ade80', // Green
+    boss: '#f87171',  // Red
+    system: '#fbbf24' // Yellow
+};
+
 const DailyCheckUp: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -280,6 +295,62 @@ const DailyCheckUp: React.FC = () => {
         return counts;
     }, [dailyUnlocks, rows]);
 
+    const groupedDailyUnlocks = useMemo(() => {
+        const groups: { key: string; label: string; category: 'boss' | 'system' | 'event'; items: any[] }[] = [];
+        
+        // Add Events first
+        if (activeEvents.length > 0) {
+            groups.push({
+                key: 'events-group',
+                label: 'EVENT',
+                category: 'event',
+                items: activeEvents.map(e => ({ ...e, isEvent: true }))
+            });
+        }
+
+        // Add Unlocks grouped
+        const seen = new Map<string, number>();
+        dailyUnlocks.forEach(u => {
+            const groupKey = u.category === 'boss' ? `boss_${u.unlocks}` : `sys_${u.unlocks}`;
+            if (seen.has(groupKey)) {
+                groups[seen.get(groupKey)!].items.push({ ...u, isEvent: false });
+            } else {
+                seen.set(groupKey, groups.length);
+                groups.push({
+                    key: groupKey,
+                    label: u.unlocks.toUpperCase(),
+                    category: u.category,
+                    items: [{ ...u, isEvent: false }]
+                });
+            }
+        });
+        
+        return groups;
+    }, [activeEvents, dailyUnlocks]);
+
+    const groupedAllUnlocks = useMemo(() => {
+        const groups: { name: string; category: 'boss' | 'system'; ids: string[]; isActive: boolean }[] = [];
+        const seen = new Map<string, number>();
+        
+        allUnlocks.forEach(u => {
+            if (seen.has(u.unlocks)) {
+                const idx = seen.get(u.unlocks)!;
+                groups[idx].ids.push(u.id);
+                if (u.show_in_daily) groups[idx].isActive = true;
+            } else {
+                seen.set(u.unlocks, groups.length);
+                groups.push({
+                    name: u.unlocks,
+                    category: u.category,
+                    ids: [u.id],
+                    isActive: u.show_in_daily
+                });
+            }
+        });
+        
+        return groups;
+    }, [allUnlocks]);
+
     if (loading) {
         return <LoadingScreen message="Cargando Dashboard Diario..." />;
     }
@@ -408,41 +479,32 @@ const DailyCheckUp: React.FC = () => {
         }
     };
 
-    const handleToggleShowInDaily = async (unlockId: string, show: boolean) => {
-        // Guardar estados originales para revertir en caso de error
+
+
+    const handleToggleGroup = async (groupName: string, show: boolean) => {
+        const group = groupedAllUnlocks.find(g => g.name === groupName);
+        if (!group) return;
+
         const originalAllUnlocks = [...allUnlocks];
         const originalDailyUnlocks = [...dailyUnlocks];
 
-        // Actualización Optimista de estados locales
-        setAllUnlocks(prev => prev.map(u => u.id === unlockId ? { ...u, show_in_daily: show } : u));
+        // Optimistic update
+        setAllUnlocks(prev => prev.map(u => group.ids.includes(u.id) ? { ...u, show_in_daily: show } : u));
         
         if (show) {
             setDailyUnlocks(prev => {
-                const exists = prev.some(u => u.id === unlockId);
-                if (exists) return prev;
-                const item = allUnlocks.find(u => u.id === unlockId);
-                return item ? [...prev, { ...item, show_in_daily: true }] : prev;
+                const newItemsToAdd = allUnlocks.filter(u => group.ids.includes(u.id) && !prev.some(p => p.id === u.id));
+                return [...prev, ...newItemsToAdd.map(i => ({ ...i, show_in_daily: true }))];
             });
         } else {
-            setDailyUnlocks(prev => prev.filter(u => u.id !== unlockId));
+            setDailyUnlocks(prev => prev.filter(u => !group.ids.includes(u.id)));
         }
 
         try {
-            // Sincronizar con DB
-            console.log(`DailyCheckUp: Intentando sincronizar show_in_daily=${show} para el ID=${unlockId}`);
-            await contentUnlocksService.setShowInDaily(unlockId, show);
-            console.log('DailyCheckUp: Sincronización exitosa con la DB');
+            await Promise.all(group.ids.map(id => contentUnlocksService.setShowInDaily(id, show)));
         } catch (error: any) {
-            console.error('Error al actualizar show_in_daily en Supabase:', error);
-            
-            // Notificar al usuario (esto ayuda a diagnosticar si falta la columna)
-            if (error.message?.includes('column "show_in_daily" does not exist')) {
-                alert('Error: La columna "show_in_daily" no existe en la tabla "content_unlocks". Por favor, ejecuta el script SQL que te proporcioné.');
-            } else {
-                alert(`Error al guardar en la base de datos: ${error.message || 'Error desconocido'}`);
-            }
-
-            // Revertir a estados originales si falla la DB
+            console.error('Error toggling group:', error);
+            alert(`Error al guardar grupo: ${error.message}`);
             setAllUnlocks(originalAllUnlocks);
             setDailyUnlocks(originalDailyUnlocks);
         }
@@ -572,35 +634,50 @@ const DailyCheckUp: React.FC = () => {
                 <Card padding="none" className="daily-table-container">
                     <table className="daily-table">
                         <thead>
-                            <tr>
-                                <th className="col-account">ACCOUNT</th>
-                                {activeEvents.map(event => {
-                                    const progress = eventProgressCounts[event.id] || { completed: 0, total: 0 };
-                                    return (
-                                        <th key={event.id} className="col-action">
-                                            <div className="header-stacked">
-                                                <span>{event.name}</span>
-                                                <span className="header-counter">{progress.completed} / {progress.total}</span>
-                                            </div>
-                                        </th>
-                                    );
-                                })}
-                                {dailyUnlocks.map(unlock => (
-                                    <th key={unlock.id} className="col-action">
-                                        <div className="header-stacked">
-                                            <span>{unlock.name}</span>
-                                            <span className="header-counter">{unlockProgressCounts[unlock.id] || 0} / {accounts.length}</span>
-                                        </div>
+                            <tr className="header-top-row">
+                                <th rowSpan={2} className="col-account">ACCOUNT</th>
+                                {groupedDailyUnlocks.map(group => (
+                                    <th 
+                                        key={group.key} 
+                                        colSpan={group.items.length} 
+                                        className="header-group-cell"
+                                        style={{ color: CATEGORY_COLORS[group.category] }}
+                                    >
+                                        {group.label}
                                     </th>
                                 ))}
-                                {showRP && <th className="col-rp">RP / PSOK</th>}
+                                {showRP && <th rowSpan={2} className="col-rp">RP / PSOK</th>}
                                 {showItems && (
                                     <>
-                                        <th className="col-items">Items For Sale</th>
-                                        <th className="col-price">Price</th>
-                                        <th className="col-timer">Timer</th>
-                                        <th className="col-action-btn">Action</th>
+                                        <th rowSpan={2} className="col-items">Items For Sale</th>
+                                        <th rowSpan={2} className="col-price">Price</th>
+                                        <th rowSpan={2} className="col-timer">Timer</th>
+                                        <th rowSpan={2} className="col-actions">Actions</th>
                                     </>
+                                )}
+                            </tr>
+                            <tr className="header-bottom-row">
+                                {groupedDailyUnlocks.map(group => 
+                                    group.items.map(item => {
+                                        const count = item.isEvent 
+                                            ? (eventProgressCounts[item.id] || { completed: 0, total: 0 })
+                                            : { completed: unlockProgressCounts[item.id] || 0, total: accounts.length };
+                                        
+                                        return (
+                                            <th key={item.id} className="col-subtask">
+                                                <div className="header-stacked">
+                                                    <div className="subtask-label">
+                                                        {group.category === 'boss' ? (
+                                                            <img src={BOSS_IMAGE_URL(group.label)} alt={group.label} className="header-boss-icon" />
+                                                        ) : (
+                                                            <span>{item.name.includes(' — ') ? item.name.split(' — ')[1] : item.name}</span>
+                                                        )}
+                                                    </div>
+                                                    <span className="header-counter">{count.completed} / {count.total}</span>
+                                                </div>
+                                            </th>
+                                        );
+                                    })
                                 )}
                             </tr>
                         </thead>
@@ -740,23 +817,45 @@ const DailyCheckUp: React.FC = () => {
                 </Card>
             </div>
 
-            {/* CONFIG MODAL */}
             <Modal
                 isOpen={configModalOpen}
                 onClose={() => setConfigModalOpen(false)}
                 title="Configure Daily Tasks"
             >
                 <div className="config-tasks-list">
-                    {allUnlocks.map(unlock => (
-                        <div key={unlock.id} className="config-task-item">
+                    {/* Events (always visible or also configurable? for now just info or separate?) */}
+                    {activeEvents.map(event => (
+                        <div key={event.id} className="config-task-item group-locked">
+                            <label className="config-checkbox">
+                                <input type="checkbox" checked={true} disabled />
+                                <span className="checkmark"></span>
+                                <div className="task-label-container">
+                                    <span className="task-category-tag" style={{ color: CATEGORY_COLORS.event }}>[EVENT]</span>
+                                    <span className="task-label">{event.name}</span>
+                                </div>
+                            </label>
+                        </div>
+                    ))}
+
+                    {/* Grouped Unlocks */}
+                    {groupedAllUnlocks.map(group => (
+                        <div key={group.name} className="config-task-item">
                             <label className="config-checkbox">
                                 <input
                                     type="checkbox"
-                                    checked={unlock.show_in_daily}
-                                    onChange={(e) => handleToggleShowInDaily(unlock.id, e.target.checked)}
+                                    checked={group.isActive}
+                                    onChange={(e) => handleToggleGroup(group.name, e.target.checked)}
                                 />
                                 <span className="checkmark"></span>
-                                <span className="task-label">{unlock.name}</span>
+                                <div className="task-label-container">
+                                    <span 
+                                        className="task-category-tag" 
+                                        style={{ color: CATEGORY_COLORS[group.category] }}
+                                    >
+                                        [{group.category === 'boss' ? 'BOSS' : group.name.toUpperCase()}]
+                                    </span>
+                                    <span className="task-label">{group.name}</span>
+                                </div>
                             </label>
                         </div>
                     ))}
