@@ -4,18 +4,18 @@ import { Button } from '../../components/UI';
 import CreateTaskModal from './CreateTaskModal';
 import EditTaskModal from './EditTaskModal';
 import NewUnlockModal from './NewUnlockModal';
+import EditUnlocksModal from './EditUnlocksModal';
 import { tasksService, accountsService, charactersService, contentUnlocksService } from '../../services';
-import type { ContentUnlock, AccountUnlockProgress, UnlockCategory } from '../../services';
+import type { ContentUnlock, AccountUnlockProgress } from '../../services';
 import type { Task, TaskProgress, Account, Character } from '../../types';
 import './Tasks.css';
 
-const CATEGORY_LABELS: Record<UnlockCategory, string> = {
-    boss:   'Boss',
-    system: 'System',
-};
-const CATEGORY_COLORS: Record<UnlockCategory, string> = {
-    boss:   '#f87171',
-    system: '#fbbf24',
+const BOSS_IMAGE_URL = (bossName: string) =>
+    `https://media.maplestorywiki.net/yetidb/Maple_Guide_-_${bossName.replace(/ /g, '_')}.png`;
+
+const simplifySystemName = (name: string) => {
+    const idx = name.indexOf(' — ');
+    return idx !== -1 ? name.slice(idx + 3) : name;
 };
 
 interface AccountWithChar extends Account {
@@ -35,6 +35,19 @@ const Tasks: React.FC = () => {
     const [unlocks, setUnlocks] = useState<ContentUnlock[]>([]);
     const [unlockProgress, setUnlockProgress] = useState<AccountUnlockProgress[]>([]);
     const [showNewUnlockModal, setShowNewUnlockModal] = useState(false);
+    const [showEditUnlocksModal, setShowEditUnlocksModal] = useState(false);
+
+    const firstInSystemGroup = useMemo(() => {
+        const seen = new Set<string>();
+        const result = new Set<string>();
+        unlocks.forEach(u => {
+            if (u.category === 'system' && !seen.has(u.unlocks)) {
+                result.add(u.id);
+                seen.add(u.unlocks);
+            }
+        });
+        return result;
+    }, [unlocks]);
 
     // Initial load
     useEffect(() => {
@@ -165,7 +178,10 @@ const Tasks: React.FC = () => {
                         </button>
                     </div>
                     {activeTab === 'unlocks' ? (
-                        <Button variant="primary" onClick={() => setShowNewUnlockModal(true)}>+ New Unlock</Button>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                            <Button variant="secondary" onClick={() => setShowEditUnlocksModal(true)}>Edit Unlocks</Button>
+                            <Button variant="primary" onClick={() => setShowNewUnlockModal(true)}>+ New Unlock</Button>
+                        </div>
                     ) : (
                         <Button variant="primary" onClick={() => setShowCreateModal(true)}>+ New Task</Button>
                     )}
@@ -188,25 +204,36 @@ const Tasks: React.FC = () => {
                                                 <th key={unlock.id} className="task-header-col">
                                                     <div className="task-header-content">
                                                         <div className="task-name-wrapper">
-                                                            <span style={{
-                                                                fontSize: '0.6rem', fontWeight: 600, padding: '1px 4px', borderRadius: '3px',
-                                                                background: CATEGORY_COLORS[unlock.category] + '20',
-                                                                color: CATEGORY_COLORS[unlock.category]
-                                                            }}>
-                                                                {CATEGORY_LABELS[unlock.category]}
-                                                            </span>
-                                                            <span className="task-name">{unlock.name}</span>
-                                                            <div style={{ fontSize: '0.65rem', color: '#64748b' }}>{unlock.unlocks}</div>
+                                                            {unlock.category === 'boss' ? (
+                                                                <>
+                                                                    <span style={{ fontSize: '0.6rem', fontWeight: 700, color: '#f87171', letterSpacing: '0.06em' }}>
+                                                                        {unlock.unlocks.toUpperCase()}
+                                                                    </span>
+                                                                    <img
+                                                                        src={BOSS_IMAGE_URL(unlock.unlocks)}
+                                                                        alt={unlock.unlocks}
+                                                                        style={{ width: 52, height: 52, objectFit: 'cover', borderRadius: 6 }}
+                                                                        onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                                                                    />
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    {firstInSystemGroup.has(unlock.id) ? (
+                                                                        <span style={{
+                                                                            fontSize: '0.6rem', fontWeight: 700, padding: '1px 5px', borderRadius: 3,
+                                                                            background: 'rgba(251,191,36,0.12)', color: '#fbbf24', letterSpacing: '0.04em'
+                                                                        }}>
+                                                                            {unlock.unlocks.toUpperCase()}
+                                                                        </span>
+                                                                    ) : (
+                                                                        <span style={{ display: 'block', height: 18 }} />
+                                                                    )}
+                                                                    <span className="task-name">{simplifySystemName(unlock.name)}</span>
+                                                                </>
+                                                            )}
                                                             <div className="task-header-progress">
                                                                 {unlockProgress.filter(p => p.unlock_id === unlock.id && p.completed).length} / {accounts.length}
                                                             </div>
-                                                        </div>
-                                                        <div className="task-actions">
-                                                            <button
-                                                                onClick={() => handleDeleteUnlock(unlock.id)}
-                                                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', fontSize: '0.85rem', padding: '2px 4px' }}
-                                                                title="Delete"
-                                                            >✕</button>
                                                         </div>
                                                     </div>
                                                 </th>
@@ -368,6 +395,13 @@ const Tasks: React.FC = () => {
                 isOpen={showNewUnlockModal}
                 onClose={() => setShowNewUnlockModal(false)}
                 onCreated={loadData}
+            />
+
+            <EditUnlocksModal
+                isOpen={showEditUnlocksModal}
+                onClose={() => setShowEditUnlocksModal(false)}
+                unlocks={unlocks}
+                onDeleted={id => { setUnlocks(prev => prev.filter(u => u.id !== id)); }}
             />
         </>
     );
