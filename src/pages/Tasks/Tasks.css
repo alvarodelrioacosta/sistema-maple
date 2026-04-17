@@ -180,8 +180,19 @@
     transition: transform 0.2s ease;
 }
 
-.task-checkbox:hover {
+.task-checkbox:hover:not(:disabled) {
     transform: scale(1.15);
+}
+
+.task-checkbox:disabled,
+.task-checkbox.locked-prereq {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.locked-cell {
+    background: rgba(255, 255, 255, 0.02);
 }
 
 /* Actions */
