@@ -6,9 +6,10 @@ import { SYMBOLS } from '../../constants/symbols';
 interface Props {
     characterId: string;
     characterName: string;
+    characterLevel: number;
 }
 
-export const SymbolTracker: React.FC<Props> = ({ characterId, characterName }) => {
+export const SymbolTracker: React.FC<Props> = ({ characterId, characterName, characterLevel }) => {
     const [levels, setLevels] = useState<Record<string, number>>({});
     const [saving, setSaving] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
@@ -35,8 +36,8 @@ export const SymbolTracker: React.FC<Props> = ({ characterId, characterName }) =
 
     if (loading) return <div style={{ padding: '1rem', color: '#64748b', fontSize: '0.85rem' }}>Loading symbols...</div>;
 
-    const arcane = SYMBOLS.filter(s => s.type === 'arcane');
-    const sacred  = SYMBOLS.filter(s => s.type === 'sacred');
+    const arcane = SYMBOLS.filter(s => s.type === 'arcane' && characterLevel >= s.unlockLevel);
+    const sacred  = SYMBOLS.filter(s => s.type === 'sacred' && characterLevel >= s.unlockLevel);
 
     const renderGroup = (group: typeof SYMBOLS, label: string) => (
         <div style={{ marginBottom: '1.25rem' }}>
@@ -102,13 +103,21 @@ export const SymbolTracker: React.FC<Props> = ({ characterId, characterName }) =
         </div>
     );
 
+    if (arcane.length === 0 && sacred.length === 0) {
+        return (
+            <div style={{ padding: '1rem 1.25rem', borderTop: '1px solid rgba(255,255,255,0.06)', color: '#475569', fontSize: '0.8rem' }}>
+                Symbols unlock at level 200
+            </div>
+        );
+    }
+
     return (
         <div style={{ padding: '1rem 1.25rem', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'rgba(0,0,0,0.15)' }}>
             <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8', marginBottom: '1rem' }}>
                 Symbols — <span style={{ color: '#f1f5f9' }}>{characterName}</span>
             </div>
-            {renderGroup(arcane, 'Arcane Symbols')}
-            {renderGroup(sacred,  'Sacred Symbols')}
+            {arcane.length > 0 && renderGroup(arcane, 'Arcane Symbols')}
+            {sacred.length > 0 && renderGroup(sacred, 'Sacred Symbols')}
         </div>
     );
 };

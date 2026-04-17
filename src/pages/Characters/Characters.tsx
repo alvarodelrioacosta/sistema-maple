@@ -11,7 +11,7 @@ import type { CharacterWithAccount, CharacterInsert, Account, JobType, ClassItem
 import type { Column } from '../../components/UI/Table';
 
 import { CharacterDetailModal } from './CharacterDetailModal';
-import { ARCANE_MAX, SACRED_MAX } from '../../constants/symbols';
+import { getAvailableMax } from '../../constants/symbols';
 import '../Accounts/Accounts.css';
 import './Characters.css';
 
@@ -262,17 +262,19 @@ export const Characters: React.FC = () => {
             key: 'arcane',
             header: 'Arcane',
             render: (c) => {
+                const max = getAvailableMax('arcane', c.level);
+                if (max === 0) return <span style={{ color: '#334155', fontSize: '0.75rem' }}>–</span>;
                 const total = allSymbols
                     .filter(s => s.character_id === c.id && s.symbol_type === 'arcane')
                     .reduce((sum, s) => sum + s.symbol_level, 0);
-                const pct = total / ARCANE_MAX;
+                const pct = total / max;
                 return (
                     <div style={{ fontSize: '0.8rem' }}>
-                        <span style={{ color: total === ARCANE_MAX ? '#4ade80' : '#f1f5f9', fontWeight: 600 }}>{total}</span>
-                        <span style={{ color: '#475569' }}>/{ARCANE_MAX}</span>
+                        <span style={{ color: total === max ? '#4ade80' : '#f1f5f9', fontWeight: 600 }}>{total}</span>
+                        <span style={{ color: '#475569' }}>/{max}</span>
                         {total > 0 && (
                             <div style={{ marginTop: '3px', height: '3px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', width: '48px' }}>
-                                <div style={{ width: `${pct * 100}%`, height: '100%', background: total === ARCANE_MAX ? '#4ade80' : '#818cf8', borderRadius: '2px', transition: 'width 0.2s' }} />
+                                <div style={{ width: `${pct * 100}%`, height: '100%', background: total === max ? '#4ade80' : '#818cf8', borderRadius: '2px', transition: 'width 0.2s' }} />
                             </div>
                         )}
                     </div>
@@ -283,17 +285,19 @@ export const Characters: React.FC = () => {
             key: 'sacred',
             header: 'Sacred',
             render: (c) => {
+                const max = getAvailableMax('sacred', c.level);
+                if (max === 0) return <span style={{ color: '#334155', fontSize: '0.75rem' }}>–</span>;
                 const total = allSymbols
                     .filter(s => s.character_id === c.id && s.symbol_type === 'sacred')
                     .reduce((sum, s) => sum + s.symbol_level, 0);
-                const pct = total / SACRED_MAX;
+                const pct = total / max;
                 return (
                     <div style={{ fontSize: '0.8rem' }}>
-                        <span style={{ color: total === SACRED_MAX ? '#4ade80' : '#f1f5f9', fontWeight: 600 }}>{total}</span>
-                        <span style={{ color: '#475569' }}>/{SACRED_MAX}</span>
+                        <span style={{ color: total === max ? '#4ade80' : '#f1f5f9', fontWeight: 600 }}>{total}</span>
+                        <span style={{ color: '#475569' }}>/{max}</span>
                         {total > 0 && (
                             <div style={{ marginTop: '3px', height: '3px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', width: '48px' }}>
-                                <div style={{ width: `${pct * 100}%`, height: '100%', background: total === SACRED_MAX ? '#4ade80' : '#fbbf24', borderRadius: '2px', transition: 'width 0.2s' }} />
+                                <div style={{ width: `${pct * 100}%`, height: '100%', background: total === max ? '#4ade80' : '#fbbf24', borderRadius: '2px', transition: 'width 0.2s' }} />
                             </div>
                         )}
                     </div>
