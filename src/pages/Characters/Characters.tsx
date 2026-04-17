@@ -8,6 +8,8 @@ import { Button, Table, Modal, Input, Select, Card } from '../../components/UI';
 import { charactersService, accountsService, classesService } from '../../services';
 import type { CharacterWithAccount, CharacterInsert, Account, JobType, ClassItem } from '../../types';
 import type { Column } from '../../components/UI/Table';
+import { SymbolTracker } from './SymbolTracker';
+import { SixthJobTracker } from './SixthJobTracker';
 import '../Accounts/Accounts.css';
 import './Characters.css';
 
@@ -46,6 +48,7 @@ export const Characters: React.FC = () => {
     const [isSaving, setIsSaving] = useState(false);
     const [syncingId, setSyncingId] = useState<string | null>(null);
     const [syncingAll, setSyncingAll] = useState(false);
+    const [expandedCharId, setExpandedCharId] = useState<string | null>(null);
 
     useEffect(() => {
         loadData();
@@ -188,7 +191,18 @@ export const Characters: React.FC = () => {
                 <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>?</div>
             )
         },
-        { key: 'name', header: 'Name' },
+        {
+            key: 'name',
+            header: 'Name',
+            render: (c) => (
+                <span
+                    style={{ cursor: 'pointer', fontWeight: 600, color: expandedCharId === c.id ? '#818cf8' : 'inherit' }}
+                    onClick={() => setExpandedCharId(expandedCharId === c.id ? null : c.id)}
+                >
+                    {c.name}
+                </span>
+            )
+        },
         {
             key: 'level',
             header: 'Level',
@@ -382,6 +396,16 @@ export const Characters: React.FC = () => {
                         emptyMessage="No characters found."
                     />
                 </Card>
+
+                {expandedCharId && (() => {
+                    const char = characters.find(c => c.id === expandedCharId);
+                    return char ? (
+                        <Card padding="none" style={{ marginTop: '0.5rem' }}>
+                            <SymbolTracker characterId={char.id} characterName={char.name} />
+                            <SixthJobTracker characterId={char.id} characterClass={char.class} />
+                        </Card>
+                    ) : null;
+                })()}
             </div>
 
             <Modal

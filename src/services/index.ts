@@ -19,3 +19,7 @@ export { tasksService } from './tasks';
 export { potentialsService } from './potentials';
 export { appSettingsService } from './appSettings';
 export { nexonApi } from './nexonApi';
+export { symbolProgressService } from './symbolProgress';
+export type { SymbolProgress } from './symbolProgress';
+export { sixthJobSkillsService } from './sixthJobSkills';
+export type { SixthJobSkillProgress } from './sixthJobSkills';
