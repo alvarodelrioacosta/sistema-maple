@@ -10,8 +10,13 @@ import type { ContentUnlock, AccountUnlockProgress } from '../../services';
 import type { Task, TaskProgress, Account, Character } from '../../types';
 import './Tasks.css';
 
-const BOSS_IMAGE_URL = (bossName: string) =>
-    `https://media.maplestorywiki.net/yetidb/Maple_Guide_-_${bossName.replace(/ /g, '_')}.png`;
+const BOSS_IMAGE_ALIAS: Record<string, string> = {
+    'Slime': 'Guardian Angel Slime',
+};
+const BOSS_IMAGE_URL = (bossName: string) => {
+    const imgName = BOSS_IMAGE_ALIAS[bossName] ?? bossName;
+    return `https://media.maplestorywiki.net/yetidb/Maple_Guide_-_${imgName.replace(/ /g, '_')}.png`;
+};
 
 const simplifySystemName = (name: string) => {
     const idx = name.indexOf(' — ');
@@ -37,16 +42,19 @@ const Tasks: React.FC = () => {
     const [showNewUnlockModal, setShowNewUnlockModal] = useState(false);
     const [showEditUnlocksModal, setShowEditUnlocksModal] = useState(false);
 
-    const firstInSystemGroup = useMemo(() => {
-        const seen = new Set<string>();
-        const result = new Set<string>();
+    const unlockGroups = useMemo(() => {
+        const groups: { key: string; label: string; category: string; items: ContentUnlock[] }[] = [];
+        const seen = new Map<string, number>();
         unlocks.forEach(u => {
-            if (u.category === 'system' && !seen.has(u.unlocks)) {
-                result.add(u.id);
-                seen.add(u.unlocks);
+            const groupKey = u.category === 'boss' ? u.id : `sys_${u.unlocks}`;
+            if (seen.has(groupKey)) {
+                groups[seen.get(groupKey)!].items.push(u);
+            } else {
+                seen.set(groupKey, groups.length);
+                groups.push({ key: groupKey, label: u.unlocks.toUpperCase(), category: u.category, items: [u] });
             }
         });
-        return result;
+        return groups;
     }, [unlocks]);
 
     // Initial load
@@ -189,45 +197,40 @@ const Tasks: React.FC = () => {
                             <div className="table-scroll-container">
                                 <table className="tasks-table">
                                     <thead>
+                                        {/* Row 1: group headers */}
                                         <tr>
-                                            <th>#</th>
-                                            <th>Mail</th>
-                                            <th>Tag</th>
-                                            <th>Char</th>
+                                            <th rowSpan={2}>#</th>
+                                            <th rowSpan={2}>Mail</th>
+                                            <th rowSpan={2}>Tag</th>
+                                            <th rowSpan={2}>Char</th>
+                                            {unlockGroups.map(group => (
+                                                <th
+                                                    key={group.key}
+                                                    colSpan={group.items.length}
+                                                    className="unlock-group-header"
+                                                    style={{ color: group.category === 'boss' ? '#f87171' : '#fbbf24' }}
+                                                >
+                                                    {group.label}
+                                                </th>
+                                            ))}
+                                        </tr>
+                                        {/* Row 2: individual column details */}
+                                        <tr>
                                             {unlocks.map(unlock => (
                                                 <th key={unlock.id} className="task-header-col">
                                                     <div className="task-header-content">
-                                                        <div className="task-name-wrapper">
-                                                            {unlock.category === 'boss' ? (
-                                                                <>
-                                                                    <span style={{ fontSize: '0.6rem', fontWeight: 700, color: '#f87171', letterSpacing: '0.06em' }}>
-                                                                        {unlock.unlocks.toUpperCase()}
-                                                                    </span>
-                                                                    <img
-                                                                        src={BOSS_IMAGE_URL(unlock.unlocks)}
-                                                                        alt={unlock.unlocks}
-                                                                        style={{ width: 52, height: 52, objectFit: 'cover', borderRadius: 6 }}
-                                                                        onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                                                                    />
-                                                                </>
-                                                            ) : (
-                                                                <>
-                                                                    {firstInSystemGroup.has(unlock.id) ? (
-                                                                        <span style={{
-                                                                            fontSize: '0.6rem', fontWeight: 700, padding: '1px 5px', borderRadius: 3,
-                                                                            background: 'rgba(251,191,36,0.12)', color: '#fbbf24', letterSpacing: '0.04em'
-                                                                        }}>
-                                                                            {unlock.unlocks.toUpperCase()}
-                                                                        </span>
-                                                                    ) : (
-                                                                        <span style={{ display: 'block', height: 18 }} />
-                                                                    )}
-                                                                    <span className="task-name">{simplifySystemName(unlock.name)}</span>
-                                                                </>
-                                                            )}
-                                                            <div className="task-header-progress">
-                                                                {unlockProgress.filter(p => p.unlock_id === unlock.id && p.completed).length} / {accounts.length}
-                                                            </div>
+                                                        {unlock.category === 'boss' ? (
+                                                            <img
+                                                                src={BOSS_IMAGE_URL(unlock.unlocks)}
+                                                                alt={unlock.unlocks}
+                                                                style={{ width: 46, height: 46, objectFit: 'cover', borderRadius: 6 }}
+                                                                onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                                                            />
+                                                        ) : (
+                                                            <span className="task-name">{simplifySystemName(unlock.name)}</span>
+                                                        )}
+                                                        <div className="task-header-progress">
+                                                            {unlockProgress.filter(p => p.unlock_id === unlock.id && p.completed).length} / {accounts.length}
                                                         </div>
                                                     </div>
                                                 </th>
