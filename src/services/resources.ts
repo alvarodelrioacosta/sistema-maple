@@ -1,19 +1,35 @@
 // =============================================
-// RESOURCES SERVICE - Inventario de recursos (Refactored to Accounts)
+// RESOURCES SERVICE - Batch-based inventory with FIFO expiry
+// =============================================
+// Resources (solid_cubes, bright_cubes, bonus_bright_cubes,
+// reward_points, psok, guardian_scroll) are stored as discrete
+// batches with optional expiration dates.
+//
+// Consumption order (FIFO): earliest-expiring batches first,
+// non-expiring batches (expires_at IS NULL) last.
+//
+// The accounts table resource columns are kept as synced
+// aggregates so existing reads (DailyCheckUp, UpgradeWorkspace)
+// continue to work without changes.
 // =============================================
 
 import supabase from '../lib/supabase';
-import type { ResourceType } from '../types';
-import accountsService from './accounts';
+import type { ResourceType, ExpiringResourceType, ResourceBatch } from '../types';
+import { EXPIRING_RESOURCE_TYPES } from '../types';
+
+const today = () => new Date().toISOString().split('T')[0];
+
+// Filter expression for non-expired batches
+const notExpiredFilter = () => `expires_at.is.null,expires_at.gte.${today()}`;
 
 export const resourcesService = {
-    // Deprecated: Resources are now part of Account. Use accountsService.getAll()
-    // Keeping this for image fetching
+
+    // ---- Metadata (image / cost lookup) ----
+
     async getResourceMetadata(): Promise<Record<string, { image: string, rpCost: number, mesoCost: number }>> {
         const { data, error } = await supabase
             .from('resource_images')
             .select('resource_type, image_url, reward_point_cost, meso_cost');
-
         if (error) throw error;
 
         const map: Record<string, { image: string, rpCost: number, mesoCost: number }> = {};
@@ -27,49 +43,200 @@ export const resourcesService = {
         return map;
     },
 
-    async updateQuantity(accountId: string, resourceType: ResourceType, quantity: number): Promise<void> {
-        // Map resourceType to account column name (they match exactly in our new schema)
-        const updatePayload = {
-            [resourceType]: quantity
-        };
+    // ---- Batch reads ----
+
+    // Returns all active (non-expired, quantity > 0) batches for an account,
+    // ordered so earliest-expiring comes first (nulls last).
+    async getBatches(accountId: string, resourceType?: ExpiringResourceType): Promise<ResourceBatch[]> {
+        let query = supabase
+            .from('account_resource_batches')
+            .select('*')
+            .eq('account_id', accountId)
+            .gt('quantity', 0)
+            .or(notExpiredFilter())
+            .order('expires_at', { ascending: true, nullsFirst: false });
+
+        if (resourceType) {
+            query = query.eq('resource_type', resourceType);
+        }
+
+        const { data, error } = await query;
+        if (error) throw error;
+        return (data || []) as ResourceBatch[];
+    },
+
+    // Current usable balance for one resource type (sum of non-expired batches)
+    async getBalance(accountId: string, resourceType: ExpiringResourceType): Promise<number> {
+        const { data, error } = await supabase
+            .from('account_resource_batches')
+            .select('quantity')
+            .eq('account_id', accountId)
+            .eq('resource_type', resourceType)
+            .gt('quantity', 0)
+            .or(notExpiredFilter());
+        if (error) throw error;
+        return (data || []).reduce((sum, row) => sum + row.quantity, 0);
+    },
+
+    // Balances for all expiring resource types at once
+    async getAllBalances(accountId: string): Promise<Record<ExpiringResourceType, number>> {
+        const { data, error } = await supabase
+            .from('account_resource_batches')
+            .select('resource_type, quantity')
+            .eq('account_id', accountId)
+            .gt('quantity', 0)
+            .or(notExpiredFilter());
+        if (error) throw error;
+
+        const result: Record<string, number> = {};
+        EXPIRING_RESOURCE_TYPES.forEach(t => { result[t] = 0; });
+        (data || []).forEach(row => {
+            result[row.resource_type] = (result[row.resource_type] || 0) + row.quantity;
+        });
+        return result as Record<ExpiringResourceType, number>;
+    },
+
+    // ---- Batch writes ----
+
+    // Add a new batch (e.g. just bought 5 solid cubes expiring on 18/04)
+    async addBatch(
+        accountId: string,
+        resourceType: ExpiringResourceType,
+        quantity: number,
+        expiresAt?: string | null
+    ): Promise<void> {
+        const { error } = await supabase
+            .from('account_resource_batches')
+            .insert({
+                account_id: accountId,
+                resource_type: resourceType,
+                quantity,
+                expires_at: expiresAt || null
+            });
+        if (error) throw error;
+        await this._syncAggregate(accountId, resourceType);
+    },
+
+    async deleteBatch(batchId: string): Promise<void> {
+        const { data: batch, error: fetchErr } = await supabase
+            .from('account_resource_batches')
+            .select('account_id, resource_type')
+            .eq('id', batchId)
+            .single();
+        if (fetchErr) throw fetchErr;
 
         const { error } = await supabase
-            .from('accounts')
-            .update(updatePayload)
-            .eq('id', accountId);
+            .from('account_resource_batches')
+            .delete()
+            .eq('id', batchId);
+        if (error) throw error;
+        await this._syncAggregate(batch.account_id, batch.resource_type as ExpiringResourceType);
+    },
 
+    // ---- Expiry cleanup ----
+
+    // Deletes all batches whose expiration date has passed and syncs aggregates.
+    // Call on app load or via a scheduled check.
+    async expireOldBatches(accountId?: string): Promise<number> {
+        const t = today();
+        let query = supabase
+            .from('account_resource_batches')
+            .select('id, account_id, resource_type, quantity')
+            .lt('expires_at', t)
+            .gt('quantity', 0);
+
+        if (accountId) query = query.eq('account_id', accountId);
+
+        const { data: expired, error: fetchErr } = await query;
+        if (fetchErr) throw fetchErr;
+        if (!expired || expired.length === 0) return 0;
+
+        const ids = expired.map(b => b.id);
+        const { error: delErr } = await supabase
+            .from('account_resource_batches')
+            .delete()
+            .in('id', ids);
+        if (delErr) throw delErr;
+
+        // Sync aggregates for every (account, resource) pair that was affected
+        const pairs = new Set(expired.map(b => `${b.account_id}:${b.resource_type}`));
+        for (const key of pairs) {
+            const [aId, rType] = key.split(':');
+            await this._syncAggregate(aId, rType as ExpiringResourceType);
+        }
+
+        return expired.length;
+    },
+
+    // ---- Consumption (FIFO) ----
+
+    // Deducts `amount` from the account's batches using FIFO order
+    // (earliest-expiring first, non-expiring last).
+    // Also kept backward-compatible: still called from UpgradeWorkspace.
+    async deductCubes(accountId: string, resourceType: ResourceType, amount: number): Promise<void> {
+        if (resourceType === 'perfect_innoc') {
+            throw new Error('perfect_innoc is managed via shared_inventory, not resource batches');
+        }
+
+        const t = today();
+        const { data: batches, error } = await supabase
+            .from('account_resource_batches')
+            .select('id, quantity')
+            .eq('account_id', accountId)
+            .eq('resource_type', resourceType)
+            .gt('quantity', 0)
+            .or(`expires_at.is.null,expires_at.gte.${t}`)
+            .order('expires_at', { ascending: true, nullsFirst: false });
+        if (error) throw error;
+
+        const available = (batches || []).reduce((sum, b) => sum + b.quantity, 0);
+        if (available < amount) {
+            throw new Error(`Insufficient ${resourceType}. Available: ${available}, Required: ${amount}`);
+        }
+
+        let remaining = amount;
+        for (const batch of batches || []) {
+            if (remaining <= 0) break;
+            const deduct = Math.min(batch.quantity, remaining);
+            const { error: updateErr } = await supabase
+                .from('account_resource_batches')
+                .update({ quantity: batch.quantity - deduct })
+                .eq('id', batch.id);
+            if (updateErr) throw updateErr;
+            remaining -= deduct;
+        }
+
+        await this._syncAggregate(accountId, resourceType as ExpiringResourceType);
+    },
+
+    // Legacy addCubes kept for any callers outside the Resources page.
+    // Adds a non-expiring batch.
+    async addCubes(accountId: string, cubeType: ResourceType, amount: number): Promise<void> {
+        if (cubeType === 'perfect_innoc') return;
+        await this.addBatch(accountId, cubeType as ExpiringResourceType, amount, null);
+    },
+
+    // ---- Internal ----
+
+    // Recalculates the resource total from batches and writes it back to
+    // the accounts row so that all existing reads stay correct.
+    async _syncAggregate(accountId: string, resourceType: ExpiringResourceType): Promise<void> {
+        const balance = await this.getBalance(accountId, resourceType);
+        const { error } = await supabase
+            .from('accounts')
+            .update({ [resourceType]: balance })
+            .eq('id', accountId);
         if (error) throw error;
     },
 
-    // Descontar cubos (para Upgrade Workspace)
-    async deductCubes(accountId: string, cubeType: ResourceType, amount: number): Promise<void> {
-        const account = await accountsService.getById(accountId);
-
-        if (!account) {
-            throw new Error(`Account not found`);
-        }
-
-        // Dynamic access to resource field
-        const currentQuantity = (account as any)[cubeType] as number || 0;
-
-        if (currentQuantity < amount) {
-            throw new Error(`Insufficient ${cubeType}. Available: ${currentQuantity}, Required: ${amount}`);
-        }
-
-        await this.updateQuantity(accountId, cubeType, currentQuantity - amount);
+    // Kept only for mesos_b (non-batch field) or emergency overrides.
+    async updateQuantity(accountId: string, resourceType: ResourceType, quantity: number): Promise<void> {
+        const { error } = await supabase
+            .from('accounts')
+            .update({ [resourceType]: quantity })
+            .eq('id', accountId);
+        if (error) throw error;
     },
-
-    // Agregar cubos
-    async addCubes(accountId: string, cubeType: ResourceType, amount: number): Promise<void> {
-        const account = await accountsService.getById(accountId);
-
-        if (!account) {
-            throw new Error(`Account not found`);
-        }
-
-        const currentQuantity = (account as any)[cubeType] as number || 0;
-        await this.updateQuantity(accountId, cubeType, currentQuantity + amount);
-    }
 };
 
 export default resourcesService;

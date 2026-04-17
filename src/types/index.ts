@@ -114,8 +114,35 @@ export interface Item {
 export type ItemInsert = Omit<Item, 'id' | 'created_at'>;
 export type ItemUpdate = Partial<ItemInsert>;
 
-// ===== RESOURCE INVENTORY REMOVED =====
+// ===== RESOURCES =====
 export type ResourceType = 'bright_cubes' | 'bonus_bright_cubes' | 'reward_points' | 'psok' | 'guardian_scroll' | 'solid_cubes' | 'perfect_innoc';
+
+// Resources tracked with per-batch expiry dates (excludes mesos_b and perfect_innoc)
+export type ExpiringResourceType = 'bright_cubes' | 'bonus_bright_cubes' | 'reward_points' | 'psok' | 'guardian_scroll' | 'solid_cubes';
+
+export const EXPIRING_RESOURCE_TYPES: ExpiringResourceType[] = [
+    'solid_cubes', 'bright_cubes', 'bonus_bright_cubes', 'reward_points', 'psok', 'guardian_scroll'
+];
+
+export const RESOURCE_LABELS: Record<ExpiringResourceType, string> = {
+    solid_cubes: 'Solid Cubes',
+    bright_cubes: 'Bright Cubes',
+    bonus_bright_cubes: 'Bonus Bright Cubes',
+    reward_points: 'Reward Points',
+    psok: 'PSOK',
+    guardian_scroll: 'Guardian Scroll'
+};
+
+export interface ResourceBatch {
+    id: string;
+    account_id: string;
+    resource_type: ExpiringResourceType;
+    quantity: number;
+    expires_at: string | null; // ISO date YYYY-MM-DD, null = never expires
+    created_at: string;
+}
+
+export type ResourceBatchInsert = Omit<ResourceBatch, 'id' | 'created_at'>;
 
 // ===== CLIENTS =====
 export interface Client {
