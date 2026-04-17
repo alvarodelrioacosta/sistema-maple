@@ -6,9 +6,11 @@ import { getSkillsForClass } from '../../constants/sixthJobSkills';
 interface Props {
     characterId: string;
     characterClass: string | null;
+    unlocked?: boolean;
+    loadingUnlocks?: boolean;
 }
 
-export const SixthJobTracker: React.FC<Props> = ({ characterId, characterClass }) => {
+export const SixthJobTracker: React.FC<Props> = ({ characterId, characterClass, unlocked, loadingUnlocks }) => {
     const [levels, setLevels] = useState<Record<string, number>>({});
     const [saving, setSaving] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
@@ -16,6 +18,10 @@ export const SixthJobTracker: React.FC<Props> = ({ characterId, characterClass }
     const skills = getSkillsForClass(characterClass);
 
     useEffect(() => {
+        if (unlocked === false) {
+            setLoading(false);
+            return;
+        }
         setLoading(true);
         sixthJobSkillsService.getByCharacter(characterId).then((data: SixthJobSkillProgress[]) => {
             const map: Record<string, number> = {};
@@ -35,8 +41,17 @@ export const SixthJobTracker: React.FC<Props> = ({ characterId, characterClass }
         }
     }, [characterId]);
 
-    if (loading) return <div style={{ padding: '1rem', color: '#64748b', fontSize: '0.85rem' }}>Loading skills...</div>;
-
+    if (loading || loadingUnlocks) return <div style={{ padding: '1rem', color: '#64748b', fontSize: '0.85rem' }}>Loading skills...</div>;
+    
+    if (unlocked === false) {
+        return (
+            <div style={{ padding: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'rgba(239, 68, 68, 0.03)', borderRadius: '8px', margin: '10px 0' }}>
+                <div style={{ color: '#f87171', fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span>🔒</span> 6th Job Skills Locked — Complete Prequest to Unlock
+                </div>
+            </div>
+        );
+    }
     return (
         <div style={{ padding: '1rem 1.25rem', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'rgba(0,0,0,0.1)' }}>
             <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>

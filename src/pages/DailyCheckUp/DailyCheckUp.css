@@ -704,4 +704,16 @@
     background: rgba(255, 255, 255, 0.08);
 }
 
+.daily-checkbox.is-locked {
+    opacity: 0.25;
+    cursor: not-allowed;
+    filter: grayscale(1);
+    pointer-events: none;
+}
+
+.daily-checkbox.is-locked .checkmark {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+
 

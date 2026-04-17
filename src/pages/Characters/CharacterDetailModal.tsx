@@ -3,7 +3,9 @@ import { Modal } from '../../components/UI';
 import { SymbolTracker } from './SymbolTracker';
 import { SixthJobTracker } from './SixthJobTracker';
 import { ContentUnlocksPanel } from './ContentUnlocksPanel';
+import { contentUnlocksService } from '../../services';
 import type { CharacterWithAccount, ClassItem } from '../../types';
+import type { ContentUnlock, AccountUnlockProgress } from '../../services';
 
 interface Props {
     character: CharacterWithAccount | null;
@@ -12,7 +14,28 @@ interface Props {
 }
 
 export const CharacterDetailModal: React.FC<Props> = ({ character, classes, onClose }) => {
+    const [unlocks, setUnlocks] = React.useState<ContentUnlock[]>([]);
+    const [progress, setProgress] = React.useState<AccountUnlockProgress[]>([]);
+    const [loading, setLoading] = React.useState(true);
+
+    React.useEffect(() => {
+        if (!character) return;
+        setLoading(true);
+        Promise.all([
+            contentUnlocksService.getAll(),
+            contentUnlocksService.getAllProgress()
+        ]).then(([u, p]) => {
+            setUnlocks(u);
+            setProgress(p.filter(pr => pr.account_id === character.account_id));
+        }).finally(() => setLoading(false));
+    }, [character?.account_id]);
+
     if (!character) return null;
+
+    const isSixthJobUnlocked = progress.some(p => {
+        const unlock = unlocks.find(u => u.id === p.unlock_id);
+        return unlock?.name === '6th Job' && p.completed;
+    });
 
     const jobClass = classes.find(cls => cls.job_1 === character.job || cls.job_2 === character.job);
     const jobIcon = character.class === 'Xenon'
@@ -72,8 +95,18 @@ export const CharacterDetailModal: React.FC<Props> = ({ character, classes, onCl
 
             {/* Tracker sections */}
             <SymbolTracker characterId={character.id} characterLevel={character.level} />
-            <SixthJobTracker characterId={character.id} characterClass={character.class} />
-            <ContentUnlocksPanel accountId={character.account_id} />
+            <SixthJobTracker 
+                characterId={character.id} 
+                characterClass={character.class} 
+                unlocked={isSixthJobUnlocked}
+                loadingUnlocks={loading}
+            />
+            <ContentUnlocksPanel 
+                accountId={character.account_id} 
+                unlocks={unlocks}
+                progress={progress}
+                loading={loading}
+            />
         </Modal>
     );
 };

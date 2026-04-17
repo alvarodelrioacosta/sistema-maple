@@ -38,6 +38,14 @@ const CATEGORY_COLORS = {
     system: '#fbbf24' // Yellow
 };
 
+const GROUP_LABEL_DISPLAY: Record<string, string> = {
+    '6TH JOB SKILLS': '6TH JOB',
+};
+
+const COLUMN_NAME_DISPLAY: Record<string, string> = {
+    '6th Job': '6th Job Prequest',
+};
+
 const DailyCheckUp: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -351,6 +359,24 @@ const DailyCheckUp: React.FC = () => {
         return groups;
     }, [allUnlocks]);
 
+    const prereqMap = useMemo(() => {
+        const map = new Map<string, string | null>();
+        groupedDailyUnlocks.forEach(group => {
+            if (group.label === 'MYSTIC FRONTIER') {
+                group.items.forEach((item, idx) => {
+                    if (idx > 0) {
+                        map.set(item.id, group.items[idx - 1].id);
+                    } else {
+                        map.set(item.id, null);
+                    }
+                });
+            } else {
+                group.items.forEach(item => map.set(item.id, null));
+            }
+        });
+        return map;
+    }, [groupedDailyUnlocks]);
+
     if (loading) {
         return <LoadingScreen message="Cargando Dashboard Diario..." />;
     }
@@ -643,7 +669,7 @@ const DailyCheckUp: React.FC = () => {
                                         className="header-group-cell"
                                         style={{ color: CATEGORY_COLORS[group.category] }}
                                     >
-                                        {group.label}
+                                        {GROUP_LABEL_DISPLAY[group.label] || group.label}
                                     </th>
                                 ))}
                                 {showRP && <th rowSpan={2} className="col-rp">RP / PSOK</th>}
@@ -670,7 +696,7 @@ const DailyCheckUp: React.FC = () => {
                                                         {group.category === 'boss' ? (
                                                             <img src={BOSS_IMAGE_URL(item.unlocks)} alt={group.label} className="header-boss-icon" />
                                                         ) : (
-                                                            <span>{item.name.includes(' — ') ? item.name.split(' — ')[1] : item.name}</span>
+                                                            <span>{COLUMN_NAME_DISPLAY[item.name] || (item.name.includes(' — ') ? item.name.split(' — ')[1] : item.name)}</span>
                                                         )}
                                                     </div>
                                                     <span className="header-counter">{count.completed} / {count.total}</span>
@@ -737,18 +763,25 @@ const DailyCheckUp: React.FC = () => {
                                     })}
 
                                     {/* Unlock Checks */}
-                                    {dailyUnlocks.map(unlock => (
-                                        <td key={unlock.id} className="col-action">
-                                            <label className="daily-checkbox">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={row.unlockProgress[unlock.id]}
-                                                    onChange={(e) => handleToggleUnlock(unlock.id, row.account.id, e.target.checked)}
-                                                />
-                                                <span className="checkmark"></span>
-                                            </label>
-                                        </td>
-                                    ))}
+                                    {dailyUnlocks.map(unlock => {
+                                        const isCompleted = !!row.unlockProgress[unlock.id];
+                                        const prereqId = prereqMap.get(unlock.id);
+                                        const isLocked = !!(prereqId && !row.unlockProgress[prereqId]);
+
+                                        return (
+                                            <td key={unlock.id} className="col-action">
+                                                <label className={`daily-checkbox ${isLocked ? 'is-locked' : ''}`}>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={isCompleted}
+                                                        disabled={isLocked}
+                                                        onChange={(e) => handleToggleUnlock(unlock.id, row.account.id, e.target.checked)}
+                                                    />
+                                                    <span className="checkmark"></span>
+                                                </label>
+                                            </td>
+                                        );
+                                    })}
 
                                     {/* Reward Points / PSOK */}
                                     {showRP && (
