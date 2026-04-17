@@ -71,7 +71,7 @@ export const CharacterDetailModal: React.FC<Props> = ({ character, classes, onCl
             </div>
 
             {/* Tracker sections */}
-            <SymbolTracker characterId={character.id} characterName={character.name} characterLevel={character.level} />
+            <SymbolTracker characterId={character.id} characterLevel={character.level} />
             <SixthJobTracker characterId={character.id} characterClass={character.class} />
             <ContentUnlocksPanel accountId={character.account_id} />
         </Modal>
