@@ -5,13 +5,12 @@
 import React, { useEffect, useState } from 'react';
 import { Header } from '../../components/Layout';
 import { Button, Table, Modal, Input, Select, Card } from '../../components/UI';
-import { charactersService, accountsService, classesService } from '../../services';
+import { charactersService, accountsService, classesService, symbolProgressService } from '../../services';
+import type { SymbolProgress } from '../../services';
 import type { CharacterWithAccount, CharacterInsert, Account, JobType, ClassItem } from '../../types';
 import type { Column } from '../../components/UI/Table';
 
-import { SymbolTracker } from './SymbolTracker';
-import { SixthJobTracker } from './SixthJobTracker';
-import { ContentUnlocksPanel } from './ContentUnlocksPanel';
+import { CharacterDetailModal } from './CharacterDetailModal';
 import '../Accounts/Accounts.css';
 import './Characters.css';
 
@@ -44,7 +43,8 @@ export const Characters: React.FC = () => {
     const [isSaving, setIsSaving] = useState(false);
     const [syncingId, setSyncingId] = useState<string | null>(null);
     const [syncingAll, setSyncingAll] = useState(false);
-    const [expandedCharId, setExpandedCharId] = useState<string | null>(null);
+    const [selectedChar, setSelectedChar] = useState<CharacterWithAccount | null>(null);
+    const [allSymbols, setAllSymbols] = useState<SymbolProgress[]>([]);
 
     useEffect(() => {
         loadData();
@@ -52,10 +52,11 @@ export const Characters: React.FC = () => {
 
     const loadData = async () => {
         try {
-            const [charsData, accountsData, classesData] = await Promise.all([
+            const [charsData, accountsData, classesData, symbolsData] = await Promise.all([
                 charactersService.getAll(),
                 accountsService.getAll(),
-                classesService.getAll()
+                classesService.getAll(),
+                symbolProgressService.getAll()
             ]);
 
             // Sort characters by Account Number
@@ -67,6 +68,7 @@ export const Characters: React.FC = () => {
             setCharacters(charsWithAccount);
             setAccounts(accountsData);
             setClasses(classesData);
+            setAllSymbols(symbolsData);
         } catch (error) {
             console.error('Error loading data:', error);
         } finally {
@@ -189,8 +191,8 @@ export const Characters: React.FC = () => {
             header: 'Name',
             render: (c) => (
                 <span
-                    style={{ cursor: 'pointer', fontWeight: 600, color: expandedCharId === c.id ? '#818cf8' : 'inherit' }}
-                    onClick={() => setExpandedCharId(expandedCharId === c.id ? null : c.id)}
+                    style={{ cursor: 'pointer', fontWeight: 600, color: '#818cf8' }}
+                    onClick={() => setSelectedChar(c)}
                 >
                     {c.name}
                 </span>
@@ -254,6 +256,48 @@ export const Characters: React.FC = () => {
                     {new Date(c.last_synced_at).toLocaleDateString('es-CL', { day: '2-digit', month: 'short' })}
                 </span>
             ) : <span style={{ color: '#475569', fontSize: '0.75rem' }}>Never</span>
+        },
+        {
+            key: 'arcane',
+            header: 'Arcane',
+            render: (c) => {
+                const total = allSymbols
+                    .filter(s => s.character_id === c.id && s.symbol_type === 'arcane')
+                    .reduce((sum, s) => sum + s.symbol_level, 0);
+                const pct = total / 120;
+                return (
+                    <div style={{ fontSize: '0.8rem' }}>
+                        <span style={{ color: total === 120 ? '#4ade80' : '#f1f5f9', fontWeight: 600 }}>{total}</span>
+                        <span style={{ color: '#475569' }}>/120</span>
+                        {total > 0 && (
+                            <div style={{ marginTop: '3px', height: '3px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', width: '48px' }}>
+                                <div style={{ width: `${pct * 100}%`, height: '100%', background: total === 120 ? '#4ade80' : '#818cf8', borderRadius: '2px', transition: 'width 0.2s' }} />
+                            </div>
+                        )}
+                    </div>
+                );
+            }
+        },
+        {
+            key: 'sacred',
+            header: 'Sacred',
+            render: (c) => {
+                const total = allSymbols
+                    .filter(s => s.character_id === c.id && s.symbol_type === 'sacred')
+                    .reduce((sum, s) => sum + s.symbol_level, 0);
+                const pct = total / 66;
+                return (
+                    <div style={{ fontSize: '0.8rem' }}>
+                        <span style={{ color: total === 66 ? '#4ade80' : '#f1f5f9', fontWeight: 600 }}>{total}</span>
+                        <span style={{ color: '#475569' }}>/66</span>
+                        {total > 0 && (
+                            <div style={{ marginTop: '3px', height: '3px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', width: '48px' }}>
+                                <div style={{ width: `${pct * 100}%`, height: '100%', background: total === 66 ? '#4ade80' : '#fbbf24', borderRadius: '2px', transition: 'width 0.2s' }} />
+                            </div>
+                        )}
+                    </div>
+                );
+            }
         },
         {
             key: 'main',
@@ -385,16 +429,11 @@ export const Characters: React.FC = () => {
                     />
                 </Card>
 
-                {expandedCharId && (() => {
-                    const char = characters.find(c => c.id === expandedCharId);
-                    return char ? (
-                        <Card padding="none" style={{ marginTop: '0.5rem' }}>
-                            <SymbolTracker characterId={char.id} characterName={char.name} />
-                            <SixthJobTracker characterId={char.id} characterClass={char.class} />
-                            <ContentUnlocksPanel accountId={char.account_id} />
-                        </Card>
-                    ) : null;
-                })()}
+                <CharacterDetailModal
+                    character={selectedChar}
+                    classes={classes}
+                    onClose={() => setSelectedChar(null)}
+                />
             </div>
 
             <Modal

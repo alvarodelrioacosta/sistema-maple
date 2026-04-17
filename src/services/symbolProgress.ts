@@ -10,6 +10,14 @@ export interface SymbolProgress {
 }
 
 export const symbolProgressService = {
+    async getAll(): Promise<SymbolProgress[]> {
+        const { data, error } = await supabase
+            .from('symbol_progress')
+            .select('*');
+        if (error) throw error;
+        return data || [];
+    },
+
     async getByCharacter(characterId: string): Promise<SymbolProgress[]> {
         const { data, error } = await supabase
             .from('symbol_progress')
