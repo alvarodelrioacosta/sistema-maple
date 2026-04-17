@@ -17,14 +17,17 @@ export const bossingService = {
 
     // ---- Date helpers ----
 
-    // Returns the ISO date string (YYYY-MM-DD) of the Monday
-    // that starts the week containing `date`.
+    // Returns the ISO date string (YYYY-MM-DD) of the Thursday 00:00 UTC
+    // that opened the current MapleStory weekly reset window.
+    // Weekly bosses reset Thursday 00:00 UTC → week window is Thu–Wed.
     getWeekStart(date: Date = new Date()): string {
         const d = new Date(date);
-        d.setHours(0, 0, 0, 0);
-        const day = d.getDay(); // 0 = Sunday
-        const diff = day === 0 ? -6 : 1 - day;
-        d.setDate(d.getDate() + diff);
+        // Work fully in UTC
+        const utcDay = d.getUTCDay(); // 0=Sun 1=Mon 2=Tue 3=Wed 4=Thu 5=Fri 6=Sat
+        // Days since the last Thursday
+        const daysSinceThu = utcDay >= 4 ? utcDay - 4 : utcDay + 3;
+        d.setUTCDate(d.getUTCDate() - daysSinceThu);
+        d.setUTCHours(0, 0, 0, 0);
         return d.toISOString().split('T')[0];
     },
 
@@ -80,6 +83,14 @@ export const bossingService = {
     },
 
     // ---- Prequest management ----
+
+    async getAllPrequests(): Promise<{ account_id: string; boss_id: string }[]> {
+        const { data, error } = await supabase
+            .from('account_boss_prequests')
+            .select('account_id, boss_id');
+        if (error) throw error;
+        return data || [];
+    },
 
     async getAccountPrequests(accountId: string): Promise<string[]> {
         const { data, error } = await supabase

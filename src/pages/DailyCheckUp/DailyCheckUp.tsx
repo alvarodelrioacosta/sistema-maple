@@ -80,11 +80,11 @@ const DailyCheckUp: React.FC = () => {
     const [showBossing, setShowBossing] = useState(false);
     const [allBosses, setAllBosses] = useState<Boss[]>([]);
     const [weekSessions, setWeekSessions] = useState<BossingSession[]>([]);
-    const [bossingModalAccount, setBossingModalAccount] = useState<Account | null>(null);
-    const [selectedBossIds, setSelectedBossIds] = useState<Set<string>>(new Set());
-    const [modalPrequests, setModalPrequests] = useState<Set<string>>(new Set());
-    const [rpOverride, setRpOverride] = useState<number | null>(null);
-    const [isRegisteringBossing, setIsRegisteringBossing] = useState(false);
+    const [allPrequests, setAllPrequests] = useState<{ account_id: string; boss_id: string }[]>([]);
+    // bossStates: accountId → bossId → 0=unselected 1=cleared 2=failed
+    const [bossStates, setBossStates] = useState<Record<string, Record<string, 0 | 1 | 2>>>({});
+    const [rpOverrides, setRpOverrides] = useState<Record<string, number | null>>({});
+    const [registeringAccounts, setRegisteringAccounts] = useState<Set<string>>(new Set());
 
     const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
 
@@ -158,7 +158,8 @@ const DailyCheckUp: React.FC = () => {
                 itemsData,
                 itemsDBData,
                 bossesData,
-                weekSessionsData
+                weekSessionsData,
+                prequestsData
             ] = await Promise.all([
                 accountsService.getAll().catch(e => { console.error('Failed to load accounts:', e); return []; }),
                 charactersService.getAll().catch(e => { console.error('Failed to load characters:', e); return []; }),
@@ -169,7 +170,8 @@ const DailyCheckUp: React.FC = () => {
                 itemsService.getByStatus('for_sale').catch(e => { console.error('Failed to load items:', e); return []; }),
                 itemsDBService.getAll().catch(e => { console.error('Failed to load itemsDB:', e); return []; }),
                 bossesService.getAll().catch(e => { console.error('Failed to load bosses:', e); return []; }),
-                bossingService.getWeekSessions(bossingService.getWeekStart()).catch(e => { console.error('Failed to load week sessions:', e); return []; })
+                bossingService.getWeekSessions(bossingService.getWeekStart()).catch(e => { console.error('Failed to load week sessions:', e); return []; }),
+                bossingService.getAllPrequests().catch(e => { console.error('Failed to load prequests:', e); return []; })
             ]);
 
             console.log('DailyCheckUp Data Loaded:', {
@@ -199,6 +201,15 @@ const DailyCheckUp: React.FC = () => {
             setItemsDB(itemsDBData);
             setAllBosses(bossesData);
             setWeekSessions(weekSessionsData);
+            setAllPrequests(prequestsData);
+            // Initialize boss selection states from existing sessions (cleared bosses → state 1)
+            const initialBossStates: Record<string, Record<string, 0 | 1 | 2>> = {};
+            weekSessionsData.forEach((session: BossingSession) => {
+                const acct: Record<string, 0 | 1 | 2> = {};
+                session.bosses_cleared.forEach((bossId: string) => { acct[bossId] = 1; });
+                initialBossStates[session.account_id] = acct;
+            });
+            setBossStates(initialBossStates);
 
             if (filteredEvents.length > 0) {
                 const progressData = await eventsService.getAccountProgress(filteredEvents.map(e => e.id));
@@ -610,63 +621,63 @@ const DailyCheckUp: React.FC = () => {
 
     // ---- Bossing handlers ----
 
-    const handleOpenBossing = async (account: Account) => {
-        const existingSession = weekSessions.find(s => s.account_id === account.id);
-        setSelectedBossIds(existingSession ? new Set(existingSession.bosses_cleared) : new Set());
-        setRpOverride(existingSession ? existingSession.rp_earned : null);
-        setBossingModalAccount(account);
-        // Load prequests lazily for this account
-        const preqIds = await bossingService.getAccountPrequests(account.id);
-        setModalPrequests(new Set(preqIds));
-    };
-
-    const handleToggleBoss = (bossId: string) => {
-        setSelectedBossIds(prev => {
-            const next = new Set(prev);
-            if (next.has(bossId)) next.delete(bossId); else next.add(bossId);
-            return next;
+    // accountId → Set of boss IDs where prequest is done
+    const prequestMap = useMemo(() => {
+        const map: Record<string, Set<string>> = {};
+        allPrequests.forEach(({ account_id, boss_id }) => {
+            if (!map[account_id]) map[account_id] = new Set();
+            map[account_id].add(boss_id);
         });
-        setRpOverride(null); // reset override when selection changes
+        return map;
+    }, [allPrequests]);
+
+    // cycle: 0 (unselected) → 1 (cleared ✓) → 2 (failed ✗) → 0
+    const handleBossClick = (accountId: string, bossId: string) => {
+        setBossStates(prev => {
+            const cur = (prev[accountId]?.[bossId] ?? 0) as 0 | 1 | 2;
+            const next: 0 | 1 | 2 = cur === 0 ? 1 : cur === 1 ? 2 : 0;
+            return { ...prev, [accountId]: { ...(prev[accountId] || {}), [bossId]: next } };
+        });
+        setRpOverrides(prev => ({ ...prev, [accountId]: null }));
     };
 
-    const handleTogglePrequest = async (bossId: string, currentlyDone: boolean) => {
-        if (!bossingModalAccount) return;
+    const handleToggleBossPrequest = async (accountId: string, bossId: string) => {
+        const currentlyDone = prequestMap[accountId]?.has(bossId) ?? false;
         const newState = !currentlyDone;
-        setModalPrequests(prev => {
-            const next = new Set(prev);
-            if (newState) next.add(bossId); else next.delete(bossId);
-            return next;
-        });
-        await bossingService.setPrequest(bossingModalAccount.id, bossId, newState);
+        setAllPrequests(prev =>
+            newState
+                ? [...prev, { account_id: accountId, boss_id: bossId }]
+                : prev.filter(p => !(p.account_id === accountId && p.boss_id === bossId))
+        );
+        await bossingService.setPrequest(accountId, bossId, newState);
     };
 
-    const handleRegisterBossing = async () => {
-        if (!bossingModalAccount || isRegisteringBossing) return;
-        setIsRegisteringBossing(true);
+    const handleRegisterBossing = async (accountId: string) => {
+        if (registeringAccounts.has(accountId)) return;
+        setRegisteringAccounts(prev => new Set([...prev, accountId]));
         try {
-            const bossIds = Array.from(selectedBossIds);
-            const calculatedRP = bossIds.length * 200;
-            const finalRP = rpOverride !== null ? rpOverride : calculatedRP;
+            const states = bossStates[accountId] || {};
+            const clearedIds = Object.entries(states).filter(([, s]) => s === 1).map(([id]) => id);
+            const calculated = clearedIds.length * 200;
+            const finalRP = rpOverrides[accountId] ?? calculated;
 
-            const existingSession = weekSessions.find(s => s.account_id === bossingModalAccount.id);
-            const deltaRP = finalRP - (existingSession?.rp_earned || 0);
+            const existing = weekSessions.find(s => s.account_id === accountId);
+            const delta = finalRP - (existing?.rp_earned || 0);
 
-            const session = await bossingService.registerSession(bossingModalAccount.id, bossIds, finalRP);
+            const session = await bossingService.registerSession(accountId, clearedIds, finalRP);
 
-            // Adjust RP batches by the delta (add or deduct)
-            if (deltaRP > 0) {
-                await resourcesService.addBatch(bossingModalAccount.id, 'reward_points', deltaRP, session.rp_expires_at);
-            } else if (deltaRP < 0) {
-                await resourcesService.deductCubes(bossingModalAccount.id, 'reward_points', Math.abs(deltaRP));
+            if (delta > 0) {
+                await resourcesService.addBatch(accountId, 'reward_points', delta, session.rp_expires_at);
+            } else if (delta < 0) {
+                await resourcesService.deductCubes(accountId, 'reward_points', Math.abs(delta));
             }
 
-            setWeekSessions(prev => [...prev.filter(s => s.account_id !== bossingModalAccount.id), session]);
-            await loadData();
-            setBossingModalAccount(null);
+            setWeekSessions(prev => [...prev.filter(s => s.account_id !== accountId), session]);
+            setRpOverrides(prev => ({ ...prev, [accountId]: null }));
         } catch (err) {
-            console.error('Error registering bossing session:', err);
+            console.error('Error registering bossing:', err);
         } finally {
-            setIsRegisteringBossing(false);
+            setRegisteringAccounts(prev => { const n = new Set(prev); n.delete(accountId); return n; });
         }
     };
 
@@ -902,28 +913,77 @@ const DailyCheckUp: React.FC = () => {
                                         </td>
                                     )}
 
-                                    {/* Bossing */}
-                                    {showBossing && (
-                                        <td className="col-bossing">
-                                            {(() => {
-                                                const session = weekSessions.find(s => s.account_id === row.account.id);
-                                                if (session) {
-                                                    return (
-                                                        <div className="bossing-done-cell">
-                                                            <span className="bossing-done-check">✓</span>
-                                                            <span className="bossing-done-rp">{session.rp_earned.toLocaleString()} RP</span>
-                                                            <button className="bossing-edit-btn" onClick={() => handleOpenBossing(row.account)} title="Edit session">✎</button>
-                                                        </div>
-                                                    );
-                                                }
-                                                return (
-                                                    <button className="bossing-open-btn" onClick={() => handleOpenBossing(row.account)}>
-                                                        Boss
-                                                    </button>
-                                                );
-                                            })()}
-                                        </td>
-                                    )}
+                                    {/* Bossing — inline strip */}
+                                    {showBossing && (() => {
+                                        const accountId = row.account.id;
+                                        const session = weekSessions.find(s => s.account_id === accountId);
+                                        const accountPreqs = prequestMap[accountId] || new Set<string>();
+                                        const states = bossStates[accountId] || {};
+                                        const clearedCount = Object.values(states).filter(s => s === 1).length;
+                                        const calculated = clearedCount * 200;
+                                        const override = rpOverrides[accountId];
+                                        const finalRP = override !== null && override !== undefined ? override : calculated;
+                                        const isRegistering = registeringAccounts.has(accountId);
+                                        const isDone = !!session;
+
+                                        return (
+                                            <td className="col-bossing">
+                                                <div className="bossing-inline">
+                                                    {/* Boss icon strip */}
+                                                    <div className="boss-strip">
+                                                        {allBosses.map(boss => {
+                                                            const locked = boss.needs_prequest && !accountPreqs.has(boss.id);
+                                                            const state = states[boss.id] ?? 0;
+                                                            return (
+                                                                <div
+                                                                    key={boss.id}
+                                                                    className={`boss-icon${locked ? ' boss-icon--locked' : ''}${state === 1 ? ' boss-icon--cleared' : ''}${state === 2 ? ' boss-icon--failed' : ''}`}
+                                                                    onClick={() => !locked && handleBossClick(accountId, boss.id)}
+                                                                    title={locked ? 'Prequest required' : boss.name}
+                                                                >
+                                                                    <img
+                                                                        src={boss.image_url || BOSS_IMAGE_URL(boss.name)}
+                                                                        alt={boss.name}
+                                                                        onError={e => { (e.target as HTMLImageElement).style.opacity = '0.2'; }}
+                                                                    />
+                                                                    {state === 1 && <span className="boss-icon-overlay boss-icon-overlay--ok">✓</span>}
+                                                                    {state === 2 && <span className="boss-icon-overlay boss-icon-overlay--fail">✗</span>}
+                                                                    {locked && (
+                                                                        <span
+                                                                            className="boss-icon-lock"
+                                                                            onClick={e => { e.stopPropagation(); handleToggleBossPrequest(accountId, boss.id); }}
+                                                                            title="Mark prequest as done"
+                                                                        >🔒</span>
+                                                                    )}
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+
+                                                    {/* RP + Register row */}
+                                                    <div className="bossing-action-row">
+                                                        {isDone && <span className="bossing-done-badge">✓ DONE</span>}
+                                                        <input
+                                                            type="number"
+                                                            min={0}
+                                                            className="bossing-rp-inline"
+                                                            value={finalRP}
+                                                            onChange={e => setRpOverrides(prev => ({ ...prev, [accountId]: parseInt(e.target.value) || 0 }))}
+                                                            title="RP to register (auto-calculated, editable)"
+                                                        />
+                                                        <button
+                                                            className={`bossing-register-btn${isDone ? ' bossing-register-btn--update' : ''}`}
+                                                            onClick={() => handleRegisterBossing(accountId)}
+                                                            disabled={isRegistering || finalRP === 0}
+                                                            title={isDone ? 'Update this week\'s session' : 'Register bossing RP'}
+                                                        >
+                                                            {isRegistering ? '...' : isDone ? '↺' : 'Register'}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        );
+                                    })()}
 
                                     {/* Items Section */}
                                     {showItems && (
@@ -1015,118 +1075,6 @@ const DailyCheckUp: React.FC = () => {
                 <div className="modal-actions">
                     <Button variant="primary" onClick={() => setConfigModalOpen(false)}>Done</Button>
                 </div>
-            </Modal>
-
-            {/* ---- BOSSING MODAL ---- */}
-            <Modal
-                isOpen={!!bossingModalAccount}
-                onClose={() => setBossingModalAccount(null)}
-                title={
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                        <span style={{ fontSize: '1.1rem', fontWeight: 700 }}>Bossing</span>
-                        <span style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
-                            Account N° {bossingModalAccount?.number}
-                            {bossingModalAccount?.email ? ` — ${bossingModalAccount.email}` : ''}
-                        </span>
-                    </div>
-                }
-            >
-                {bossingModalAccount && (() => {
-                    const calculatedRP = selectedBossIds.size * 200;
-                    const finalRP = rpOverride !== null ? rpOverride : calculatedRP;
-                    const existingSession = weekSessions.find(s => s.account_id === bossingModalAccount.id);
-                    const deltaRP = finalRP - (existingSession?.rp_earned || 0);
-                    const btnLabel = existingSession
-                        ? `Update (${deltaRP >= 0 ? '+' : ''}${deltaRP.toLocaleString()} RP)`
-                        : `Register ${finalRP.toLocaleString()} RP`;
-
-                    return (
-                        <div className="bossing-modal-body">
-                            {/* Boss grid */}
-                            <div className="boss-grid">
-                                {allBosses.map(boss => {
-                                    const preqDone = !boss.needs_prequest || modalPrequests.has(boss.id);
-                                    const selected = selectedBossIds.has(boss.id);
-                                    return (
-                                        <div
-                                            key={boss.id}
-                                            className={`boss-card${selected ? ' boss-card--selected' : ''}${!preqDone ? ' boss-card--locked' : ''}`}
-                                            onClick={() => preqDone && handleToggleBoss(boss.id)}
-                                            title={!preqDone ? 'Prequest required — click 🔒 to mark as done' : boss.name}
-                                        >
-                                            <div className="boss-img-wrapper">
-                                                <img
-                                                    src={boss.image_url || BOSS_IMAGE_URL(boss.name)}
-                                                    alt={boss.name}
-                                                    className="boss-img"
-                                                    onError={(e) => { (e.target as HTMLImageElement).style.opacity = '0.3'; }}
-                                                />
-                                                {!preqDone && (
-                                                    <button
-                                                        className="boss-lock-btn"
-                                                        onClick={e => { e.stopPropagation(); handleTogglePrequest(boss.id, false); }}
-                                                        title="Mark prequest as done"
-                                                    >🔒</button>
-                                                )}
-                                                {preqDone && boss.needs_prequest && (
-                                                    <button
-                                                        className="boss-unlock-btn"
-                                                        onClick={e => { e.stopPropagation(); handleTogglePrequest(boss.id, true); }}
-                                                        title="Prequest done — click to undo"
-                                                    >🔓</button>
-                                                )}
-                                                {selected && <div className="boss-check-overlay">✓</div>}
-                                            </div>
-                                            <span className="boss-card-name">{boss.name}</span>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-
-                            {/* Summary & RP override */}
-                            <div className="bossing-summary">
-                                <div className="bossing-summary-row">
-                                    <span className="bossing-summary-label">Bosses selected:</span>
-                                    <strong>{selectedBossIds.size}</strong>
-                                </div>
-                                <div className="bossing-summary-row">
-                                    <span className="bossing-summary-label">Calculated RP:</span>
-                                    <strong>{calculatedRP.toLocaleString()}</strong>
-                                </div>
-                                <div className="bossing-summary-row">
-                                    <label className="bossing-summary-label" htmlFor="rp-override">Total RP to register:</label>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                        <input
-                                            id="rp-override"
-                                            type="number"
-                                            min={0}
-                                            className="bossing-rp-input"
-                                            value={rpOverride !== null ? rpOverride : calculatedRP}
-                                            onChange={e => setRpOverride(parseInt(e.target.value) || 0)}
-                                        />
-                                        {rpOverride !== null && (
-                                            <button className="bossing-reset-btn" onClick={() => setRpOverride(null)} title="Reset to calculated value">↺</button>
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="bossing-expiry-note">
-                                    RP expires: <strong>{bossingService.getRPExpiry()}</strong>
-                                </div>
-                            </div>
-
-                            <div className="modal-actions">
-                                <Button variant="secondary" onClick={() => setBossingModalAccount(null)}>Cancel</Button>
-                                <Button
-                                    onClick={handleRegisterBossing}
-                                    loading={isRegisteringBossing}
-                                    disabled={isRegisteringBossing || finalRP === 0}
-                                >
-                                    {btnLabel}
-                                </Button>
-                            </div>
-                        </div>
-                    );
-                })()}
             </Modal>
 
             <Modal
