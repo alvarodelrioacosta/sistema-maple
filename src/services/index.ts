@@ -25,3 +25,5 @@ export { sixthJobSkillsService } from './sixthJobSkills';
 export type { SixthJobSkillProgress } from './sixthJobSkills';
 export { contentUnlocksService } from './contentUnlocks';
 export type { ContentUnlock, AccountUnlockProgress, UnlockCategory } from './contentUnlocks';
+export { bossesService } from './bosses';
+export type { Boss } from './bosses';

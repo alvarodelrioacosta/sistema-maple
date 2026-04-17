@@ -23,7 +23,8 @@ import {
     Tasks,
     DailyCheckUp,
     Events,
-    Login
+    Login,
+    Bosses
 } from './pages';
 
 const ProtectedRoute: React.FC<{ children: React.ReactElement; adminOnly?: boolean }> = ({ children, adminOnly }) => {
@@ -78,6 +79,7 @@ function AppRoutes() {
                 <Route path="cubing-history" element={<ProtectedRoute adminOnly><CubingHistory /></ProtectedRoute>} />
                 <Route path="events" element={<ProtectedRoute adminOnly><Events /></ProtectedRoute>} />
                 <Route path="tasks" element={<ProtectedRoute adminOnly><Tasks /></ProtectedRoute>} />
+                <Route path="bosses" element={<ProtectedRoute adminOnly><Bosses /></ProtectedRoute>} />
                 <Route path="settings" element={<ProtectedRoute adminOnly><Settings /></ProtectedRoute>} />
             </Route>
         </Routes>

@@ -14,3 +14,4 @@ export { default as Events } from './Events/Events';
 export { default as Tasks } from './Tasks/Tasks';
 export { default as DailyCheckUp } from './DailyCheckUp/DailyCheckUp';
 export { default as Login } from './Login/Login';
+export { Bosses } from './Bosses';

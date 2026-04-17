@@ -22,6 +22,7 @@ const managementItems: NavItem[] = [
     { path: '/accounts-receivable', label: 'Accounts Receivable', icon: '📋' },
     { path: '/events', label: 'Events', icon: '📅' },
     { path: '/tasks', label: 'Tasks', icon: '✔️' },
+    { path: '/bosses', label: 'Bosses', icon: '💀' },
 ];
 
 const resourceItems: NavItem[] = [
