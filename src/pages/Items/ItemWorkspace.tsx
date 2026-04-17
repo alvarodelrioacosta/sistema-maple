@@ -6,7 +6,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { createWorker } from 'tesseract.js';
 import { ocrUtil } from '../../utils/ocr';
-import { Button, Select, Input, ResourceHistoryPanel } from '../../components/UI';
+import { Button, Select, ResourceHistoryPanel } from '../../components/UI';
 import {
     itemsService, clientsService, accountsService, resourcesService,
     charactersService, itemsDBService, cubeSessionsService, sharedInventoryService,
@@ -97,6 +97,7 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
     const [message, setMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
     const [showTotalInUSD, setShowTotalInUSD] = useState<boolean>(true);
     const [historyPanelOpen, setHistoryPanelOpen] = useState<boolean>(false);
+    const [editingField, setEditingField] = useState<string | null>(null);
 
     // ---- Modals ----
     const [resourceModal, setResourceModal] = useState<ResourceModalState | null>(null);
@@ -722,13 +723,66 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
         field: keyof Item,
         placeholder: string,
         value: string | null | undefined,
-    ) => (
-        <Input
-            value={value || ''}
-            onChange={e => setEditingItem(prev => ({ ...prev, [field]: e.target.value || null }))}
-            placeholder={placeholder}
-        />
-    );
+    ) => {
+        const isEditing = editingField === field;
+        if (!isEditing) {
+            return (
+                <div
+                    className="maple-potential-line premium-editable"
+                    onClick={() => setEditingField(field)}
+                >
+                    {value || placeholder}
+                </div>
+            );
+        }
+        return (
+            <input
+                autoFocus
+                className="premium-input"
+                value={value || ''}
+                onChange={e => setEditingItem(prev => ({ ...prev, [field]: e.target.value || null }))}
+                onBlur={() => setEditingField(null)}
+                placeholder={placeholder}
+            />
+        );
+    };
+
+    const StarForceSystem: React.FC<{ value: number; onChange: (v: number) => void }> = ({ value, onChange }) => {
+        const stars = Array.from({ length: 30 }, (_, i) => i + 1);
+
+        return (
+            <div className="maple-sf-system">
+                <div className="maple-stars-grid">
+                    {stars.map(s => (
+                        <span
+                            key={s}
+                            className={`maple-star ${s <= value ? 'active' : ''}`}
+                            onClick={() => onChange(s)}
+                            onDoubleClick={() => onChange(0)}
+                            title={`Set to ${s} stars`}
+                        >
+                            ★
+                        </span>
+                    ))}
+                </div>
+                {editingField === 'star_force' ? (
+                    <input
+                        autoFocus
+                        type="number"
+                        className="premium-input"
+                        style={{ width: '50px', textAlign: 'center' }}
+                        value={value}
+                        onChange={e => onChange(parseInt(e.target.value) || 0)}
+                        onBlur={() => setEditingField(null)}
+                    />
+                ) : (
+                    <div className="maple-sf-value-display premium-editable" onClick={() => setEditingField('star_force')}>
+                        {value} STAR FORCE
+                    </div>
+                )}
+            </div>
+        );
+    };
 
     // ========================= RENDER =========================
 
@@ -992,93 +1046,154 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                     )}
                 </div>
 
-                {/* ===== CENTER PANEL: ITEM PROPERTIES ===== */}
+                {/* ===== CENTER PANEL: ITEM PROPERTIES (MAPLE TOOLTIP) ===== */}
                 <div className="workspace-panel">
+                    <div className="maple-tooltip-container">
 
-                    {/* Item Preview + OCR */}
-                    <div className="item-preview-box">
-                        {dbInfo.image ? (
-                            <img src={dbInfo.image} alt={editingItem.name as string} className="item-preview-img" />
-                        ) : (
-                            <div className="item-preview-img-placeholder">🗡️</div>
-                        )}
-                        <div className="item-preview-details">
-                            <div className="item-preview-name">{editingItem.name}</div>
-                            <div className="item-preview-sf">★{editingItem.star_force || 0}</div>
-                        </div>
-                        <div
-                            className="ocr-paste-zone"
-                            tabIndex={0}
-                            title="Pega un screenshot con Ctrl+V para escanear potenciales"
-                            onClick={() => showMessage('info', 'Presiona Ctrl+V para pegar un screenshot del item')}
-                        >
-                            {ocrLoading ? '⏳ Analizando...' : '📋 OCR'}
-                        </div>
-                    </div>
-
-                    {/* Main Potential */}
-                    <div className={`potential-block ${editingItem.main_potential_tier?.toLowerCase() || ''}`}>
-                        <h4>Main Potential</h4>
-                        <Select
-                            value={editingItem.main_potential_tier || ''}
-                            onChange={v => setEditingItem(prev => ({ ...prev, main_potential_tier: (v || null) as PotentialTier | null }))}
-                            options={TIER_OPTIONS}
-                            className={editingItem.main_potential_tier ? `text-${editingItem.main_potential_tier.toLowerCase()}` : ''}
+                        {/* Star Force Section */}
+                        <StarForceSystem
+                            value={editingItem.star_force || 0}
+                            onChange={v => setEditingItem(prev => ({ ...prev, star_force: v }))}
                         />
-                        {renderPotentialInput('main_potential_1', 'Line 1', editingItem.main_potential_1)}
-                        {renderPotentialInput('main_potential_2', 'Line 2', editingItem.main_potential_2)}
-                        {renderPotentialInput('main_potential_3', 'Line 3', editingItem.main_potential_3)}
-                    </div>
 
-                    {/* Bonus Potential */}
-                    <div className={`potential-block ${editingItem.bonus_potential_tier?.toLowerCase() || ''}`}>
-                        <h4>Bonus Potential</h4>
-                        <Select
-                            value={editingItem.bonus_potential_tier || ''}
-                            onChange={v => setEditingItem(prev => ({ ...prev, bonus_potential_tier: (v || null) as PotentialTier | null }))}
-                            options={TIER_OPTIONS}
-                            className={editingItem.bonus_potential_tier ? `text-${editingItem.bonus_potential_tier.toLowerCase()}` : ''}
-                        />
-                        {renderPotentialInput('bonus_potential_1', 'Line 1', editingItem.bonus_potential_1)}
-                        {renderPotentialInput('bonus_potential_2', 'Line 2', editingItem.bonus_potential_2)}
-                        {renderPotentialInput('bonus_potential_3', 'Line 3', editingItem.bonus_potential_3)}
-                    </div>
+                        {/* Item Header */}
+                        <div className="maple-item-header">
+                            {editingField === 'name' ? (
+                                <input
+                                    autoFocus
+                                    className="premium-input maple-item-name"
+                                    value={editingItem.name || ''}
+                                    onChange={e => setEditingItem(prev => ({ ...prev, name: e.target.value }))}
+                                    onBlur={() => setEditingField(null)}
+                                />
+                            ) : (
+                                <h2 className="maple-item-name premium-editable" onClick={() => setEditingField('name')}>
+                                    {editingItem.name}
+                                </h2>
+                            )}
 
-                    {/* Stats */}
-                    <div className="ws-section">
-                        <h4>Propiedades</h4>
-                        <div className="stats-row">
-                            <Input
-                                label="Star Force"
-                                type="number"
-                                value={editingItem.star_force || 0}
-                                onChange={e => setEditingItem(prev => ({ ...prev, star_force: parseInt(e.target.value) || 0 }))}
-                            />
-                            <Input
-                                label="Slots Restantes"
-                                type="number"
-                                value={editingItem.remaining_trade_slots ?? 0}
-                                onChange={e => setEditingItem(prev => ({ ...prev, remaining_trade_slots: parseInt(e.target.value) || 0 }))}
-                            />
+                            <div className="maple-item-icon-container">
+                                <div className="maple-item-icon-border">
+                                    {dbInfo.image ? (
+                                        <img src={dbInfo.image} alt={editingItem.name as string} className="maple-item-icon" />
+                                    ) : (
+                                        <div style={{ fontSize: '2rem' }}>🗡️</div>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="maple-stats-bar">
+                                {editingField === 'tradeability' ? (
+                                    <Select
+                                        autoFocus
+                                        value={editingItem.tradeability || 'Tradeable'}
+                                        onChange={v => {
+                                            setEditingItem(prev => ({ ...prev, tradeability: v as TradeabilityType }));
+                                            setEditingField(null);
+                                        }}
+                                        options={TRADEABILITY_OPTIONS}
+                                    />
+                                ) : (
+                                    <span className="premium-editable" onClick={() => setEditingField('tradeability')}>
+                                        {editingItem.tradeability}
+                                    </span>
+                                )}
+
+                                {editingField === 'remaining_trade_slots' ? (
+                                    <input
+                                        autoFocus
+                                        type="number"
+                                        className="premium-input"
+                                        style={{ width: '40px' }}
+                                        value={editingItem.remaining_trade_slots ?? 0}
+                                        onChange={e => setEditingItem(prev => ({ ...prev, remaining_trade_slots: parseInt(e.target.value) || 0 }))}
+                                        onBlur={() => setEditingField(null)}
+                                    />
+                                ) : (
+                                    <span className="premium-editable" onClick={() => setEditingField('remaining_trade_slots')}>
+                                        Slots: {editingItem.remaining_trade_slots ?? 0}
+                                    </span>
+                                )}
+                            </div>
                         </div>
-                        <Select
-                            label="Tradeability"
-                            value={editingItem.tradeability || 'Tradeable'}
-                            onChange={v => setEditingItem(prev => ({ ...prev, tradeability: v as TradeabilityType }))}
-                            options={TRADEABILITY_OPTIONS}
-                        />
-                    </div>
 
-                    {/* Save Button */}
-                    <button className="save-properties-btn" onClick={handleSaveProperties} disabled={saving}>
-                        {saving ? '...' : '💾 Guardar Propiedades' + ((!isFastCubingActive && (brightCubesUsed + bonusCubesUsed + solidCubesUsed) > 0) ? ` & Descontar ${brightCubesUsed + bonusCubesUsed + solidCubesUsed} cubos` : '')}
-                    </button>
+                        {/* Main Potential */}
+                        <div className="maple-potential-section">
+                            <div className="maple-potential-header">
+                                <div className="maple-potential-tier-icon">P</div>
+                                <span>Main Potential</span>
+                                {editingField === 'main_tier' ? (
+                                    <Select
+                                        autoFocus
+                                        value={editingItem.main_potential_tier || ''}
+                                        onChange={v => {
+                                            setEditingItem(prev => ({ ...prev, main_potential_tier: (v || null) as PotentialTier | null }));
+                                            setEditingField(null);
+                                        }}
+                                        options={TIER_OPTIONS}
+                                    />
+                                ) : (
+                                    <span className={`premium-editable text-${editingItem.main_potential_tier?.toLowerCase() || 'none'}`} onClick={() => setEditingField('main_tier')}>
+                                        [{editingItem.main_potential_tier || 'None'}]
+                                    </span>
+                                )}
+                            </div>
+                            <div className="maple-potential-lines">
+                                {renderPotentialInput('main_potential_1', 'Line 1', editingItem.main_potential_1)}
+                                {renderPotentialInput('main_potential_2', 'Line 2', editingItem.main_potential_2)}
+                                {renderPotentialInput('main_potential_3', 'Line 3', editingItem.main_potential_3)}
+                            </div>
+                        </div>
+
+                        {/* Bonus Potential */}
+                        <div className="maple-potential-section" style={{ borderTop: '1px dashed #555', paddingTop: '1rem' }}>
+                            <div className="maple-potential-header">
+                                <div className="maple-potential-tier-icon" style={{ background: '#60a5fa' }}>A</div>
+                                <span style={{ color: '#60a5fa' }}>Bonus Potential</span>
+                                {editingField === 'bonus_tier' ? (
+                                    <Select
+                                        autoFocus
+                                        value={editingItem.bonus_potential_tier || ''}
+                                        onChange={v => {
+                                            setEditingItem(prev => ({ ...prev, bonus_potential_tier: (v || null) as PotentialTier | null }));
+                                            setEditingField(null);
+                                        }}
+                                        options={TIER_OPTIONS}
+                                    />
+                                ) : (
+                                    <span className={`premium-editable text-${editingItem.bonus_potential_tier?.toLowerCase() || 'none'}`} onClick={() => setEditingField('bonus_tier')}>
+                                        [{editingItem.bonus_potential_tier || 'None'}]
+                                    </span>
+                                )}
+                            </div>
+                            <div className="maple-potential-lines">
+                                {renderPotentialInput('bonus_potential_1', 'Line 1', editingItem.bonus_potential_1)}
+                                {renderPotentialInput('bonus_potential_2', 'Line 2', editingItem.bonus_potential_2)}
+                                {renderPotentialInput('bonus_potential_3', 'Line 3', editingItem.bonus_potential_3)}
+                            </div>
+                        </div>
+
+                        {/* Save Actions */}
+                        <button className="save-properties-btn" onClick={handleSaveProperties} disabled={saving}>
+                            {saving ? '...' : '💾 Guardar Cambios' + ((!isFastCubingActive && (brightCubesUsed + bonusCubesUsed + solidCubesUsed) > 0) ? ` & Descontar ${brightCubesUsed + bonusCubesUsed + solidCubesUsed} cubos` : '')}
+                        </button>
+                    </div>
 
                     {isFastCubingActive && (fcTotals.bc + fcTotals.bbc + fcTotals.sc) > 0 && (
                         <button className="save-properties-btn" onClick={handleSaveProperties} disabled={saving} style={{ background: 'linear-gradient(135deg, rgba(192,132,252,0.18), rgba(139,92,246,0.18))', borderColor: 'rgba(192,132,252,0.4)', color: '#e9d5ff' }}>
                             ⚡ Guardar & Descontar Fast Cubing ({fcTotals.bc + fcTotals.bbc + fcTotals.sc} cubos)
                         </button>
                     )}
+
+                    <div
+                        className="ocr-paste-zone"
+                        style={{ marginTop: '1rem' }}
+                        tabIndex={0}
+                        title="Pega un screenshot con Ctrl+V para escanear potenciales"
+                        onClick={() => showMessage('info', 'Presiona Ctrl+V para pegar un screenshot del item')}
+                    >
+                        {ocrLoading ? '⏳ Analizando...' : '📋 OCR Paste Zone (Ctrl+V)'}
+                    </div>
                 </div>
 
                 {/* ===== RIGHT PANEL: RESOURCE POOL ===== */}

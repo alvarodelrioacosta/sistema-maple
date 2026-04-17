@@ -155,7 +155,7 @@
 /* ---- 3-COLUMN GRID ---- */
 .workspace-grid {
     display: grid;
-    grid-template-columns: 280px 1fr 300px;
+    grid-template-columns: 320px 420px 1fr;
     gap: 0;
     flex: 1;
     overflow: hidden;
@@ -477,106 +477,176 @@
 
 /* ---- CENTER PANEL: ITEM PROPERTIES ---- */
 
-.item-preview-box {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 0.75rem;
+/* ---- CENTER PANEL: MAPLE TOOLTIP STYLE ---- */
+
+.maple-tooltip-container {
+    background: #0c0c0c;
+    border: 2px solid #555;
+    border-radius: 10px;
+    padding: 1.5rem;
     display: flex;
-    align-items: center;
-    gap: 0.75rem;
+    flex-direction: column;
+    gap: 1.2rem;
+    box-shadow: 0 0 20px rgba(0,0,0,0.8);
+    position: relative;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 380px;
 }
 
-.item-preview-img {
-    width: 54px;
-    height: 54px;
-    object-fit: contain;
-    flex-shrink: 0;
-}
-
-.item-preview-img-placeholder {
-    width: 54px;
-    height: 54px;
-    background: rgba(255,255,255,0.05);
-    border-radius: 8px;
+/* Star Force System */
+.maple-sf-system {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    flex-shrink: 0;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
-.item-preview-details {
-    flex: 1;
-    min-width: 0;
+.maple-stars-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 2px;
 }
 
-.item-preview-name {
+.maple-star {
+    font-size: 1.1rem;
+    cursor: pointer;
+    color: #444;
+    transition: transform 0.1s, color 0.1s;
+    user-select: none;
+}
+
+.maple-star.active {
+    color: #facc15;
+    text-shadow: 0 0 8px rgba(250, 204, 21, 0.4);
+}
+
+.maple-star:hover {
+    transform: scale(1.2);
+}
+
+.maple-sf-value-display {
     font-size: 0.9rem;
     font-weight: 700;
-    color: var(--color-text-primary);
-    margin-bottom: 0.2rem;
-}
-
-.item-preview-sf {
-    font-size: 0.8rem;
     color: #facc15;
 }
 
-/* OCR Paste zone */
-.ocr-paste-zone {
+/* Item Header */
+.maple-item-header {
+    text-align: center;
+    border-bottom: 1px dashed #555;
+    padding-bottom: 1rem;
+}
+
+/* Premium Editable Fields */
+.premium-editable {
+    cursor: pointer;
+    transition: background 0.2s;
+    border-radius: 4px;
+    padding: 2px 4px;
+    display: inline-block;
+}
+
+.premium-editable:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.maple-item-name {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0.5rem 0;
+}
+
+.maple-item-icon-container {
+    display: flex;
+    justify-content: center;
+    margin: 1rem 0;
+}
+
+.maple-item-icon-border {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #eee 0%, #aaa 100%);
+    border-radius: 12px;
+    padding: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-    padding: 0.6rem;
-    background: rgba(255,255,255,0.03);
-    border: 1px dashed rgba(255,255,255,0.12);
-    border-radius: 8px;
-    font-size: 0.8rem;
-    color: var(--color-text-tertiary);
-    cursor: pointer;
-    transition: all 0.2s;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
 }
 
-.ocr-paste-zone:hover, .ocr-paste-zone:focus {
-    border-color: rgba(192,132,252,0.3);
-    background: rgba(192,132,252,0.05);
-    color: #c084fc;
-    outline: none;
+.maple-item-icon {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+}
+
+.maple-stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    font-size: 0.85rem;
+    color: #ddd;
+    border-bottom: 1px dashed #555;
+    padding-bottom: 1rem;
 }
 
 /* Potential Sections */
-.potential-block {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 0.875rem;
+.maple-potential-section {
+    padding-top: 0.5rem;
+}
+
+.maple-potential-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #4ade80;
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.maple-potential-tier-icon {
+    width: 18px;
+    height: 18px;
+    background: #4ade80;
+    color: #000;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 900;
+}
+
+.maple-potential-lines {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    transition: border-color 0.2s;
+    gap: 0.25rem;
 }
 
-.potential-block.rare    { border-color: rgba(74,222,128,0.3); }
-.potential-block.epic    { border-color: rgba(167,139,250,0.4); }
-.potential-block.unique  { border-color: rgba(251,191,36,0.4); }
-.potential-block.legendary { border-color: rgba(248,113,113,0.4); }
-
-.potential-block h4 {
-    margin: 0;
-    font-size: 0.68rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--color-text-tertiary);
+.maple-potential-line {
+    font-size: 0.9rem;
+    color: #fff;
 }
 
-/* Stats row (SF, Trade, Slots) */
-.stats-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
+/* Input Overrides for Premium Fields */
+.premium-input {
+    background: #222;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: inherit;
+    width: 100%;
+    outline: none;
+}
+
+.premium-input:focus {
+    border-color: #facc15;
 }
 
 /* Save Properties Button */
@@ -591,6 +661,7 @@
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
+    margin-top: 1rem;
 }
 
 .save-properties-btn:hover {
