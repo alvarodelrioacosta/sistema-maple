@@ -10,17 +10,15 @@ interface Props {
 }
 
 const CATEGORY_OPTIONS = [
-    { value: 'boss_access',      label: 'Boss Access' },
-    { value: 'area_unlock',      label: 'Area Unlock' },
-    { value: 'system_unlock',    label: 'System Unlock' },
-    { value: 'character_unlock', label: 'Character Unlock' },
+    { value: 'boss',   label: 'Boss' },
+    { value: 'system', label: 'System' },
 ];
 
 const NewUnlockModal: React.FC<Props> = ({ isOpen, onClose, onCreated }) => {
     const [name, setName] = useState('');
     const [unlocks, setUnlocks] = useState('');
     const [description, setDescription] = useState('');
-    const [category, setCategory] = useState<UnlockCategory>('boss_access');
+    const [category, setCategory] = useState<UnlockCategory>('boss');
     const [saving, setSaving] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -29,7 +27,7 @@ const NewUnlockModal: React.FC<Props> = ({ isOpen, onClose, onCreated }) => {
         setSaving(true);
         try {
             await contentUnlocksService.create({ name: name.trim(), unlocks: unlocks.trim(), description: description.trim() || null, category, order_index: null });
-            setName(''); setUnlocks(''); setDescription(''); setCategory('boss_access');
+            setName(''); setUnlocks(''); setDescription(''); setCategory('boss');
             onCreated();
             onClose();
         } catch (err) {

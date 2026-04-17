@@ -7,10 +7,8 @@ interface Props {
 }
 
 const CATEGORY_COLORS: Record<UnlockCategory, string> = {
-    boss_access:      '#f87171',
-    area_unlock:      '#60a5fa',
-    system_unlock:    '#fbbf24',
-    character_unlock: '#a78bfa',
+    boss:   '#f87171',
+    system: '#fbbf24',
 };
 
 export const ContentUnlocksPanel: React.FC<Props> = ({ accountId }) => {

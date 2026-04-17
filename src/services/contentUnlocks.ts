@@ -1,6 +1,6 @@
 import supabase from '../lib/supabase';
 
-export type UnlockCategory = 'boss_access' | 'area_unlock' | 'system_unlock' | 'character_unlock';
+export type UnlockCategory = 'boss' | 'system';
 
 export interface ContentUnlock {
     id: string;
