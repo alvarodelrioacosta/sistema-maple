@@ -150,12 +150,6 @@ const Tasks: React.FC = () => {
         await contentUnlocksService.toggleProgress(unlockId, accountId, next);
     };
 
-    const handleDeleteUnlock = async (unlockId: string) => {
-        if (!window.confirm('¿Eliminar este unlock?')) return;
-        await contentUnlocksService.delete(unlockId);
-        setUnlocks(prev => prev.filter(u => u.id !== unlockId));
-    };
-
     const countPendingAccounts = (taskId: string): number => {
         const completedCount = allProgress.filter(p => p.task_id === taskId && p.completed).length;
         return accounts.length - completedCount;
