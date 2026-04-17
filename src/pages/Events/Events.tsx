@@ -4,7 +4,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { Header } from '../../components/Layout';
-import { Button, Select } from '../../components/UI';
+import { Button, Select, AccountCell } from '../../components/UI';
 import CreateEventModal from './CreateEventModal';
 import { eventsService, accountsService, charactersService } from '../../services';
 import type {
@@ -526,10 +526,7 @@ const Events: React.FC = () => {
                         <table className="events-table">
                             <thead>
                                 <tr>
-                                    <th>#</th>
-                                    <th>Mail</th>
-                                    <th>Tag</th>
-                                    <th>Char</th>
+                                    <th>Account</th>
                                     {dayHeaders.map((header, i) => {
                                         const date = weekDays[i];
                                         const count = dailyProgressCounts[date] || 0;
@@ -570,10 +567,14 @@ const Events: React.FC = () => {
 
                                     return (
                                         <tr key={account.id}>
-                                            <td className="account-number">{account.number}</td>
-                                            <td className="account-email">{account.email}</td>
-                                            <td className="account-tag">{account.tag}</td>
-                                            <td className="account-char">{account.mainCharacter?.name || '-'}</td>
+                                            <td className="account-cell-td">
+                                                <AccountCell
+                                                    number={account.number}
+                                                    email={account.email}
+                                                    tag={account.tag}
+                                                    charName={account.mainCharacter?.name}
+                                                />
+                                            </td>
                                             {weekDays.map((date, i) => {
                                                 const progress = dailyProgress.find(p =>
                                                     p.account_id === account.id && p.date === date
@@ -685,10 +686,7 @@ const Events: React.FC = () => {
                         <table className="events-table">
                             <thead>
                                 <tr>
-                                    <th>#</th>
-                                    <th>Mail</th>
-                                    <th>Tag</th>
-                                    <th>Char</th>
+                                    <th>Account</th>
                                     <th>Boss (Week)</th>
                                     <th className="points-cell">Pts Wk</th>
                                     <th className="points-cell">Pts Tot</th>
@@ -718,10 +716,14 @@ const Events: React.FC = () => {
 
                                     return (
                                         <tr key={account.id}>
-                                            <td className="account-number">{account.number}</td>
-                                            <td className="account-email">{account.email}</td>
-                                            <td className="account-tag">{account.tag}</td>
-                                            <td className="account-char">{account.mainCharacter?.name || '-'}</td>
+                                            <td className="account-cell-td">
+                                                <AccountCell
+                                                    number={account.number}
+                                                    email={account.email}
+                                                    tag={account.tag}
+                                                    charName={account.mainCharacter?.name}
+                                                />
+                                            </td>
                                             <td className="boss-selector">
                                                 <select
                                                     value={currentProgress?.highest_boss_id || ''}

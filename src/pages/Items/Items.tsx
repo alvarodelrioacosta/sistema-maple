@@ -4,7 +4,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { Header } from '../../components/Layout';
-import { Button, Table, Modal, Input, Select, Card } from '../../components/UI';
+import { Button, Table, Modal, Input, Select, Card, AccountCell } from '../../components/UI';
 import { itemsService, charactersService, itemsDBService, accountsService, clientsService, accountsReceivableService, transactionsService, sharedInventoryService, appSettingsService } from '../../services';
 import type { ItemWithCharacter, ItemInsert, Character, ItemStatus, PotentialTier, ItemDB, TradeabilityType, Account, Client, SharedInventory } from '../../types';
 import { formatCurrencyValue } from '../../utils/format';
@@ -502,6 +502,14 @@ export const Items: React.FC = () => {
         return account ? account.number : null;
     };
 
+    const getAccountTag = (characterId: string | null) => {
+        if (!characterId) return null;
+        const char = characters.find(c => c.id === characterId);
+        if (!char) return null;
+        const account = accounts.find(a => a.id === char.account_id);
+        return account ? account.tag : null;
+    };
+
 
 
 
@@ -577,29 +585,19 @@ export const Items: React.FC = () => {
         },
         {
             key: 'email',
-            header: filterStatus === 'in_use' ? 'Char' : 'Email',
-            width: filterStatus === 'in_use' ? '120px' : '220px',
+            header: 'Account',
+            width: '200px',
             render: (i) => {
-                if (filterStatus === 'in_use') {
-                    return <span style={{ fontWeight: 500 }}>{i.character?.name || '-'}</span>;
-                }
+                if (!i.character) return <span style={{ color: '#64748b' }}>-</span>;
+                const accNum = getAccountNumber(i.character.id);
+                if (accNum === null) return <span style={{ color: '#64748b' }}>-</span>;
                 return (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', maxWidth: '100%' }}>
-                        <span style={{
-                            display: 'block',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                            fontSize: '0.95rem'
-                        }} title={(i.character ? getAccountEmail(i.character.id) : '') || undefined}>
-                            {i.character ? getAccountEmail(i.character.id) : '-'}
-                        </span>
-                        {i.character && (
-                            <span style={{ fontSize: '0.85em', color: '#9ca3af', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                {getAccountNumber(i.character.id)} - {i.character.name}
-                            </span>
-                        )}
-                    </div>
+                    <AccountCell
+                        number={accNum}
+                        email={getAccountEmail(i.character.id)}
+                        tag={getAccountTag(i.character.id)}
+                        charName={i.character.name}
+                    />
                 );
             }
         },

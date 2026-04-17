@@ -162,29 +162,11 @@
     display: inline-block;
 }
 
-.account-number {
-    color: #3b82f6;
-    font-weight: 600;
-    font-family: 'JetBrains Mono', monospace;
+.account-cell-td {
+    min-width: 185px;
+    max-width: 200px;
 }
 
-.account-email {
-    color: #cbd5e1;
-    font-size: 0.85rem;
-    font-weight: 600;
-}
-
-.account-tag {
-    color: #6366f1;
-    font-weight: 600;
-    font-size: 0.85rem;
-}
-
-.account-char {
-    color: #f59e0b;
-    font-weight: 600;
-    font-size: 0.85rem;
-}
 
 .task-checkbox-cell {
     text-align: center;

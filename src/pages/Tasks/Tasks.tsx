@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Header } from '../../components/Layout';
-import { Button } from '../../components/UI';
+import { Button, AccountCell } from '../../components/UI';
 import CreateTaskModal from './CreateTaskModal';
 import EditTaskModal from './EditTaskModal';
 import NewUnlockModal from './NewUnlockModal';
@@ -199,10 +199,7 @@ const Tasks: React.FC = () => {
                                     <thead>
                                         {/* Row 1: group headers */}
                                         <tr>
-                                            <th rowSpan={2}>#</th>
-                                            <th rowSpan={2}>Mail</th>
-                                            <th rowSpan={2}>Tag</th>
-                                            <th rowSpan={2}>Char</th>
+                                            <th rowSpan={2}>Account</th>
                                             {unlockGroups.map(group => (
                                                 <th
                                                     key={group.key}
@@ -240,10 +237,14 @@ const Tasks: React.FC = () => {
                                     <tbody>
                                         {accounts.map(account => (
                                             <tr key={account.id}>
-                                                <td className="account-number">{account.number}</td>
-                                                <td className="account-email">{account.email}</td>
-                                                <td className="account-tag">{account.tag}</td>
-                                                <td className="account-char">{account.mainCharacter?.name || '-'}</td>
+                                                <td className="account-cell-td">
+                                                    <AccountCell
+                                                        number={account.number}
+                                                        email={account.email}
+                                                        tag={account.tag}
+                                                        charName={account.mainCharacter?.name}
+                                                    />
+                                                </td>
                                                 {unlocks.map(unlock => {
                                                     const done = getUnlockStatus(unlock.id, account.id);
                                                     return (
@@ -277,10 +278,7 @@ const Tasks: React.FC = () => {
                             <table className="tasks-table">
                                 <thead>
                                     <tr>
-                                        <th>#</th>
-                                        <th>Mail</th>
-                                        <th>Tag</th>
-                                        <th>Char</th>
+                                        <th>Account</th>
                                         {filteredTasks.map(task => (
                                             <th key={task.id} className="task-header-col">
                                                 <div className="task-header-content">
@@ -315,10 +313,14 @@ const Tasks: React.FC = () => {
                                 <tbody>
                                     {accounts.map((account) => (
                                         <tr key={account.id}>
-                                            <td className="account-number">{account.number}</td>
-                                            <td className="account-email">{account.email}</td>
-                                            <td className="account-tag">{account.tag}</td>
-                                            <td className="account-char">{account.mainCharacter?.name || '-'}</td>
+                                            <td className="account-cell-td">
+                                                <AccountCell
+                                                    number={account.number}
+                                                    email={account.email}
+                                                    tag={account.tag}
+                                                    charName={account.mainCharacter?.name}
+                                                />
+                                            </td>
                                             {filteredTasks.map(task => {
                                                 const isCompleted = getTaskStatus(task.id, account.id);
                                                 return (

@@ -4,7 +4,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Header } from '../../components/Layout';
-import { Button, Card, Table, Modal, KPICard, LoadingScreen } from '../../components/UI';
+import { Button, Card, Table, Modal, KPICard, LoadingScreen, AccountCell } from '../../components/UI';
 import { resourcesService, accountsService, sharedInventoryService } from '../../services';
 import type { SharedInventory, Account } from '../../types';
 import type { Column } from '../../components/UI/Table';
@@ -179,18 +179,13 @@ export const Resources: React.FC = () => {
         {
             key: 'accountNumber',
             header: 'Account',
+            width: '190px',
             render: (row) => (
-                <div className="account-cell">
-                    <span className="account-number">N° {row.accountNumber}</span>
-                    <span className="account-email">{row.accountEmail || '-'}</span>
-                </div>
-            )
-        },
-        {
-            key: 'tag',
-            header: 'Tag',
-            render: (row) => (
-                row.tag ? <span className="account-tag">{row.tag}</span> : '-'
+                <AccountCell
+                    number={row.accountNumber}
+                    email={row.accountEmail}
+                    tag={row.tag}
+                />
             )
         },
         {
