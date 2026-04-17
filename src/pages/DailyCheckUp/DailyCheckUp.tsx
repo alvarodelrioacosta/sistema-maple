@@ -668,7 +668,7 @@ const DailyCheckUp: React.FC = () => {
                                                 <div className="header-stacked">
                                                     <div className="subtask-label">
                                                         {group.category === 'boss' ? (
-                                                            <img src={BOSS_IMAGE_URL(group.label)} alt={group.label} className="header-boss-icon" />
+                                                            <img src={BOSS_IMAGE_URL(item.unlocks)} alt={group.label} className="header-boss-icon" />
                                                         ) : (
                                                             <span>{item.name.includes(' — ') ? item.name.split(' — ')[1] : item.name}</span>
                                                         )}
