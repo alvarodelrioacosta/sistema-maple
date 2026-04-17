@@ -23,3 +23,5 @@ export { symbolProgressService } from './symbolProgress';
 export type { SymbolProgress } from './symbolProgress';
 export { sixthJobSkillsService } from './sixthJobSkills';
 export type { SixthJobSkillProgress } from './sixthJobSkills';
+export { contentUnlocksService } from './contentUnlocks';
+export type { ContentUnlock, AccountUnlockProgress, UnlockCategory } from './contentUnlocks';

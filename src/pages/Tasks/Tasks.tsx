@@ -3,9 +3,24 @@ import { Header } from '../../components/Layout';
 import { Button } from '../../components/UI';
 import CreateTaskModal from './CreateTaskModal';
 import EditTaskModal from './EditTaskModal';
-import { tasksService, accountsService, charactersService } from '../../services';
+import NewUnlockModal from './NewUnlockModal';
+import { tasksService, accountsService, charactersService, contentUnlocksService } from '../../services';
+import type { ContentUnlock, AccountUnlockProgress, UnlockCategory } from '../../services';
 import type { Task, TaskProgress, Account, Character } from '../../types';
 import './Tasks.css';
+
+const CATEGORY_LABELS: Record<UnlockCategory, string> = {
+    boss_access:      'Boss Access',
+    area_unlock:      'Area Unlock',
+    system_unlock:    'System Unlock',
+    character_unlock: 'Character Unlock',
+};
+const CATEGORY_COLORS: Record<UnlockCategory, string> = {
+    boss_access:      '#f87171',
+    area_unlock:      '#60a5fa',
+    system_unlock:    '#fbbf24',
+    character_unlock: '#a78bfa',
+};
 
 interface AccountWithChar extends Account {
     mainCharacter?: Character;
@@ -13,7 +28,7 @@ interface AccountWithChar extends Account {
 
 const Tasks: React.FC = () => {
     // State
-    const [activeTab, setActiveTab] = useState<'active' | 'completed'>('active');
+    const [activeTab, setActiveTab] = useState<'active' | 'completed' | 'unlocks'>('active');
     const [tasks, setTasks] = useState<Task[]>([]);
     const [allProgress, setAllProgress] = useState<TaskProgress[]>([]);
     const [accounts, setAccounts] = useState<AccountWithChar[]>([]);
@@ -21,6 +36,9 @@ const Tasks: React.FC = () => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+    const [unlocks, setUnlocks] = useState<ContentUnlock[]>([]);
+    const [unlockProgress, setUnlockProgress] = useState<AccountUnlockProgress[]>([]);
+    const [showNewUnlockModal, setShowNewUnlockModal] = useState(false);
 
     // Initial load
     useEffect(() => {
@@ -30,10 +48,12 @@ const Tasks: React.FC = () => {
     const loadData = async () => {
         setLoading(true);
         try {
-            const [tasksData, accountsData, charactersData] = await Promise.all([
+            const [tasksData, accountsData, charactersData, unlocksData, unlockProgressData] = await Promise.all([
                 tasksService.getAll(),
                 accountsService.getAll(),
-                charactersService.getAll()
+                charactersService.getAll(),
+                contentUnlocksService.getAll(),
+                contentUnlocksService.getAllProgress()
             ]);
 
             // Load progress only for the tasks we got
@@ -50,6 +70,8 @@ const Tasks: React.FC = () => {
             setTasks(tasksData);
             setAccounts(accountsWithChars);
             setAllProgress(progressData);
+            setUnlocks(unlocksData);
+            setUnlockProgress(unlockProgressData);
         } catch (error) {
             console.error('Error loading tasks data:', error);
         } finally {
@@ -105,6 +127,26 @@ const Tasks: React.FC = () => {
         return progress?.completed || false;
     };
 
+    const getUnlockStatus = (unlockId: string, accountId: string): boolean => {
+        return unlockProgress.find(p => p.unlock_id === unlockId && p.account_id === accountId)?.completed || false;
+    };
+
+    const handleToggleUnlock = async (unlockId: string, accountId: string, current: boolean) => {
+        const next = !current;
+        setUnlockProgress(prev => {
+            const existing = prev.find(p => p.unlock_id === unlockId && p.account_id === accountId);
+            if (existing) return prev.map(p => p.unlock_id === unlockId && p.account_id === accountId ? { ...p, completed: next } : p);
+            return [...prev, { id: '', unlock_id: unlockId, account_id: accountId, completed: next, completed_at: null }];
+        });
+        await contentUnlocksService.toggleProgress(unlockId, accountId, next);
+    };
+
+    const handleDeleteUnlock = async (unlockId: string) => {
+        if (!window.confirm('¿Eliminar este unlock?')) return;
+        await contentUnlocksService.delete(unlockId);
+        setUnlocks(prev => prev.filter(u => u.id !== unlockId));
+    };
+
     const countPendingAccounts = (taskId: string): number => {
         const completedCount = allProgress.filter(p => p.task_id === taskId && p.completed).length;
         return accounts.length - completedCount;
@@ -116,25 +158,86 @@ const Tasks: React.FC = () => {
             <div className="tasks-page">
                 <div className="tasks-header">
                     <div className="tasks-tabs">
-                        <button
-                            className={`task-tab ${activeTab === 'active' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('active')}
-                        >
+                        <button className={`task-tab ${activeTab === 'active' ? 'active' : ''}`} onClick={() => setActiveTab('active')}>
                             Active Tasks ({tasks.filter(t => !t.is_completed).length})
                         </button>
-                        <button
-                            className={`task-tab ${activeTab === 'completed' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('completed')}
-                        >
+                        <button className={`task-tab ${activeTab === 'completed' ? 'active' : ''}`} onClick={() => setActiveTab('completed')}>
                             Completed Tasks ({tasks.filter(t => t.is_completed).length})
                         </button>
+                        <button className={`task-tab ${activeTab === 'unlocks' ? 'active' : ''}`} onClick={() => setActiveTab('unlocks')}>
+                            Content Unlocks ({unlocks.length})
+                        </button>
                     </div>
-                    <Button variant="primary" onClick={() => setShowCreateModal(true)}>
-                        + New Task
-                    </Button>
+                    {activeTab === 'unlocks' ? (
+                        <Button variant="primary" onClick={() => setShowNewUnlockModal(true)}>+ New Unlock</Button>
+                    ) : (
+                        <Button variant="primary" onClick={() => setShowCreateModal(true)}>+ New Task</Button>
+                    )}
                 </div>
 
-                {loading ? (
+                {activeTab === 'unlocks' ? (
+                    loading ? <div className="loading-state">Loading...</div> : unlocks.length === 0 ? (
+                        <div className="no-tasks"><div className="no-tasks-icon">🔓</div><p>No content unlocks yet. Add one!</p></div>
+                    ) : (
+                        <div className="tasks-table-container">
+                            <div className="table-scroll-container">
+                                <table className="tasks-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Category</th>
+                                            <th>Unlock</th>
+                                            <th>Unlocks</th>
+                                            {accounts.map(a => (
+                                                <th key={a.id} className="task-header-col">
+                                                    <div style={{ fontSize: '0.75rem', fontWeight: 600 }}>#{a.number}</div>
+                                                    <div style={{ fontSize: '0.65rem', color: '#64748b' }}>{a.mainCharacter?.name || '-'}</div>
+                                                </th>
+                                            ))}
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {unlocks.map(unlock => (
+                                            <tr key={unlock.id}>
+                                                <td>
+                                                    <span style={{
+                                                        fontSize: '0.7rem', fontWeight: 600, padding: '2px 6px', borderRadius: '4px',
+                                                        background: CATEGORY_COLORS[unlock.category] + '20',
+                                                        color: CATEGORY_COLORS[unlock.category]
+                                                    }}>
+                                                        {CATEGORY_LABELS[unlock.category]}
+                                                    </span>
+                                                </td>
+                                                <td style={{ fontWeight: 600 }}>{unlock.name}</td>
+                                                <td style={{ color: '#94a3b8', fontSize: '0.85rem' }}>{unlock.unlocks}</td>
+                                                {accounts.map(a => {
+                                                    const done = getUnlockStatus(unlock.id, a.id);
+                                                    return (
+                                                        <td key={a.id} className="task-checkbox-cell">
+                                                            <input
+                                                                type="checkbox"
+                                                                className="task-checkbox"
+                                                                checked={done}
+                                                                onChange={() => handleToggleUnlock(unlock.id, a.id, done)}
+                                                            />
+                                                        </td>
+                                                    );
+                                                })}
+                                                <td>
+                                                    <button
+                                                        onClick={() => handleDeleteUnlock(unlock.id)}
+                                                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', fontSize: '0.85rem', padding: '2px 6px' }}
+                                                        title="Delete"
+                                                    >✕</button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )
+                ) : loading ? (
                     <div className="loading-state">Loading tasks...</div>
                 ) : filteredTasks.length === 0 ? (
                     <div className="no-tasks">
@@ -256,6 +359,12 @@ const Tasks: React.FC = () => {
                 }}
                 onTaskUpdated={loadData}
                 task={selectedTask}
+            />
+
+            <NewUnlockModal
+                isOpen={showNewUnlockModal}
+                onClose={() => setShowNewUnlockModal(false)}
+                onCreated={loadData}
             />
         </>
     );

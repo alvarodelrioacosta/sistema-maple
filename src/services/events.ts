@@ -9,6 +9,7 @@ import type {
     EventDailyReward,
     EventDailyRewardInsert,
     EventDailyProgress,
+    EventAccountProgress,
     EventDailyClaim,
     EventDailyClaimInsert,
     EventBoss,
@@ -20,6 +21,16 @@ import type {
     EventShopPurchase,
     EventShopPurchaseInsert
 } from '../types';
+
+function getISOWeekKey(): number {
+    const d = new Date();
+    const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    const day = date.getUTCDay() || 7;
+    date.setUTCDate(date.getUTCDate() + 4 - day);
+    const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+    const week = Math.ceil((((date.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+    return date.getUTCFullYear() * 100 + week;
+}
 
 export const eventsService = {
     // ===== EVENTS =====
@@ -482,6 +493,76 @@ export const eventsService = {
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
 
         return Math.ceil(diffDays / 7);
+    },
+
+    // ===== EVENT ACCOUNT PROGRESS (new simplified table) =====
+    async getAccountProgress(eventIds: string[]): Promise<EventAccountProgress[]> {
+        if (eventIds.length === 0) return [];
+        const { data, error } = await supabase
+            .from('event_account_progress')
+            .select('*')
+            .in('event_id', eventIds);
+        if (error) throw error;
+        return data || [];
+    },
+
+    async toggleAccountProgress(eventId: string, accountId: string): Promise<EventAccountProgress> {
+        const today = new Date().toISOString().split('T')[0];
+        const thisWeek = getISOWeekKey();
+
+        const { data: existing } = await supabase
+            .from('event_account_progress')
+            .select('*')
+            .eq('event_id', eventId)
+            .eq('account_id', accountId)
+            .single();
+
+        let patch: Partial<EventAccountProgress>;
+
+        if (existing) {
+            const doneToday = existing.last_completed_date === today;
+            if (doneToday) {
+                // Undo
+                patch = {
+                    last_completed_date: null,
+                    current_week_count: Math.max(0, existing.current_week_count - 1),
+                    total_count: Math.max(0, existing.total_count - 1),
+                    updated_at: new Date().toISOString()
+                };
+            } else {
+                const weekChanged = existing.current_week_number !== thisWeek;
+                patch = {
+                    last_completed_date: today,
+                    current_week_number: thisWeek,
+                    current_week_count: weekChanged ? 1 : existing.current_week_count + 1,
+                    total_count: existing.total_count + 1,
+                    updated_at: new Date().toISOString()
+                };
+            }
+            const { data, error } = await supabase
+                .from('event_account_progress')
+                .update(patch)
+                .eq('id', existing.id)
+                .select()
+                .single();
+            if (error) throw error;
+            return data;
+        } else {
+            const { data, error } = await supabase
+                .from('event_account_progress')
+                .insert({
+                    event_id: eventId,
+                    account_id: accountId,
+                    last_completed_date: today,
+                    current_week_number: thisWeek,
+                    current_week_count: 1,
+                    total_count: 1
+                })
+                .select()
+                .single();
+            if (error) throw error;
+            return data;
+        }
     },
 
     async getEventTotalProgress(eventId: string): Promise<Record<string, number>> {

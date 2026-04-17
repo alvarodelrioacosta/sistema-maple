@@ -18,7 +18,7 @@ import type {
     GameEvent,
     Task,
     ItemWithCharacter,
-    EventDailyProgress,
+    EventAccountProgress,
     TaskProgress,
     ItemDB
 } from '../../types';
@@ -37,8 +37,7 @@ const DailyCheckUp: React.FC = () => {
     const [itemsDB, setItemsDB] = useState<ItemDB[]>([]);
 
     // Progress states
-    const [eventProgress, setEventProgress] = useState<EventDailyProgress[]>([]);
-    const [eventTotalProgressMap, setEventTotalProgressMap] = useState<Record<string, Record<string, number>>>({});
+    const [eventProgress, setEventProgress] = useState<EventAccountProgress[]>([]);
     const [taskProgress, setTaskProgress] = useState<TaskProgress[]>([]);
 
     // UI States
@@ -59,26 +58,13 @@ const DailyCheckUp: React.FC = () => {
         // Configurar Realtime
         const channel = supabase
             .channel('daily_checkup_changes')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'event_daily_progress' }, (payload: any) => {
-                console.log('Realtime Event Progress Change:', payload);
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'event_account_progress' }, (payload: any) => {
                 setEventProgress(prev => {
-                    const newData = payload.new as EventDailyProgress;
-                    const oldData = payload.old as EventDailyProgress;
-                    let updated = [...prev];
-
-                    if (payload.eventType === 'DELETE') {
-                        return updated.filter(p => p.id !== oldData.id);
-                    }
-
-                    // Aggressive deduplication: remove any record with same ID or same composite key
-                    const filtered = updated.filter(p =>
-                        !(newData.id && p.id === newData.id) &&
-                        !(p.event_id === newData.event_id && p.account_id === newData.account_id && (p.date?.split('T')[0] === newData.date?.split('T')[0]))
-                    );
-
-                    if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
-                        filtered.push(newData);
-                    }
+                    const newData = payload.new as EventAccountProgress;
+                    const oldData = payload.old as EventAccountProgress;
+                    if (payload.eventType === 'DELETE') return prev.filter(p => p.id !== oldData.id);
+                    const filtered = prev.filter(p => !(p.event_id === newData.event_id && p.account_id === newData.account_id));
+                    if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') filtered.push(newData);
                     return filtered;
                 });
             })
@@ -191,34 +177,8 @@ const DailyCheckUp: React.FC = () => {
             setTaskProgress(allTaskProgress);
 
             if (filteredEvents.length > 0) {
-                const eventProgressPromises = filteredEvents.map(event => {
-                    const currentWeekNum = eventsService.getWeekNumber(event, new Date());
-                    const weekDays = eventsService.getWeekDays(event, currentWeekNum);
-                    
-                    if (weekDays.length > 0) {
-                        const startDate = weekDays[0];
-                        const endDate = weekDays[weekDays.length - 1];
-                        return eventsService.getDailyProgress(event.id, undefined, startDate, endDate);
-                    }
-                    return eventsService.getDailyProgress(event.id, todayStr);
-                });
-
-                const eventTotalsPromises = filteredEvents.map(event => 
-                    eventsService.getEventTotalProgress(event.id)
-                );
-
-                const [allEventProgressResults, allEventTotalsResults] = await Promise.all([
-                    Promise.all(eventProgressPromises),
-                    Promise.all(eventTotalsPromises)
-                ]);
-
-                setEventProgress(allEventProgressResults.flat());
-
-                const newTotalsMap: Record<string, Record<string, number>> = {};
-                filteredEvents.forEach((event, idx) => {
-                    newTotalsMap[event.id] = allEventTotalsResults[idx];
-                });
-                setEventTotalProgressMap(newTotalsMap);
+                const progressData = await eventsService.getAccountProgress(filteredEvents.map(e => e.id));
+                setEventProgress(progressData);
             }
 
         } catch (error: any) {
@@ -231,17 +191,14 @@ const DailyCheckUp: React.FC = () => {
 
     // Memoized data structures for O(1) lookups
     const indexedEventProgress = useMemo(() => {
-        const map = new Map<string, boolean>();
+        const map = new Map<string, EventAccountProgress>();
         (eventProgress || []).forEach(p => {
-            if (p.event_id && p.account_id && p.date) {
-                const dateOnly = p.date.split('T')[0];
-                if (dateOnly === todayStr) {
-                    map.set(`${p.event_id}-${p.account_id}`, p.completed);
-                }
+            if (p.event_id && p.account_id) {
+                map.set(`${p.event_id}-${p.account_id}`, p);
             }
         });
         return map;
-    }, [eventProgress, todayStr]);
+    }, [eventProgress]);
 
     const indexedTaskProgress = useMemo(() => {
         const map = new Map<string, boolean>();
@@ -281,24 +238,10 @@ const DailyCheckUp: React.FC = () => {
                 const eventTotalCounts: Record<string, number> = {};
 
                 (activeEvents || []).forEach(event => {
-                    eventStates[event.id] = indexedEventProgress.get(`${event.id}-${acc.id}`) || false;
-
-                    // Calculate weekly count for this specific event and account
-                    const currentWeekNum = eventsService.getWeekNumber(event, new Date());
-                    const weekDays = eventsService.getWeekDays(event, currentWeekNum);
-
-                    const count = (eventProgress || []).filter(p =>
-                        p.event_id === event.id &&
-                        p.account_id === acc.id &&
-                        p.completed &&
-                        weekDays.includes(p.date?.split('T')[0])
-                    ).length;
-
-                    // Use external totalCountMap for accurate global total
-                    const totalAcrossEvent = eventTotalProgressMap[event.id]?.[acc.id] || 0;
-
-                    eventWeeklyCounts[event.id] = count;
-                    eventTotalCounts[event.id] = totalAcrossEvent;
+                    const prog = indexedEventProgress.get(`${event.id}-${acc.id}`);
+                    eventStates[event.id] = prog?.last_completed_date === todayStr;
+                    eventWeeklyCounts[event.id] = prog?.current_week_count || 0;
+                    eventTotalCounts[event.id] = prog?.total_count || 0;
                 });
 
                 // Get progress for each daily task
@@ -394,41 +337,34 @@ const DailyCheckUp: React.FC = () => {
                 const totalCount = row.eventTotalCounts[eventId] || 0;
                 const maxPerWeek = event.max_per_week || 7;
                 const maxPerEvent = event.max_per_event;
-
-                const isWeeklyLimitReached = weeklyCount >= maxPerWeek;
-                const isEventLimitReached = maxPerEvent !== null && totalCount >= maxPerEvent;
-
-                if (isWeeklyLimitReached || isEventLimitReached) {
-                    return; // Prevent toggle if limit reached
-                }
+                if (weeklyCount >= maxPerWeek || (maxPerEvent !== null && totalCount >= maxPerEvent)) return;
             }
         }
 
         // Optimistic update
         setEventProgress(prev => {
-            const existingIndex = prev.findIndex(p => p.event_id === eventId && p.account_id === accountId && p.date === todayStr);
-            if (existingIndex > -1) {
-                const newArr = [...prev];
-                newArr[existingIndex] = { ...newArr[existingIndex], completed };
-                return newArr;
-            } else {
-                return [...prev, { event_id: eventId, account_id: accountId, date: todayStr, completed } as EventDailyProgress];
+            const existing = prev.find(p => p.event_id === eventId && p.account_id === accountId);
+            if (existing) {
+                return prev.map(p => p.event_id === eventId && p.account_id === accountId
+                    ? { ...p, last_completed_date: completed ? todayStr : null }
+                    : p
+                );
             }
+            return [...prev, {
+                id: '', event_id: eventId, account_id: accountId,
+                last_completed_date: completed ? todayStr : null,
+                current_week_number: 0, current_week_count: completed ? 1 : 0,
+                total_count: completed ? 1 : 0, updated_at: ''
+            } as EventAccountProgress];
         });
 
         try {
-            await eventsService.toggleDailyProgress(eventId, accountId, todayStr, completed);
-            
-            // Refresh total count for this event and account
-            setEventTotalProgressMap(prev => {
-                const eventMap = { ...prev[eventId] };
-                const currentTotal = eventMap[accountId] || 0;
-                eventMap[accountId] = completed ? currentTotal + 1 : Math.max(0, currentTotal - 1);
-                return { ...prev, [eventId]: eventMap };
-            });
+            const updated = await eventsService.toggleAccountProgress(eventId, accountId);
+            setEventProgress(prev => prev.map(p =>
+                p.event_id === eventId && p.account_id === accountId ? updated : p
+            ));
         } catch (error) {
             console.error('Error toggling event progress:', error);
-            // Revert on error could be done here if needed
         }
     };
 

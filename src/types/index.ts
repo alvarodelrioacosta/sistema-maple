@@ -348,6 +348,17 @@ export interface EventDailyProgress {
 
 export type EventDailyProgressInsert = Omit<EventDailyProgress, 'id' | 'created_at'>;
 
+export interface EventAccountProgress {
+    id: string;
+    event_id: string;
+    account_id: string;
+    last_completed_date: string | null;
+    current_week_number: number;
+    current_week_count: number;
+    total_count: number;
+    updated_at: string;
+}
+
 export interface EventDailyClaim {
     id: string;
     event_id: string;
