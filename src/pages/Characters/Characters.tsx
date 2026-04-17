@@ -44,6 +44,7 @@ export const Characters: React.FC = () => {
     const [isSaving, setIsSaving] = useState(false);
     const [syncingId, setSyncingId] = useState<string | null>(null);
     const [syncingAll, setSyncingAll] = useState(false);
+    const [syncProgress, setSyncProgress] = useState<{ current: number; total: number } | null>(null);
     const [selectedChar, setSelectedChar] = useState<CharacterWithAccount | null>(null);
     const [allSymbols, setAllSymbols] = useState<SymbolProgress[]>([]);
 
@@ -163,16 +164,36 @@ export const Characters: React.FC = () => {
         }
     };
 
+    const getStaleCount = () => {
+        const now = new Date();
+        const sevenDaysAgo  = new Date(now.getTime() - 7  * 24 * 60 * 60 * 1000);
+        const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        return characters.filter(c => {
+            if (!c.last_synced_at) return true;
+            const lastSync = new Date(c.last_synced_at);
+            return c.main === 'Main' ? lastSync < sevenDaysAgo : lastSync < thirtyDaysAgo;
+        }).length;
+    };
+
     const handleSyncAll = async () => {
+        const staleCount = getStaleCount();
+        if (staleCount === 0) {
+            alert('All characters are up to date.');
+            return;
+        }
         setSyncingAll(true);
+        setSyncProgress({ current: 0, total: staleCount });
         try {
-            const { synced, failed } = await charactersService.syncAllFromNexon();
-            alert(`Sync complete: ${synced} updated, ${failed} failed.`);
+            const { synced, failed } = await charactersService.syncAllFromNexon({
+                onProgress: (current, total) => setSyncProgress({ current, total })
+            });
             await loadData();
+            alert(`Sync complete: ${synced} updated, ${failed} failed.`);
         } catch (error) {
             console.error('Error syncing all:', error);
         } finally {
             setSyncingAll(false);
+            setSyncProgress(null);
         }
     };
 
@@ -382,10 +403,26 @@ export const Characters: React.FC = () => {
                 title="Characters"
                 subtitle="Manage your game characters"
                 actions={
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                        <Button variant="secondary" onClick={handleSyncAll} disabled={syncingAll}>
-                            {syncingAll ? 'Syncing...' : 'Sync All'}
-                        </Button>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+                            <Button variant="secondary" onClick={handleSyncAll} disabled={syncingAll}>
+                                {syncingAll && syncProgress
+                                    ? `Syncing ${syncProgress.current}/${syncProgress.total}...`
+                                    : syncingAll ? 'Preparing...' : 'Sync All'}
+                            </Button>
+                            {!syncingAll && getStaleCount() > 0 && (
+                                <span style={{
+                                    position: 'absolute', top: '-6px', right: '-6px',
+                                    background: '#f97316', color: '#fff',
+                                    borderRadius: '999px', fontSize: '0.65rem', fontWeight: 700,
+                                    minWidth: '18px', height: '18px',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    padding: '0 4px', pointerEvents: 'none'
+                                }}>
+                                    {getStaleCount()}
+                                </span>
+                            )}
+                        </div>
                         <Button onClick={() => handleOpenModal()}>+ New Character</Button>
                     </div>
                 }

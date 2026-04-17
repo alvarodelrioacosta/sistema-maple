@@ -197,27 +197,47 @@ export const charactersService = {
         return true;
     },
 
-    async syncAllFromNexon(accountId?: string): Promise<{ synced: number; failed: number }> {
-        let query = supabase.from('characters').select('id, name, account_id');
+    async syncAllFromNexon(options?: {
+        accountId?: string;
+        onProgress?: (current: number, total: number) => void;
+    }): Promise<{ synced: number; failed: number; skipped: number }> {
+        const { accountId, onProgress } = options || {};
+
+        let query = supabase.from('characters').select('id, name, account_id, main, last_synced_at');
         if (accountId) query = query.eq('account_id', accountId);
 
         const { data: chars, error } = await query;
         if (error) throw error;
-        if (!chars) return { synced: 0, failed: 0 };
+        if (!chars) return { synced: 0, failed: 0, skipped: 0 };
 
+        const now = new Date();
+        const sevenDaysAgo  = new Date(now.getTime() - 7  * 24 * 60 * 60 * 1000);
+        const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+        const toSync = chars.filter(c => {
+            if (!c.last_synced_at) return true;
+            const lastSync = new Date(c.last_synced_at);
+            return c.main === 'Main' ? lastSync < sevenDaysAgo : lastSync < thirtyDaysAgo;
+        });
+
+        const skipped = chars.length - toSync.length;
         let synced = 0;
         let failed = 0;
 
-        for (const char of chars) {
+        for (let i = 0; i < toSync.length; i++) {
+            if (i > 0) {
+                await new Promise(r => setTimeout(r, i % 5 === 0 ? 5000 : 1000));
+            }
             try {
-                const ok = await charactersService.syncFromNexon(char.id);
+                const ok = await charactersService.syncFromNexon(toSync[i].id);
                 if (ok) synced++; else failed++;
             } catch {
                 failed++;
             }
+            onProgress?.(i + 1, toSync.length);
         }
 
-        return { synced, failed };
+        return { synced, failed, skipped };
     },
 
     async recalculateCategorization(accountId: string): Promise<void> {
