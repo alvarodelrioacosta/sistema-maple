@@ -5,8 +5,8 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Header } from '../../components/Layout';
 import { Button, Table, Modal, Input, Select, Card } from '../../components/UI';
-import { itemsService, charactersService, itemsDBService, accountsService, clientsService, accountsReceivableService, transactionsService, sharedInventoryService, appSettingsService, potentialsService } from '../../services';
-import type { ItemWithCharacter, ItemInsert, Character, ItemStatus, PotentialTier, ItemDB, TradeabilityType, Account, Client, SharedInventory, Potential } from '../../types';
+import { itemsService, charactersService, itemsDBService, accountsService, clientsService, accountsReceivableService, transactionsService, sharedInventoryService, appSettingsService } from '../../services';
+import type { ItemWithCharacter, ItemInsert, Character, ItemStatus, PotentialTier, ItemDB, TradeabilityType, Account, Client, SharedInventory } from '../../types';
 import { formatCurrencyValue } from '../../utils/format';
 import type { Column } from '../../components/UI/Table';
 import './Items.css';
@@ -124,15 +124,6 @@ export const Items: React.FC = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<ItemWithCharacter | null>(null);
     const [mesoUsdRate, setMesoUsdRate] = useState<number>(0);
-    const [mainPotentials, setMainPotentials] = useState<Potential[]>([]);
-    const [bonusPotentials, setBonusPotentials] = useState<Potential[]>([]);
-
-    const potentialRankMap = useMemo(() => {
-        const map = new Map<string, string>();
-        mainPotentials.forEach(p => map.set(p.potential_name, p.rank));
-        bonusPotentials.forEach(p => map.set(p.potential_name, p.rank));
-        return map;
-    }, [mainPotentials, bonusPotentials]);
 
 
 
@@ -188,16 +179,14 @@ export const Items: React.FC = () => {
 
     const loadData = async () => {
         try {
-            const [itemsData, charsData, itemsDBData, accountsData, clientsData, sharedData, rate, mainPots, bonusPots] = await Promise.all([
+            const [itemsData, charsData, itemsDBData, accountsData, clientsData, sharedData, rate] = await Promise.all([
                 itemsService.getAll(),
                 charactersService.getAll(),
                 itemsDBService.getAll(),
                 accountsService.getAll(),
                 clientsService.getAll(),
                 sharedInventoryService.get().catch(() => null),
-                appSettingsService.getMesoUsdRate(),
-                potentialsService.getMainPotentials(),
-                potentialsService.getBonusPotentials()
+                appSettingsService.getMesoUsdRate()
             ]);
             setItems(itemsData);
             setCharacters(charsData);
@@ -206,8 +195,6 @@ export const Items: React.FC = () => {
             setClients(clientsData);
             setSharedChest(sharedData);
             setMesoUsdRate(rate);
-            setMainPotentials(mainPots);
-            setBonusPotentials(bonusPots);
         } catch (error) {
             console.error('Error loading data:', error);
         } finally {
@@ -629,14 +616,11 @@ export const Items: React.FC = () => {
 
                 return (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                        {lines.map((line, idx) => {
-                            const rank = potentialRankMap.get(line) || i.main_potential_tier;
-                            return (
-                                <span key={idx} className={`potential-line text-${rank?.toLowerCase()}`}>
-                                    {line}
-                                </span>
-                            );
-                        })}
+                        {lines.map((line, idx) => (
+                            <span key={idx} className={`potential-line text-${i.main_potential_tier?.toLowerCase()}`}>
+                                {line}
+                            </span>
+                        ))}
                     </div>
                 );
             }
@@ -654,14 +638,11 @@ export const Items: React.FC = () => {
 
                 return (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                        {lines.map((line, idx) => {
-                            const rank = potentialRankMap.get(line) || i.bonus_potential_tier;
-                            return (
-                                <span key={idx} className={`potential-line text-${rank?.toLowerCase()}`}>
-                                    {line}
-                                </span>
-                            );
-                        })}
+                        {lines.map((line, idx) => (
+                            <span key={idx} className={`potential-line text-${i.bonus_potential_tier?.toLowerCase()}`}>
+                                {line}
+                            </span>
+                        ))}
                     </div>
                 );
             }

@@ -8,15 +8,12 @@ import { Button, Table, Modal, Input, Select, Card } from '../../components/UI';
 import { charactersService, accountsService, classesService } from '../../services';
 import type { CharacterWithAccount, CharacterInsert, Account, JobType, ClassItem } from '../../types';
 import type { Column } from '../../components/UI/Table';
+
 import { SymbolTracker } from './SymbolTracker';
 import { SixthJobTracker } from './SixthJobTracker';
+import { ContentUnlocksPanel } from './ContentUnlocksPanel';
 import '../Accounts/Accounts.css';
 import './Characters.css';
-
-const WORLD_COLORS: Record<string, string> = {
-    'Reboot': '#a78bfa', 'Reboot 2': '#c084fc', 'Heroic': '#fbbf24',
-    'Scania': '#60a5fa', 'Bera': '#4ade80'
-};
 
 const JOB_OPTIONS: { value: JobType; label: string; color: string }[] = [
     { value: 'Warrior', label: 'Warrior', color: '#ff4d4f' }, // Red
@@ -39,8 +36,7 @@ export const Characters: React.FC = () => {
         class: '',
         job: null,
         main: null,
-        account_id: '',
-        nexon_name: null
+        account_id: ''
     });
 
     const [activeFilter, setActiveFilter] = useState<JobType | null>(null);
@@ -87,13 +83,12 @@ export const Characters: React.FC = () => {
                 class: character.class || '',
                 job: character.job || null,
                 main: character.main || null,
-                account_id: character.account_id,
-                nexon_name: character.nexon_name || null
+                account_id: character.account_id
             });
         } else {
             setEditingCharacter(null);
             const lastAccountId = formData.account_id || accounts[0]?.id || '';
-            setFormData({ name: '', level: 1, class: '', job: null, main: null, account_id: lastAccountId, nexon_name: null });
+            setFormData({ name: '', level: 1, class: '', job: null, main: null, account_id: lastAccountId });
         }
         setModalOpen(true);
     };
@@ -112,28 +107,26 @@ export const Characters: React.FC = () => {
             if (editingCharacter) {
                 await charactersService.update(editingCharacter.id, formData);
                 await loadData();
-                // Instead of closing, deselect the character and clear fields
                 setEditingCharacter(null);
-                setFormData(prev => ({
-                    ...prev,
-                    name: '',
-                    level: 1,
-                    class: '',
-                    job: null,
-                    main: null
-                }));
+                setFormData(prev => ({ ...prev, name: '', level: 1, class: '', job: null, main: null }));
             } else {
-                await charactersService.create(formData);
-                await loadData();
-                // Clear fields but keep account
-                setFormData(prev => ({
-                    ...prev,
-                    name: '',
+                // Create with defaults — Nexon sync will fill in level/class/job/exp
+                const newChar = await charactersService.create({
+                    name: formData.name,
+                    account_id: formData.account_id,
                     level: 1,
-                    class: '',
+                    class: null,
                     job: null,
                     main: null
-                }));
+                });
+                // Auto-sync silently; character is saved regardless of outcome
+                try {
+                    await charactersService.syncFromNexon(newChar.id);
+                } catch {
+                    // Sync failure is non-fatal
+                }
+                await loadData();
+                setFormData(prev => ({ ...prev, name: '', level: 1, class: '', job: null, main: null }));
             }
         } catch (error) {
             console.error('Error saving character:', error);
@@ -209,7 +202,9 @@ export const Characters: React.FC = () => {
             render: (c) => (
                 <div>
                     <div style={{ fontWeight: 600 }}>{c.level}</div>
-                    {c.rank_position && <div style={{ fontSize: '0.7rem', color: '#fbbf24' }}>#{c.rank_position}</div>}
+                    {c.exp_percent !== null && c.exp_percent !== undefined && (
+                        <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>{Number(c.exp_percent).toFixed(1)}%</div>
+                    )}
                 </div>
             )
         },
@@ -251,13 +246,6 @@ export const Characters: React.FC = () => {
             }
         },
         { key: 'class', header: 'Class', render: (c) => c.class || '-' },
-        {
-            key: 'world',
-            header: 'World',
-            render: (c) => c.world ? (
-                <span style={{ color: WORLD_COLORS[c.world] || '#94a3b8', fontSize: '0.8rem', fontWeight: 500 }}>{c.world}</span>
-            ) : <span style={{ color: '#475569' }}>-</span>
-        },
         {
             key: 'last_synced',
             header: 'Synced',
@@ -403,6 +391,7 @@ export const Characters: React.FC = () => {
                         <Card padding="none" style={{ marginTop: '0.5rem' }}>
                             <SymbolTracker characterId={char.id} characterName={char.name} />
                             <SixthJobTracker characterId={char.id} characterClass={char.class} />
+                            <ContentUnlocksPanel accountId={char.account_id} />
                         </Card>
                     ) : null;
                 })()}
@@ -430,40 +419,34 @@ export const Characters: React.FC = () => {
                             label="Name"
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            placeholder="Exact in-game name"
                             required
                         />
-                        <Input
-                            label="Nexon Name"
-                            value={formData.nexon_name || ''}
-                            onChange={(e) => setFormData({ ...formData, nexon_name: e.target.value || null })}
-                            placeholder="Exact in-game name for Nexon API sync"
-                        />
-                        <Input
-                            label="Level"
-                            type="number"
-                            min={1}
-                            max={300}
-                            value={formData.level}
-                            onChange={(e) => setFormData({ ...formData, level: parseInt(e.target.value) || 1 })}
-                        />
-
-                        <Select
-                            label="Job"
-                            value={formData.job || ''}
-                            onChange={(value) => setFormData({ ...formData, job: value as JobType, class: '' })}
-                            options={[{ value: '', label: 'Select Job' }, ...JOB_OPTIONS]}
-                        />
-
-                        <Select
-                            label="Class"
-                            value={formData.class || ''}
-                            onChange={(value) => setFormData({ ...formData, class: value })}
-                            options={[
-                                { value: '', label: 'Select Class' },
-                                ...classOptions
-                            ]}
-                            disabled={!formData.job}
-                        />
+                        {editingCharacter && (
+                            <>
+                                <Input
+                                    label="Level"
+                                    type="number"
+                                    min={1}
+                                    max={300}
+                                    value={formData.level}
+                                    onChange={(e) => setFormData({ ...formData, level: parseInt(e.target.value) || 1 })}
+                                />
+                                <Select
+                                    label="Job"
+                                    value={formData.job || ''}
+                                    onChange={(value) => setFormData({ ...formData, job: value as JobType, class: '' })}
+                                    options={[{ value: '', label: 'Select Job' }, ...JOB_OPTIONS]}
+                                />
+                                <Select
+                                    label="Class"
+                                    value={formData.class || ''}
+                                    onChange={(value) => setFormData({ ...formData, class: value })}
+                                    options={[{ value: '', label: 'Select Class' }, ...classOptions]}
+                                    disabled={!formData.job}
+                                />
+                            </>
+                        )}
                     </div>
 
                     {/* COMPACT CHARACTER LIST (Option B) */}

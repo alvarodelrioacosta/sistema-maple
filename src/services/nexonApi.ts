@@ -12,17 +12,8 @@ export interface NexonCharacterData {
     level: number;
     exp: number;
     jobName: string;
-    world: string;
-    rankPosition: number;
     avatarUrl: string;
 }
-
-const WORLD_NAMES: Record<number, string> = {
-    0: 'Scania', 1: 'Bera', 2: 'Broa', 3: 'Windia', 5: 'Khaini',
-    6: 'Bellocan', 7: 'Mardia', 8: 'Kradia', 9: 'Yellonde', 10: 'Galicia',
-    12: 'El Nido', 13: 'Zenith', 14: 'Chaos', 15: 'Nova', 16: 'Renegades',
-    17: 'Reboot', 18: 'Reboot 2', 45: 'Heroic'
-};
 
 export const nexonApi = {
     async fetchCharacter(characterName: string): Promise<NexonCharacterData | null> {
@@ -49,8 +40,6 @@ export const nexonApi = {
             level: entry.level,
             exp: entry.exp,
             jobName: entry.jobName,
-            world: WORLD_NAMES[entry.worldID] ?? `World ${entry.worldID}`,
-            rankPosition: entry.rank,
             avatarUrl: entry.characterImgURL
         };
     }

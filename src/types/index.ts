@@ -42,21 +42,17 @@ export interface Character {
     job: JobType | null;
     main: 'Main' | 'Mule' | null;
     created_at: string;
-    nexon_name: string | null;
     exp: number | null;
     avatar_url: string | null;
-    world: string | null;
-    rank_position: number | null;
     last_synced_at: string | null;
+    exp_percent: number | null;
 }
 
-export type CharacterInsert = Omit<Character, 'id' | 'created_at' | 'nexon_name' | 'exp' | 'avatar_url' | 'world' | 'rank_position' | 'last_synced_at'> & {
-    nexon_name?: string | null;
+export type CharacterInsert = Omit<Character, 'id' | 'created_at' | 'exp' | 'avatar_url' | 'last_synced_at' | 'exp_percent'> & {
     exp?: number | null;
     avatar_url?: string | null;
-    world?: string | null;
-    rank_position?: number | null;
     last_synced_at?: string | null;
+    exp_percent?: number | null;
 };
 export type CharacterUpdate = Partial<CharacterInsert>;
 
@@ -432,19 +428,6 @@ export interface TaskProgress {
     account_id: string;
     completed: boolean;
     updated_at: string;
-}
-
-export interface Potential {
-    id?: string;
-    item_type: string;
-    rank: string;
-    potential_name: string;
-    val_0_30?: string;
-    val_31_70?: string;
-    val_71: string;
-    val_151: string;
-    val_120?: string;
-    created_at?: string;
 }
 
 export type TaskInsert = Omit<Task, 'id' | 'created_at' | 'is_completed'>;

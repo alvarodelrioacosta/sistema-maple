@@ -184,52 +184,59 @@ const Tasks: React.FC = () => {
                                 <table className="tasks-table">
                                     <thead>
                                         <tr>
-                                            <th>Category</th>
-                                            <th>Unlock</th>
-                                            <th>Unlocks</th>
-                                            {accounts.map(a => (
-                                                <th key={a.id} className="task-header-col">
-                                                    <div style={{ fontSize: '0.75rem', fontWeight: 600 }}>#{a.number}</div>
-                                                    <div style={{ fontSize: '0.65rem', color: '#64748b' }}>{a.mainCharacter?.name || '-'}</div>
+                                            <th>#</th>
+                                            <th>Mail</th>
+                                            <th>Tag</th>
+                                            <th>Char</th>
+                                            {unlocks.map(unlock => (
+                                                <th key={unlock.id} className="task-header-col">
+                                                    <div className="task-header-content">
+                                                        <div className="task-name-wrapper">
+                                                            <span style={{
+                                                                fontSize: '0.6rem', fontWeight: 600, padding: '1px 4px', borderRadius: '3px',
+                                                                background: CATEGORY_COLORS[unlock.category] + '20',
+                                                                color: CATEGORY_COLORS[unlock.category]
+                                                            }}>
+                                                                {CATEGORY_LABELS[unlock.category]}
+                                                            </span>
+                                                            <span className="task-name">{unlock.name}</span>
+                                                            <div style={{ fontSize: '0.65rem', color: '#64748b' }}>{unlock.unlocks}</div>
+                                                            <div className="task-header-progress">
+                                                                {unlockProgress.filter(p => p.unlock_id === unlock.id && p.completed).length} / {accounts.length}
+                                                            </div>
+                                                        </div>
+                                                        <div className="task-actions">
+                                                            <button
+                                                                onClick={() => handleDeleteUnlock(unlock.id)}
+                                                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', fontSize: '0.85rem', padding: '2px 4px' }}
+                                                                title="Delete"
+                                                            >✕</button>
+                                                        </div>
+                                                    </div>
                                                 </th>
                                             ))}
-                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {unlocks.map(unlock => (
-                                            <tr key={unlock.id}>
-                                                <td>
-                                                    <span style={{
-                                                        fontSize: '0.7rem', fontWeight: 600, padding: '2px 6px', borderRadius: '4px',
-                                                        background: CATEGORY_COLORS[unlock.category] + '20',
-                                                        color: CATEGORY_COLORS[unlock.category]
-                                                    }}>
-                                                        {CATEGORY_LABELS[unlock.category]}
-                                                    </span>
-                                                </td>
-                                                <td style={{ fontWeight: 600 }}>{unlock.name}</td>
-                                                <td style={{ color: '#94a3b8', fontSize: '0.85rem' }}>{unlock.unlocks}</td>
-                                                {accounts.map(a => {
-                                                    const done = getUnlockStatus(unlock.id, a.id);
+                                        {accounts.map(account => (
+                                            <tr key={account.id}>
+                                                <td className="account-number">{account.number}</td>
+                                                <td className="account-email">{account.email}</td>
+                                                <td className="account-tag">{account.tag}</td>
+                                                <td className="account-char">{account.mainCharacter?.name || '-'}</td>
+                                                {unlocks.map(unlock => {
+                                                    const done = getUnlockStatus(unlock.id, account.id);
                                                     return (
-                                                        <td key={a.id} className="task-checkbox-cell">
+                                                        <td key={unlock.id} className="task-checkbox-cell">
                                                             <input
                                                                 type="checkbox"
                                                                 className="task-checkbox"
                                                                 checked={done}
-                                                                onChange={() => handleToggleUnlock(unlock.id, a.id, done)}
+                                                                onChange={() => handleToggleUnlock(unlock.id, account.id, done)}
                                                             />
                                                         </td>
                                                     );
                                                 })}
-                                                <td>
-                                                    <button
-                                                        onClick={() => handleDeleteUnlock(unlock.id)}
-                                                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', fontSize: '0.85rem', padding: '2px 6px' }}
-                                                        title="Delete"
-                                                    >✕</button>
-                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>

@@ -5,6 +5,7 @@
 import supabase from '../lib/supabase';
 import type { Character, CharacterInsert, CharacterUpdate, CharacterWithAccount } from '../types';
 import { nexonApi } from './nexonApi';
+import { expTnlService } from './expTnl';
 
 export const charactersService = {
     async getAll(): Promise<CharacterWithAccount[]> {
@@ -158,18 +159,34 @@ export const charactersService = {
         const char = await charactersService.getById(characterId);
         if (!char) return false;
 
-        const searchName = char.nexon_name || char.name;
-        const nexonData = await nexonApi.fetchCharacter(searchName);
+        const nexonData = await nexonApi.fetchCharacter(char.name);
         if (!nexonData) return false;
+
+        // Look up job type from class name
+        const { data: classData } = await supabase
+            .from('classes')
+            .select('job_1')
+            .eq('class_name', nexonData.jobName)
+            .maybeSingle();
+
+        // Calculate exp percentage
+        let expPercent: number | null = null;
+        if (nexonData.exp !== null && nexonData.level !== null) {
+            const tnl = await expTnlService.getByLevel(nexonData.level);
+            if (tnl && tnl > 0) {
+                expPercent = parseFloat(Math.min(100, (nexonData.exp / tnl) * 100).toFixed(2));
+            }
+        }
 
         const { error } = await supabase
             .from('characters')
             .update({
                 level: nexonData.level,
                 exp: nexonData.exp,
+                class: nexonData.jobName,
+                job: classData?.job_1 ?? char.job,
                 avatar_url: nexonData.avatarUrl,
-                world: nexonData.world,
-                rank_position: nexonData.rankPosition,
+                exp_percent: expPercent,
                 last_synced_at: new Date().toISOString()
             })
             .eq('id', characterId);
@@ -181,7 +198,7 @@ export const charactersService = {
     },
 
     async syncAllFromNexon(accountId?: string): Promise<{ synced: number; failed: number }> {
-        let query = supabase.from('characters').select('id, name, nexon_name, account_id');
+        let query = supabase.from('characters').select('id, name, account_id');
         if (accountId) query = query.eq('account_id', accountId);
 
         const { data: chars, error } = await query;
