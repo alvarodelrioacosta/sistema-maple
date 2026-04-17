@@ -50,6 +50,18 @@ const COLUMN_NAME_DISPLAY: Record<string, string> = {
     '6th Job': '6th Job Prequest',
 };
 
+const HIDDEN_BOSS_NAMES = new Set(['Guardian Angel Slime', 'Lucid']);
+
+// Client-side ordering by name. Bosses not listed fall back to order_index.
+const BOSS_NAME_ORDER: Record<string, number> = {
+    'Zakum': 10, 'Horntail': 20, 'Pink Bean': 30, 'Magnus': 40,
+    'Von Bon': 50, 'Pierre': 60, 'Crimson Queen': 70, 'Vellum': 80,
+    'Cygnus': 90, 'Hilla': 100, 'Papulatus': 110, 'Arkarium': 120,
+    'Will': 130, 'Gloom': 140, 'Darknell': 150, 'Bain': 160,
+    'Verus Hilla': 170, 'Chosen Seren': 180, 'Kalos': 190,
+    'Kaling': 200, 'Limbo': 210,
+};
+
 const DailyCheckUp: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -87,6 +99,8 @@ const DailyCheckUp: React.FC = () => {
     const [registeringAccounts, setRegisteringAccounts] = useState<Set<string>>(new Set());
 
     const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
+    const weekStart = useMemo(() => bossingService.getWeekStart(), []);
+    const LS_KEY = `bossStates_${weekStart}`;
 
     useEffect(() => {
         loadData();
@@ -142,6 +156,13 @@ const DailyCheckUp: React.FC = () => {
             supabase.removeChannel(channel);
         };
     }, []);
+
+    // Persist boss states for the current week in localStorage (survives refresh)
+    useEffect(() => {
+        if (Object.keys(bossStates).length > 0) {
+            localStorage.setItem(LS_KEY, JSON.stringify(bossStates));
+        }
+    }, [bossStates, LS_KEY]);
 
     const loadData = async () => {
         setLoading(true);
@@ -202,12 +223,18 @@ const DailyCheckUp: React.FC = () => {
             setAllBosses(bossesData);
             setWeekSessions(weekSessionsData);
             setAllPrequests(prequestsData);
-            // Initialize boss selection states from existing sessions (cleared bosses → state 1)
-            const initialBossStates: Record<string, Record<string, 0 | 1 | 2>> = {};
+            // Load persisted boss states from localStorage (preserves failed state 2)
+            let initialBossStates: Record<string, Record<string, 0 | 1 | 2>> = {};
+            const lsStored = localStorage.getItem(LS_KEY);
+            if (lsStored) {
+                try { initialBossStates = JSON.parse(lsStored); } catch { /* ignore */ }
+            }
+            // DB sessions are authoritative for cleared bosses (state 1)
             weekSessionsData.forEach((session: BossingSession) => {
-                const acct: Record<string, 0 | 1 | 2> = {};
-                session.bosses_cleared.forEach((bossId: string) => { acct[bossId] = 1; });
-                initialBossStates[session.account_id] = acct;
+                if (!initialBossStates[session.account_id]) initialBossStates[session.account_id] = {};
+                session.bosses_cleared.forEach((bossId: string) => {
+                    initialBossStates[session.account_id][bossId] = 1;
+                });
             });
             setBossStates(initialBossStates);
 
@@ -409,6 +436,16 @@ const DailyCheckUp: React.FC = () => {
         });
         return map;
     }, [groupedDailyUnlocks]);
+
+    const visibleBosses = useMemo(() => {
+        return allBosses
+            .filter(b => !HIDDEN_BOSS_NAMES.has(b.name))
+            .sort((a, b) => {
+                const oa = BOSS_NAME_ORDER[a.name] ?? (a.order_index ?? 999);
+                const ob = BOSS_NAME_ORDER[b.name] ?? (b.order_index ?? 999);
+                return oa - ob;
+            });
+    }, [allBosses]);
 
     // accountId → Set of boss IDs where prequest is done
     const prequestMap = useMemo(() => {
@@ -673,9 +710,10 @@ const DailyCheckUp: React.FC = () => {
             }
 
             setWeekSessions(prev => [...prev.filter(s => s.account_id !== accountId), session]);
-            setRpOverrides(prev => ({ ...prev, [accountId]: null }));
-        } catch (err) {
+            setRpOverrides(prev => ({ ...prev, [accountId]: 0 }));
+        } catch (err: any) {
             console.error('Error registering bossing:', err);
+            alert(`Error al registrar bossing: ${err?.message || 'Error desconocido'}`);
         } finally {
             setRegisteringAccounts(prev => { const n = new Set(prev); n.delete(accountId); return n; });
         }
@@ -931,7 +969,7 @@ const DailyCheckUp: React.FC = () => {
                                                 <div className="bossing-inline">
                                                     {/* Boss icon strip */}
                                                     <div className="boss-strip">
-                                                        {allBosses.map(boss => {
+                                                        {visibleBosses.map(boss => {
                                                             const locked = boss.needs_prequest && !accountPreqs.has(boss.id);
                                                             const state = states[boss.id] ?? 0;
                                                             return (
@@ -962,6 +1000,7 @@ const DailyCheckUp: React.FC = () => {
 
                                                     {/* RP + Register row */}
                                                     <div className="bossing-action-row">
+                                                        <span className="bossing-current-rp">{row.account.reward_points.toLocaleString()} RP</span>
                                                         {isDone && <span className="bossing-done-badge">✓ DONE</span>}
                                                         <input
                                                             type="number"
