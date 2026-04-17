@@ -111,8 +111,6 @@ export const Characters: React.FC = () => {
             if (editingCharacter) {
                 await charactersService.update(editingCharacter.id, formData);
                 await loadData();
-                setEditingCharacter(null);
-                setFormData(prev => ({ ...prev, name: '', level: 1, class: '', job: null, main: null }));
             } else {
                 // Create with defaults — Nexon sync will fill in level/class/job/exp
                 const newChar = await charactersService.create({
@@ -130,8 +128,9 @@ export const Characters: React.FC = () => {
                     // Sync failure is non-fatal
                 }
                 await loadData();
-                setFormData(prev => ({ ...prev, name: '', level: 1, class: '', job: null, main: null }));
             }
+            // Close modal and reset state
+            handleCloseModal();
         } catch (error) {
             console.error('Error saving character:', error);
         } finally {
