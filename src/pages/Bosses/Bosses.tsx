@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Header } from '../../components/Layout';
 import { bossesService } from '../../services';
 import type { Boss } from '../../services';
@@ -13,28 +13,24 @@ const BOSS_ORDER = [
     'Lotus', 'Damien', 'Guardian Angel Slime', 'Lucid'
 ];
 
-const BossCard: React.FC<{ boss: Boss; onSaveMesos: (id: string, value: number | null) => void }> = ({ boss, onSaveMesos }) => {
-    const [editing, setEditing] = useState(false);
-    const [inputValue, setInputValue] = useState(boss.crystal_mesos?.toString() ?? '');
-    const inputRef = useRef<HTMLInputElement>(null);
+const PRESET_1_NAMES = ['Zakum', 'Hilla', 'Papulatus', 'Crimson Queen', 'Pierre', 'Von Bon', 'Vellum', 'Princess No', 'Akechi Mitsuhide'];
+const PRESET_2_NAMES = [...PRESET_1_NAMES, 'Cygnus', 'Lotus', 'Damien'];
 
-    useEffect(() => {
-        if (editing) inputRef.current?.focus();
-    }, [editing]);
+const BossThumb: React.FC<{ boss: Boss; isActive?: boolean; onClick?: () => void; isCalculator?: boolean }> = ({ boss, isActive = true, onClick, isCalculator }) => (
+    <div 
+        className={`boss-thumb ${isActive ? 'is-active' : 'is-inactive'} ${isCalculator ? 'is-clickable' : ''}`}
+        onClick={onClick}
+        title={boss.name}
+    >
+        {boss.image_url ? (
+            <img src={boss.image_url} alt={boss.name} />
+        ) : (
+            <div className="boss-thumb-placeholder">?</div>
+        )}
+    </div>
+);
 
-    const handleSave = () => {
-        setEditing(false);
-        const parsed = inputValue.trim() === '' ? null : parseInt(inputValue.replace(/[^0-9]/g, ''), 10);
-        if (parsed !== boss.crystal_mesos) {
-            onSaveMesos(boss.id, isNaN(parsed as number) ? null : parsed);
-        }
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') handleSave();
-        if (e.key === 'Escape') { setEditing(false); setInputValue(boss.crystal_mesos?.toString() ?? ''); }
-    };
-
+const BossCard: React.FC<{ boss: Boss }> = ({ boss }) => {
     return (
         <div className="boss-card">
             <div className="boss-card__image-wrap">
@@ -52,25 +48,9 @@ const BossCard: React.FC<{ boss: Boss; onSaveMesos: (id: string, value: number |
                 </div>
                 <div className="boss-card__mesos-row">
                     <span className="boss-card__mesos-label">Crystal</span>
-                    {editing ? (
-                        <input
-                            ref={inputRef}
-                            className="boss-card__mesos-input"
-                            value={inputValue}
-                            onChange={e => setInputValue(e.target.value)}
-                            onBlur={handleSave}
-                            onKeyDown={handleKeyDown}
-                            placeholder="0"
-                        />
-                    ) : (
-                        <span
-                            className={`boss-card__mesos-value ${boss.crystal_mesos == null ? 'boss-card__mesos-value--empty' : ''}`}
-                            onClick={() => setEditing(true)}
-                            title="Click to edit"
-                        >
-                            {boss.crystal_mesos != null ? `${formatMesos(boss.crystal_mesos)}` : '—'}
-                        </span>
-                    )}
+                    <span className={`boss-card__mesos-value ${boss.crystal_mesos == null ? 'boss-card__mesos-value--empty' : ''}`}>
+                        {boss.crystal_mesos != null ? formatMesos(boss.crystal_mesos) : '—'}
+                    </span>
                 </div>
             </div>
         </div>
@@ -80,10 +60,10 @@ const BossCard: React.FC<{ boss: Boss; onSaveMesos: (id: string, value: number |
 const Bosses: React.FC = () => {
     const [bosses, setBosses] = useState<Boss[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
     useEffect(() => {
         bossesService.getAll().then(data => {
-            // Sort bosses according to the requested order
             const sorted = [...data].sort((a, b) => {
                 const indexA = BOSS_ORDER.indexOf(a.name);
                 const indexB = BOSS_ORDER.indexOf(b.name);
@@ -96,27 +76,94 @@ const Bosses: React.FC = () => {
         }).finally(() => setLoading(false));
     }, []);
 
-    const handleSaveMesos = async (id: string, value: number | null) => {
-        try {
-            const updated = await bossesService.update(id, { crystal_mesos: value });
-            setBosses(prev => prev.map(b => b.id === id ? updated : b));
-        } catch (err) {
-            console.error('Error updating boss mesos:', err);
-        }
+    const toggleBossSelection = (id: string) => {
+        setSelectedIds(prev => {
+            if (prev.includes(id)) return prev.filter(i => i !== id);
+            if (prev.length >= 14) return prev; // Limit to 14
+            return [...prev, id];
+        });
     };
+
+    const calculateTotal = (namesOrIds: string[], isById = false) => {
+        return bosses
+            .filter(b => isById ? namesOrIds.includes(b.id) : namesOrIds.includes(b.name))
+            .reduce((sum, b) => sum + (b.crystal_mesos || 0), 0);
+    };
+
+    const preset1Total = calculateTotal(PRESET_1_NAMES);
+    const preset2Total = calculateTotal(PRESET_2_NAMES);
+    const calculatorTotal = calculateTotal(selectedIds, true);
 
     return (
         <div className="bosses-page">
             <Header title="Bosses" subtitle={`${bosses.length} bosses`} />
-            {loading ? (
-                <div className="bosses-page__loading">Cargando...</div>
-            ) : (
-                <div className="bosses-grid">
-                    {bosses.map(boss => (
-                        <BossCard key={boss.id} boss={boss} onSaveMesos={handleSaveMesos} />
-                    ))}
-                </div>
-            )}
+            
+            <div className="bosses-content">
+                {!loading && (
+                    <div className="bosses-summary">
+                        {/* PRESET 1 */}
+                        <div className="summary-row">
+                            <div className="summary-row__label">Basic Preset</div>
+                            <div className="summary-row__thumbs">
+                                {bosses.filter(b => PRESET_1_NAMES.includes(b.name)).map(b => (
+                                    <BossThumb key={b.id} boss={b} />
+                                ))}
+                            </div>
+                            <div className="summary-row__total">
+                                <span className="label">Total:</span>
+                                <span className="value">{formatMesos(preset1Total)}</span>
+                            </div>
+                        </div>
+
+                        {/* PRESET 2 */}
+                        <div className="summary-row">
+                            <div className="summary-row__label">Extended Preset</div>
+                            <div className="summary-row__thumbs">
+                                {bosses.filter(b => PRESET_2_NAMES.includes(b.name)).map(b => (
+                                    <BossThumb key={b.id} boss={b} />
+                                ))}
+                            </div>
+                            <div className="summary-row__total">
+                                <span className="label">Total:</span>
+                                <span className="value">{formatMesos(preset2Total)}</span>
+                            </div>
+                        </div>
+
+                        {/* CALCULATOR */}
+                        <div className="summary-row calculator">
+                            <div className="summary-row__label">
+                                Custom Selector
+                                <span className="counter">{selectedIds.length} / 14</span>
+                            </div>
+                            <div className="summary-row__thumbs">
+                                {bosses.map(b => (
+                                    <BossThumb 
+                                        key={b.id} 
+                                        boss={b} 
+                                        isActive={selectedIds.includes(b.id)} 
+                                        isCalculator 
+                                        onClick={() => toggleBossSelection(b.id)} 
+                                    />
+                                ))}
+                            </div>
+                            <div className="summary-row__total">
+                                <span className="label">Selection:</span>
+                                <span className="value highlight">{formatMesos(calculatorTotal)}</span>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {loading ? (
+                    <div className="bosses-page__loading">Cargando...</div>
+                ) : (
+                    <div className="bosses-grid">
+                        {bosses.map(boss => (
+                            <BossCard key={boss.id} boss={boss} />
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

@@ -429,9 +429,19 @@ const DailyCheckUp: React.FC = () => {
 
         try {
             // Sincronizar con DB
+            console.log(`DailyCheckUp: Intentando sincronizar show_in_daily=${show} para el ID=${unlockId}`);
             await contentUnlocksService.setShowInDaily(unlockId, show);
-        } catch (error) {
-            console.error('Error toggling show_in_daily:', error);
+            console.log('DailyCheckUp: Sincronización exitosa con la DB');
+        } catch (error: any) {
+            console.error('Error al actualizar show_in_daily en Supabase:', error);
+            
+            // Notificar al usuario (esto ayuda a diagnosticar si falta la columna)
+            if (error.message?.includes('column "show_in_daily" does not exist')) {
+                alert('Error: La columna "show_in_daily" no existe en la tabla "content_unlocks". Por favor, ejecuta el script SQL que te proporcioné.');
+            } else {
+                alert(`Error al guardar en la base de datos: ${error.message || 'Error desconocido'}`);
+            }
+
             // Revertir a estados originales si falla la DB
             setAllUnlocks(originalAllUnlocks);
             setDailyUnlocks(originalDailyUnlocks);
