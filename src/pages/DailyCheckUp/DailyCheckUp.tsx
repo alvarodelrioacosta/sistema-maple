@@ -7,19 +7,18 @@ import {
     accountsService,
     charactersService,
     eventsService,
-    tasksService,
+    contentUnlocksService,
     itemsService,
     itemsDBService,
     transactionsService
 } from '../../services';
+import type { ContentUnlock, AccountUnlockProgress } from '../../services';
 import type {
     Account,
     Character,
     GameEvent,
-    Task,
     ItemWithCharacter,
     EventAccountProgress,
-    TaskProgress,
     ItemDB
 } from '../../types';
 import './DailyCheckUp.css';
@@ -31,14 +30,14 @@ const DailyCheckUp: React.FC = () => {
     const [allChars, setAllChars] = useState<Character[]>([]);
     const [mainChars, setMainChars] = useState<Character[]>([]);
     const [activeEvents, setActiveEvents] = useState<GameEvent[]>([]);
-    const [dailyTasks, setDailyTasks] = useState<Task[]>([]);
-    const [allTasks, setAllTasks] = useState<Task[]>([]);
+    const [dailyUnlocks, setDailyUnlocks] = useState<ContentUnlock[]>([]);
+    const [allUnlocks, setAllUnlocks] = useState<ContentUnlock[]>([]);
+    const [unlockProgress, setUnlockProgress] = useState<AccountUnlockProgress[]>([]);
     const [itemsForSale, setItemsForSale] = useState<ItemWithCharacter[]>([]);
     const [itemsDB, setItemsDB] = useState<ItemDB[]>([]);
 
     // Progress states
     const [eventProgress, setEventProgress] = useState<EventAccountProgress[]>([]);
-    const [taskProgress, setTaskProgress] = useState<TaskProgress[]>([]);
 
     // UI States
     const [configModalOpen, setConfigModalOpen] = useState(false);
@@ -68,26 +67,13 @@ const DailyCheckUp: React.FC = () => {
                     return filtered;
                 });
             })
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'task_progress' }, (payload: any) => {
-                console.log('Realtime Task Progress Change:', payload);
-                setTaskProgress(prev => {
-                    const newData = payload.new as TaskProgress;
-                    const oldData = payload.old as TaskProgress;
-                    let updated = [...prev];
-
-                    if (payload.eventType === 'DELETE') {
-                        return updated.filter(p => p.id !== oldData.id);
-                    }
-
-                    // Aggressive deduplication
-                    const filtered = updated.filter(p =>
-                        !(newData.id && p.id === newData.id) &&
-                        !(p.task_id === newData.task_id && p.account_id === newData.account_id)
-                    );
-
-                    if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
-                        filtered.push(newData);
-                    }
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'account_unlock_progress' }, (payload: any) => {
+                const newData = payload.new as AccountUnlockProgress;
+                const oldData = payload.old as AccountUnlockProgress;
+                setUnlockProgress(prev => {
+                    if (payload.eventType === 'DELETE') return prev.filter(p => p.id !== oldData.id);
+                    const filtered = prev.filter(p => !(p.unlock_id === newData.unlock_id && p.account_id === newData.account_id));
+                    if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') filtered.push(newData);
                     return filtered;
                 });
             })
@@ -129,32 +115,27 @@ const DailyCheckUp: React.FC = () => {
                 accountsData,
                 charsData,
                 eventsData,
-                dailyTasksData,
-                allTasksData,
+                dailyUnlocksData,
+                allUnlocksData,
+                unlockProgressData,
                 itemsData,
                 itemsDBData
             ] = await Promise.all([
                 accountsService.getAll().catch(e => { console.error('Failed to load accounts:', e); return []; }),
                 charactersService.getAll().catch(e => { console.error('Failed to load characters:', e); return []; }),
                 eventsService.getActive().catch(e => { console.error('Failed to load events:', e); return []; }),
-                tasksService.getDailyTasks().catch(e => { console.error('Failed to load daily tasks:', e); return []; }),
-                tasksService.getAll().catch(e => { console.error('Failed to load all tasks:', e); return []; }),
+                contentUnlocksService.getDailyUnlocks().catch(e => { console.error('Failed to load daily unlocks:', e); return []; }),
+                contentUnlocksService.getAll().catch(e => { console.error('Failed to load all unlocks:', e); return []; }),
+                contentUnlocksService.getAllProgress().catch(e => { console.error('Failed to load unlock progress:', e); return []; }),
                 itemsService.getByStatus('for_sale').catch(e => { console.error('Failed to load items:', e); return []; }),
                 itemsDBService.getAll().catch(e => { console.error('Failed to load itemsDB:', e); return []; })
             ]);
-
-            // Load progress only for relevant tasks
-            const taskIds = allTasksData.map(t => t.id);
-            const allTaskProgress = await tasksService.getAllProgress(taskIds).catch(e => {
-                console.error('Failed to load task progress:', e);
-                return [];
-            });
 
             console.log('DailyCheckUp Data Loaded:', {
                 accounts: accountsData.length,
                 characters: charsData.length,
                 events: eventsData.length,
-                dailyTasks: dailyTasksData.length,
+                dailyUnlocks: dailyUnlocksData.length,
                 items: itemsData.length
             });
 
@@ -170,11 +151,11 @@ const DailyCheckUp: React.FC = () => {
             });
             setActiveEvents(filteredEvents);
 
-            setDailyTasks(dailyTasksData);
-            setAllTasks(allTasksData);
+            setDailyUnlocks(dailyUnlocksData);
+            setAllUnlocks(allUnlocksData);
+            setUnlockProgress(unlockProgressData);
             setItemsForSale(itemsData);
             setItemsDB(itemsDBData);
-            setTaskProgress(allTaskProgress);
 
             if (filteredEvents.length > 0) {
                 const progressData = await eventsService.getAccountProgress(filteredEvents.map(e => e.id));
@@ -200,15 +181,15 @@ const DailyCheckUp: React.FC = () => {
         return map;
     }, [eventProgress]);
 
-    const indexedTaskProgress = useMemo(() => {
+    const indexedUnlockProgress = useMemo(() => {
         const map = new Map<string, boolean>();
-        (taskProgress || []).forEach(p => {
-            if (p.task_id && p.account_id) {
-                map.set(`${p.task_id}-${p.account_id}`, p.completed);
+        (unlockProgress || []).forEach(p => {
+            if (p.unlock_id && p.account_id) {
+                map.set(`${p.unlock_id}-${p.account_id}`, p.completed);
             }
         });
         return map;
-    }, [taskProgress]);
+    }, [unlockProgress]);
 
     const itemsDBMap = useMemo(() => {
         const map = new Map<string, string>();
@@ -244,10 +225,10 @@ const DailyCheckUp: React.FC = () => {
                     eventTotalCounts[event.id] = prog?.total_count || 0;
                 });
 
-                // Get progress for each daily task
-                const taskStates: Record<string, boolean> = {};
-                (dailyTasks || []).forEach(task => {
-                    taskStates[task.id] = indexedTaskProgress.get(`${task.id}-${acc.id}`) || false;
+                // Get progress for each daily unlock
+                const unlockStates: Record<string, boolean> = {};
+                (dailyUnlocks || []).forEach(unlock => {
+                    unlockStates[unlock.id] = indexedUnlockProgress.get(`${unlock.id}-${acc.id}`) || false;
                 });
 
                 return {
@@ -257,14 +238,14 @@ const DailyCheckUp: React.FC = () => {
                     eventProgress: eventStates,
                     eventWeeklyCounts,
                     eventTotalCounts,
-                    taskProgress: taskStates
+                    unlockProgress: unlockStates
                 };
             });
         } catch (e) {
             console.error('Error calculating DailyCheckUp rows:', e);
             return [];
         }
-    }, [accounts, mainChars, itemsForSale, allChars, activeEvents, dailyTasks, indexedEventProgress, indexedTaskProgress]);
+    }, [accounts, mainChars, itemsForSale, allChars, activeEvents, dailyUnlocks, indexedEventProgress, indexedUnlockProgress]);
     const formattedDate = useMemo(() => {
         try {
             return new Intl.DateTimeFormat('es-ES', {
@@ -291,13 +272,13 @@ const DailyCheckUp: React.FC = () => {
         return counts;
     }, [activeEvents, rows]);
 
-    const taskProgressCounts = useMemo(() => {
+    const unlockProgressCounts = useMemo(() => {
         const counts: Record<string, number> = {};
-        dailyTasks.forEach(task => {
-            counts[task.id] = rows.filter(row => row.taskProgress[task.id]).length;
+        dailyUnlocks.forEach(unlock => {
+            counts[unlock.id] = rows.filter(row => row.unlockProgress[unlock.id]).length;
         });
         return counts;
-    }, [dailyTasks, rows]);
+    }, [dailyUnlocks, rows]);
 
     if (loading) {
         return <LoadingScreen message="Cargando Dashboard Diario..." />;
@@ -368,25 +349,6 @@ const DailyCheckUp: React.FC = () => {
         }
     };
 
-    const handleToggleTask = async (taskId: string, accountId: string, completed: boolean) => {
-        // Optimistic update
-        setTaskProgress(prev => {
-            const existingIndex = prev.findIndex(p => p.task_id === taskId && p.account_id === accountId);
-            if (existingIndex > -1) {
-                const newArr = [...prev];
-                newArr[existingIndex] = { ...newArr[existingIndex], completed };
-                return newArr;
-            } else {
-                return [...prev, { task_id: taskId, account_id: accountId, completed } as TaskProgress];
-            }
-        });
-
-        try {
-            await tasksService.toggleProgress(taskId, accountId, completed);
-        } catch (error) {
-            console.error('Error toggling task progress:', error);
-        }
-    };
 
     const handleListAH = async (item: ItemWithCharacter) => {
         try {
@@ -446,17 +408,28 @@ const DailyCheckUp: React.FC = () => {
         }
     };
 
-    const handleToggleDailyTask = async (taskId: string, show: boolean) => {
+    const handleToggleShowInDaily = async (unlockId: string, show: boolean) => {
         try {
-            await tasksService.update(taskId, { show_in_daily: show });
-            setAllTasks(prev => prev.map(t => t.id === taskId ? { ...t, show_in_daily: show } : t));
-
-            // Refresh daily tasks list
-            const updatedDaily = await tasksService.getDailyTasks();
-            setDailyTasks(updatedDaily);
+            await contentUnlocksService.setShowInDaily(unlockId, show);
+            setAllUnlocks(prev => prev.map(u => u.id === unlockId ? { ...u, show_in_daily: show } : u));
+            if (show) {
+                const updated = allUnlocks.find(u => u.id === unlockId);
+                if (updated) setDailyUnlocks(prev => [...prev, { ...updated, show_in_daily: true }]);
+            } else {
+                setDailyUnlocks(prev => prev.filter(u => u.id !== unlockId));
+            }
         } catch (error) {
-            console.error('Error toggling daily task:', error);
+            console.error('Error toggling show_in_daily:', error);
         }
+    };
+
+    const handleToggleUnlock = async (unlockId: string, accountId: string, completed: boolean) => {
+        setUnlockProgress(prev => {
+            const existing = prev.find(p => p.unlock_id === unlockId && p.account_id === accountId);
+            if (existing) return prev.map(p => p.unlock_id === unlockId && p.account_id === accountId ? { ...p, completed } : p);
+            return [...prev, { id: '', unlock_id: unlockId, account_id: accountId, completed, completed_at: null }];
+        });
+        await contentUnlocksService.toggleProgress(unlockId, accountId, completed);
     };
 
     const handleRPBlur = async (accountId: string, newValue: number) => {
@@ -587,11 +560,11 @@ const DailyCheckUp: React.FC = () => {
                                         </th>
                                     );
                                 })}
-                                {dailyTasks.map(task => (
-                                    <th key={task.id} className="col-action">
+                                {dailyUnlocks.map(unlock => (
+                                    <th key={unlock.id} className="col-action">
                                         <div className="header-stacked">
-                                            <span>{task.name}</span>
-                                            <span className="header-counter">{taskProgressCounts[task.id] || 0} / {accounts.length}</span>
+                                            <span>{unlock.name}</span>
+                                            <span className="header-counter">{unlockProgressCounts[unlock.id] || 0} / {accounts.length}</span>
                                         </div>
                                     </th>
                                 ))}
@@ -661,14 +634,14 @@ const DailyCheckUp: React.FC = () => {
                                         );
                                     })}
 
-                                    {/* Tasks Checks */}
-                                    {dailyTasks.map(task => (
-                                        <td key={task.id} className="col-action">
+                                    {/* Unlock Checks */}
+                                    {dailyUnlocks.map(unlock => (
+                                        <td key={unlock.id} className="col-action">
                                             <label className="daily-checkbox">
                                                 <input
                                                     type="checkbox"
-                                                    checked={row.taskProgress[task.id]}
-                                                    onChange={(e) => handleToggleTask(task.id, row.account.id, e.target.checked)}
+                                                    checked={row.unlockProgress[unlock.id]}
+                                                    onChange={(e) => handleToggleUnlock(unlock.id, row.account.id, e.target.checked)}
                                                 />
                                                 <span className="checkmark"></span>
                                             </label>
@@ -749,18 +722,17 @@ const DailyCheckUp: React.FC = () => {
                 title="Configure Daily Tasks"
             >
                 <div className="config-tasks-list">
-                    {allTasks.filter(t => !t.is_completed).map(task => (
-                        <div key={task.id} className="config-task-item">
+                    {allUnlocks.map(unlock => (
+                        <div key={unlock.id} className="config-task-item">
                             <label className="config-checkbox">
                                 <input
                                     type="checkbox"
-                                    checked={task.show_in_daily}
-                                    onChange={(e) => handleToggleDailyTask(task.id, e.target.checked)}
+                                    checked={unlock.show_in_daily}
+                                    onChange={(e) => handleToggleShowInDaily(unlock.id, e.target.checked)}
                                 />
                                 <span className="checkmark"></span>
-                                <span className="task-label">{task.name}</span>
+                                <span className="task-label">{unlock.name}</span>
                             </label>
-                            {task.is_core && <span className="badge-core-global">Core</span>}
                         </div>
                     ))}
                 </div>

@@ -26,7 +26,7 @@ const NewUnlockModal: React.FC<Props> = ({ isOpen, onClose, onCreated }) => {
         if (!name.trim() || !unlocks.trim()) return;
         setSaving(true);
         try {
-            await contentUnlocksService.create({ name: name.trim(), unlocks: unlocks.trim(), description: description.trim() || null, category, order_index: null });
+            await contentUnlocksService.create({ name: name.trim(), unlocks: unlocks.trim(), description: description.trim() || null, category, order_index: null, show_in_daily: false });
             setName(''); setUnlocks(''); setDescription(''); setCategory('boss');
             onCreated();
             onClose();

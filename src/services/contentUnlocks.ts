@@ -9,6 +9,7 @@ export interface ContentUnlock {
     unlocks: string;
     category: UnlockCategory;
     order_index: number | null;
+    show_in_daily: boolean;
     created_at: string;
 }
 
@@ -31,6 +32,25 @@ export const contentUnlocksService = {
             .order('order_index', { nullsFirst: false });
         if (error) throw error;
         return data || [];
+    },
+
+    async getDailyUnlocks(): Promise<ContentUnlock[]> {
+        const { data, error } = await supabase
+            .from('content_unlocks')
+            .select('*')
+            .eq('show_in_daily', true)
+            .order('category')
+            .order('order_index', { nullsFirst: false });
+        if (error) throw error;
+        return data || [];
+    },
+
+    async setShowInDaily(id: string, show: boolean): Promise<void> {
+        const { error } = await supabase
+            .from('content_unlocks')
+            .update({ show_in_daily: show })
+            .eq('id', id);
+        if (error) throw error;
     },
 
     async create(unlock: ContentUnlockInsert): Promise<ContentUnlock> {
