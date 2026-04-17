@@ -710,7 +710,10 @@ const DailyCheckUp: React.FC = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {rows.map((row) => (
+                            {rows.map((row) => {
+                                // La cuenta 0 (Alvaro) es solo de referencia: sus campos son read-only
+                                const isReadOnly = row.account.number === 0;
+                                return (
                                 <tr key={row.account.id}>
                                     <td className="col-account">
                                         <AccountCell
@@ -772,12 +775,12 @@ const DailyCheckUp: React.FC = () => {
 
                                         return (
                                             <td key={unlock.id} className="col-action">
-                                                <label className={`daily-checkbox ${isLocked ? 'is-locked' : ''}`}>
+                                                <label className={`daily-checkbox ${isLocked || isReadOnly ? 'is-locked' : ''}`}>
                                                     <input
                                                         type="checkbox"
                                                         checked={isCompleted}
-                                                        disabled={isLocked}
-                                                        onChange={(e) => handleToggleUnlock(unlock.id, row.account.id, e.target.checked)}
+                                                        disabled={isLocked || isReadOnly}
+                                                        onChange={(e) => !isReadOnly && handleToggleUnlock(unlock.id, row.account.id, e.target.checked)}
                                                     />
                                                     <span className="checkmark"></span>
                                                 </label>
@@ -846,7 +849,8 @@ const DailyCheckUp: React.FC = () => {
                                         </td>
                                     )}
                                 </tr>
-                            ))}
+                                );
+                            })}
                         </tbody>
                     </table>
                 </Card>
