@@ -410,6 +410,16 @@ const DailyCheckUp: React.FC = () => {
         return map;
     }, [groupedDailyUnlocks]);
 
+    // accountId → Set of boss IDs where prequest is done
+    const prequestMap = useMemo(() => {
+        const map: Record<string, Set<string>> = {};
+        allPrequests.forEach(({ account_id, boss_id }) => {
+            if (!map[account_id]) map[account_id] = new Set();
+            map[account_id].add(boss_id);
+        });
+        return map;
+    }, [allPrequests]);
+
     if (loading) {
         return <LoadingScreen message="Cargando Dashboard Diario..." />;
     }
@@ -620,16 +630,6 @@ const DailyCheckUp: React.FC = () => {
     };
 
     // ---- Bossing handlers ----
-
-    // accountId → Set of boss IDs where prequest is done
-    const prequestMap = useMemo(() => {
-        const map: Record<string, Set<string>> = {};
-        allPrequests.forEach(({ account_id, boss_id }) => {
-            if (!map[account_id]) map[account_id] = new Set();
-            map[account_id].add(boss_id);
-        });
-        return map;
-    }, [allPrequests]);
 
     // cycle: 0 (unselected) → 1 (cleared ✓) → 2 (failed ✗) → 0
     const handleBossClick = (accountId: string, bossId: string) => {
