@@ -11,6 +11,7 @@ import type { CharacterWithAccount, CharacterInsert, Account, JobType, ClassItem
 import type { Column } from '../../components/UI/Table';
 
 import { CharacterDetailModal } from './CharacterDetailModal';
+import { ARCANE_MAX, SACRED_MAX } from '../../constants/symbols';
 import '../Accounts/Accounts.css';
 import './Characters.css';
 
@@ -264,14 +265,14 @@ export const Characters: React.FC = () => {
                 const total = allSymbols
                     .filter(s => s.character_id === c.id && s.symbol_type === 'arcane')
                     .reduce((sum, s) => sum + s.symbol_level, 0);
-                const pct = total / 120;
+                const pct = total / ARCANE_MAX;
                 return (
                     <div style={{ fontSize: '0.8rem' }}>
-                        <span style={{ color: total === 120 ? '#4ade80' : '#f1f5f9', fontWeight: 600 }}>{total}</span>
-                        <span style={{ color: '#475569' }}>/120</span>
+                        <span style={{ color: total === ARCANE_MAX ? '#4ade80' : '#f1f5f9', fontWeight: 600 }}>{total}</span>
+                        <span style={{ color: '#475569' }}>/{ARCANE_MAX}</span>
                         {total > 0 && (
                             <div style={{ marginTop: '3px', height: '3px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', width: '48px' }}>
-                                <div style={{ width: `${pct * 100}%`, height: '100%', background: total === 120 ? '#4ade80' : '#818cf8', borderRadius: '2px', transition: 'width 0.2s' }} />
+                                <div style={{ width: `${pct * 100}%`, height: '100%', background: total === ARCANE_MAX ? '#4ade80' : '#818cf8', borderRadius: '2px', transition: 'width 0.2s' }} />
                             </div>
                         )}
                     </div>
@@ -285,14 +286,14 @@ export const Characters: React.FC = () => {
                 const total = allSymbols
                     .filter(s => s.character_id === c.id && s.symbol_type === 'sacred')
                     .reduce((sum, s) => sum + s.symbol_level, 0);
-                const pct = total / 66;
+                const pct = total / SACRED_MAX;
                 return (
                     <div style={{ fontSize: '0.8rem' }}>
-                        <span style={{ color: total === 66 ? '#4ade80' : '#f1f5f9', fontWeight: 600 }}>{total}</span>
-                        <span style={{ color: '#475569' }}>/66</span>
+                        <span style={{ color: total === SACRED_MAX ? '#4ade80' : '#f1f5f9', fontWeight: 600 }}>{total}</span>
+                        <span style={{ color: '#475569' }}>/{SACRED_MAX}</span>
                         {total > 0 && (
                             <div style={{ marginTop: '3px', height: '3px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', width: '48px' }}>
-                                <div style={{ width: `${pct * 100}%`, height: '100%', background: total === 66 ? '#4ade80' : '#fbbf24', borderRadius: '2px', transition: 'width 0.2s' }} />
+                                <div style={{ width: `${pct * 100}%`, height: '100%', background: total === SACRED_MAX ? '#4ade80' : '#fbbf24', borderRadius: '2px', transition: 'width 0.2s' }} />
                             </div>
                         )}
                     </div>

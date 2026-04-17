@@ -54,20 +54,24 @@ export const SymbolTracker: React.FC<Props> = ({ characterId, characterName }) =
                             border: `1px solid ${level > 0 ? sym.color + '55' : 'rgba(255,255,255,0.08)'}`,
                             borderRadius: '8px',
                             padding: '8px 10px',
-                            minWidth: '80px',
+                            minWidth: '72px',
                             flex: '0 0 auto',
                             position: 'relative',
                             overflow: 'hidden'
                         }}>
-                            {/* Progress bar background */}
                             <div style={{
                                 position: 'absolute', bottom: 0, left: 0,
                                 width: `${pct * 100}%`, height: '3px',
                                 background: sym.color, borderRadius: '0 0 0 8px',
                                 transition: 'width 0.2s'
                             }} />
-                            <div style={{ fontSize: '0.7rem', color: sym.color, fontWeight: 600, marginBottom: '4px', whiteSpace: 'nowrap' }}>
-                                {sym.shortName}
+                            <div style={{ marginBottom: '4px' }}>
+                                <img
+                                    src={sym.imageUrl}
+                                    alt={sym.shortName}
+                                    title={sym.name}
+                                    style={{ width: '28px', height: '28px', objectFit: 'contain', display: 'block' }}
+                                />
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                                 <input
