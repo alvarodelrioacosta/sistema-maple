@@ -83,7 +83,8 @@
 .daily-table th.col-mail,
 .daily-table th.col-tag,
 .daily-table th.col-char,
-.daily-table th.col-items {
+.daily-table th.col-items,
+.daily-table th.col-account {
     text-align: left;
 }
 
@@ -97,8 +98,14 @@
 .daily-table td.col-mail,
 .daily-table td.col-tag,
 .daily-table td.col-char,
-.daily-table td.col-items {
+.daily-table td.col-items,
+.daily-table td.col-account {
     text-align: left;
+}
+
+.col-account {
+    min-width: 215px;
+    max-width: 230px;
 }
 
 .col-hash {

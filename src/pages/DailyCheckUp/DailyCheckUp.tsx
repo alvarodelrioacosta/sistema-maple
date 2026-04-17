@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Header } from '../../components/Layout';
-import { Card, Button, Modal, Input, LoadingScreen } from '../../components/UI';
+import { Card, Button, Modal, Input, LoadingScreen, AccountCell } from '../../components/UI';
 // Deployment trigger: force fresh commit after Vercel repository reconnection
 import {
     accountsService,
@@ -575,10 +575,7 @@ const DailyCheckUp: React.FC = () => {
                     <table className="daily-table">
                         <thead>
                             <tr>
-                                <th className="col-hash">#</th>
-                                <th className="col-mail">MAIL</th>
-                                <th className="col-tag">TAG</th>
-                                <th className="col-char">CHAR</th>
+                                <th className="col-account">ACCOUNT</th>
                                 {activeEvents.map(event => {
                                     const progress = eventProgressCounts[event.id] || { completed: 0, total: 0 };
                                     return (
@@ -610,16 +607,16 @@ const DailyCheckUp: React.FC = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {rows.map((row, index) => (
+                            {rows.map((row) => (
                                 <tr key={row.account.id}>
-                                    <td className="col-hash">{index}</td>
-                                    <td className="col-mail">{row.account.email}</td>
-                                    <td className="col-tag">
-                                        <span className={`tag-badge ${row.account.tag?.toLowerCase()}`}>
-                                            {row.account.tag}
-                                        </span>
+                                    <td className="col-account">
+                                        <AccountCell
+                                            number={row.account.number}
+                                            email={row.account.email}
+                                            tag={row.account.tag}
+                                            charName={row.mainChar?.name}
+                                        />
                                     </td>
-                                    <td className="col-char">{row.mainChar?.name || '-'}</td>
 
                                     {/* Events Checks */}
                                     {activeEvents.map(event => {

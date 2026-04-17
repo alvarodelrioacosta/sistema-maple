@@ -1,8 +1,10 @@
 .account-cell-unified {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     gap: 2px;
     min-width: 0;
+    text-align: left;
 }
 
 .account-cell-row1 {
@@ -38,7 +40,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    max-width: 180px;
+    max-width: 100%;
 }
 
 .acell-char {
@@ -48,5 +50,5 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 180px;
+    max-width: 100%;
 }

@@ -533,6 +533,6 @@
 
 /* Account Info Cell */
 .account-cell-td {
-    min-width: 185px;
-    max-width: 200px;
+    min-width: 215px;
+    max-width: 230px;
 }

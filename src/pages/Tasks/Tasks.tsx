@@ -21,6 +21,19 @@ const simplifySystemName = (name: string) => {
     return idx !== -1 ? name.slice(idx + 3) : name;
 };
 
+// Groups where items must be completed in order (each requires the previous)
+const SEQUENTIAL_GROUPS = new Set(['MYSTIC FRONTIER']);
+
+// Display overrides for group headers (DB value uppercased → display label)
+const GROUP_LABEL_DISPLAY: Record<string, string> = {
+    '6TH JOB SKILLS': '6TH JOB',
+};
+
+// Display overrides for individual column names
+const COLUMN_NAME_DISPLAY: Record<string, React.ReactNode> = {
+    '6th Job': <><span>6th Job</span><br /><span>Prequest</span></>,
+};
+
 interface AccountWithChar extends Account {
     mainCharacter?: Character;
 }
@@ -48,12 +61,13 @@ const Tasks: React.FC = () => {
         return groups;
     }, [unlocks]);
 
-    // For each system-category unlock, map its ID to its prerequisite unlock ID (null if first)
+    // For sequential groups, each item requires the previous one to be done first
     const prereqMap = useMemo(() => {
         const map = new Map<string, string | null>();
         unlockGroups.forEach(group => {
+            const isSequential = SEQUENTIAL_GROUPS.has(group.label);
             group.items.forEach((item, idx) => {
-                if (group.category === 'system' && idx > 0) {
+                if (isSequential && idx > 0) {
                     map.set(item.id, group.items[idx - 1].id);
                 } else {
                     map.set(item.id, null);
@@ -141,7 +155,7 @@ const Tasks: React.FC = () => {
                                                 className="unlock-group-header"
                                                 style={{ color: group.category === 'boss' ? '#f87171' : '#fbbf24' }}
                                             >
-                                                {group.label}
+                                                {GROUP_LABEL_DISPLAY[group.label] ?? group.label}
                                             </th>
                                         ))}
                                     </tr>
@@ -157,7 +171,9 @@ const Tasks: React.FC = () => {
                                                             onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
                                                         />
                                                     ) : (
-                                                        <span className="task-name">{simplifySystemName(unlock.name)}</span>
+                                                        <span className="task-name">
+                                                            {COLUMN_NAME_DISPLAY[simplifySystemName(unlock.name)] ?? simplifySystemName(unlock.name)}
+                                                        </span>
                                                     )}
                                                     <div className="task-header-progress">
                                                         {unlockProgress.filter(p => p.unlock_id === unlock.id && p.completed).length} / {accounts.length}
