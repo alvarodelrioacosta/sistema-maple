@@ -11,6 +11,7 @@ interface ModalProps {
     title: React.ReactNode;
     children: React.ReactNode;
     size?: 'sm' | 'md' | 'lg' | 'xl';
+    hideHeader?: boolean;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -18,7 +19,8 @@ export const Modal: React.FC<ModalProps> = ({
     onClose,
     title,
     children,
-    size = 'md'
+    size = 'md',
+    hideHeader = false
 }) => {
     useEffect(() => {
         if (isOpen) {
@@ -41,16 +43,26 @@ export const Modal: React.FC<ModalProps> = ({
                 aria-modal="true"
                 aria-labelledby="modal-title"
             >
-                <div className="modal__header">
-                    <h3 id="modal-title" className="modal__title">{title}</h3>
+                {hideHeader ? (
                     <button
-                        className="modal__close"
+                        className="modal__close modal__close--absolute"
                         onClick={onClose}
                         aria-label="Close modal"
                     >
                         ✕
                     </button>
-                </div>
+                ) : (
+                    <div className="modal__header">
+                        <h3 id="modal-title" className="modal__title">{title}</h3>
+                        <button
+                            className="modal__close"
+                            onClick={onClose}
+                            aria-label="Close modal"
+                        >
+                            ✕
+                        </button>
+                    </div>
+                )}
                 <div className="modal__content">
                     {children}
                 </div>

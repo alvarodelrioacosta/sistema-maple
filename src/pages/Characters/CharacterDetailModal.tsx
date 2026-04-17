@@ -20,7 +20,7 @@ export const CharacterDetailModal: React.FC<Props> = ({ character, classes, onCl
         : jobClass ? (jobClass.job_1 === character.job ? jobClass.image_1 : jobClass.image_2) : null;
 
     return (
-        <Modal isOpen={!!character} onClose={onClose} title="" size="lg">
+        <Modal isOpen={!!character} onClose={onClose} title="" size="lg" hideHeader>
             {/* Character header */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '20px', padding: '4px 0 20px', borderBottom: '1px solid rgba(255,255,255,0.07)', marginBottom: '4px' }}>
                 {character.avatar_url ? (
