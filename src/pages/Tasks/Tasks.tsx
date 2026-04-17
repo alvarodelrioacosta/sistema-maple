@@ -91,10 +91,27 @@ const Tasks: React.FC = () => {
                 contentUnlocksService.getAllProgress()
             ]);
 
-            const accountsWithChars: AccountWithChar[] = accountsData.map(account => {
+            const accountsWithChars: AccountWithChar[] = [];
+            accountsData.forEach(account => {
                 const chars = charactersData.filter(c => c.account_id === account.id);
-                const mainChar = chars.find(c => c.main === 'Main') || chars[0];
-                return { ...account, mainCharacter: mainChar };
+                
+                if (account.number === 0) {
+                    // Specially for Account 0: Show ALL characters marked as 'Main'
+                    const mains = chars.filter(c => c.main === 'Main');
+                    if (mains.length > 0) {
+                        mains.forEach(char => {
+                            accountsWithChars.push({ ...account, mainCharacter: char });
+                        });
+                    } else if (chars.length > 0) {
+                        accountsWithChars.push({ ...account, mainCharacter: chars[0] });
+                    } else {
+                        accountsWithChars.push({ ...account });
+                    }
+                } else {
+                    // Normal behavior: Find the primary main or the first character
+                    const mainChar = chars.find(c => c.main === 'Main') || chars[0];
+                    accountsWithChars.push({ ...account, mainCharacter: mainChar });
+                }
             });
 
             setAccounts(accountsWithChars);
@@ -185,7 +202,7 @@ const Tasks: React.FC = () => {
                                 </thead>
                                 <tbody>
                                     {accounts.map(account => (
-                                        <tr key={account.id}>
+                                        <tr key={`${account.id}-${account.mainCharacter?.name || 'none'}`}>
                                             <td className="account-cell-td">
                                                 <AccountCell
                                                     number={account.number}

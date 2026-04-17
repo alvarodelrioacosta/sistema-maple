@@ -227,7 +227,9 @@ const DailyCheckUp: React.FC = () => {
 
         try {
             return accounts.map(acc => {
-                const mainChar = (mainChars || []).find(c => c.account_id === acc.id) || null;
+                const mainChar = acc.number === 0 
+                  ? (allChars || []).find(c => c.account_id === acc.id && c.name === 'Alvaro') || null
+                  : (mainChars || []).find(c => c.account_id === acc.id) || null;
 
                 // Filter items for this account's characters
                 const accountItems = (itemsForSale || []).filter(item => {
