@@ -10,16 +10,12 @@ import type { Task, TaskProgress, Account, Character } from '../../types';
 import './Tasks.css';
 
 const CATEGORY_LABELS: Record<UnlockCategory, string> = {
-    boss_access:      'Boss Access',
-    area_unlock:      'Area Unlock',
-    system_unlock:    'System Unlock',
-    character_unlock: 'Character Unlock',
+    boss:   'Boss',
+    system: 'System',
 };
 const CATEGORY_COLORS: Record<UnlockCategory, string> = {
-    boss_access:      '#f87171',
-    area_unlock:      '#60a5fa',
-    system_unlock:    '#fbbf24',
-    character_unlock: '#a78bfa',
+    boss:   '#f87171',
+    system: '#fbbf24',
 };
 
 interface AccountWithChar extends Account {
