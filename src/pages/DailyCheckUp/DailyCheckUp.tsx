@@ -54,12 +54,13 @@ const HIDDEN_BOSS_NAMES = new Set(['Guardian Angel Slime', 'Lucid']);
 
 // Client-side ordering by name. Bosses not listed fall back to order_index.
 const BOSS_NAME_ORDER: Record<string, number> = {
-    'Zakum': 10, 'Horntail': 20, 'Pink Bean': 30, 'Magnus': 40,
-    'Von Bon': 50, 'Pierre': 60, 'Crimson Queen': 70, 'Vellum': 80,
-    'Cygnus': 90, 'Hilla': 100, 'Papulatus': 110, 'Arkarium': 120,
-    'Will': 130, 'Gloom': 140, 'Darknell': 150, 'Bain': 160,
-    'Verus Hilla': 170, 'Chosen Seren': 180, 'Kalos': 190,
-    'Kaling': 200, 'Limbo': 210,
+    'Zakum': 10, 'Hilla': 20, 'Papulatus': 30,
+    'Von Bon': 40, 'Pierre': 50, 'Crimson Queen': 60, 'Vellum': 70,
+    'Cygnus': 80, 'Pink Bean': 90, 'Magnus': 100,
+    'Princess No': 110, 'Akechi': 120, 'Lotus': 130, 'Damien': 140,
+    'Will': 150, 'Gloom': 160, 'Darknell': 170, 'Bain': 180,
+    'Verus Hilla': 190, 'Chosen Seren': 200, 'Kalos': 210,
+    'Kaling': 220, 'Limbo': 230, 'Horntail': 240, 'Arkarium': 250,
 };
 
 const DailyCheckUp: React.FC = () => {
