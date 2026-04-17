@@ -144,6 +144,17 @@ export interface ResourceBatch {
 
 export type ResourceBatchInsert = Omit<ResourceBatch, 'id' | 'created_at'>;
 
+// ===== BOSSING =====
+export interface BossingSession {
+    id: string;
+    account_id: string;
+    week_start: string;        // ISO date — Monday of the bossing week
+    bosses_cleared: string[];  // array of boss UUIDs
+    rp_earned: number;
+    rp_expires_at: string;     // ISO date — last day of next month
+    registered_at: string;
+}
+
 // ===== CLIENTS =====
 export interface Client {
     id: string;
