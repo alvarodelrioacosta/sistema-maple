@@ -57,7 +57,7 @@ const BOSS_NAME_ORDER: Record<string, number> = {
     'Zakum': 10, 'Hilla': 20, 'Papulatus': 30,
     'Von Bon': 40, 'Pierre': 50, 'Crimson Queen': 60, 'Vellum': 70,
     'Cygnus': 80, 'Pink Bean': 90, 'Magnus': 100,
-    'Princess No': 110, 'Akechi': 120, 'Lotus': 130, 'Damien': 140,
+    'Princess No': 110, 'Akechi Mitsuhide': 120, 'Lotus': 130, 'Damien': 140,
     'Will': 150, 'Gloom': 160, 'Darknell': 170, 'Bain': 180,
     'Verus Hilla': 190, 'Chosen Seren': 200, 'Kalos': 210,
     'Kaling': 220, 'Limbo': 230, 'Horntail': 240, 'Arkarium': 250,
