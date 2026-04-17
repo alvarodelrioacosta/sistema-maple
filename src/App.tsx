@@ -15,10 +15,8 @@ import {
     Resources,
     Clients,
     AccountsReceivable,
-    UpgradeWorkspace,
     ItemsDB,
     Settings,
-    CubingSessions,
     CubingHistory,
     Tasks,
     DailyCheckUp,
@@ -72,10 +70,7 @@ function AppRoutes() {
                 <Route path="resources" element={<ProtectedRoute adminOnly><Resources /></ProtectedRoute>} />
                 <Route path="clients" element={<ProtectedRoute adminOnly><Clients /></ProtectedRoute>} />
                 <Route path="accounts-receivable" element={<ProtectedRoute adminOnly><AccountsReceivable /></ProtectedRoute>} />
-                <Route path="upgrade-workspace" element={<ProtectedRoute adminOnly><UpgradeWorkspace /></ProtectedRoute>} />
-                <Route path="upgrade-workspace-v2" element={<ProtectedRoute adminOnly><UpgradeWorkspace /></ProtectedRoute>} />
                 <Route path="items-db" element={<ProtectedRoute adminOnly><ItemsDB /></ProtectedRoute>} />
-                <Route path="cubing-sessions" element={<ProtectedRoute adminOnly><CubingSessions /></ProtectedRoute>} />
                 <Route path="cubing-history" element={<ProtectedRoute adminOnly><CubingHistory /></ProtectedRoute>} />
                 <Route path="events" element={<ProtectedRoute adminOnly><Events /></ProtectedRoute>} />
                 <Route path="tasks" element={<ProtectedRoute adminOnly><Tasks /></ProtectedRoute>} />

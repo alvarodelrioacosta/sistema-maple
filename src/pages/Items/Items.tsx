@@ -12,6 +12,7 @@ import type { Column } from '../../components/UI/Table';
 import './Items.css';
 import { createWorker } from 'tesseract.js';
 import { ocrUtil } from '../../utils/ocr';
+import { ItemWorkspace } from './ItemWorkspace';
 
 
 
@@ -118,6 +119,9 @@ export const Items: React.FC = () => {
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedAccountId, setSelectedAccountId] = useState<string>(''); // New state for Account Filter
+
+    // === ITEM WORKSPACE (reemplaza modal de edición) ===
+    const [workspaceItem, setWorkspaceItem] = useState<ItemWithCharacter | null>(null);
 
     const [filterStatus, setFilterStatus] = useState<ItemStatus | 'all'>('in_stock'); // State for Filter
     const [sharedChest, setSharedChest] = useState<SharedInventory | null>(null);
@@ -817,7 +821,7 @@ export const Items: React.FC = () => {
 
                 return (
                     <div className="table-actions">
-                        <Button size="sm" variant="ghost" onClick={() => handleOpenModal(i)}>Edit</Button>
+                        <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); setWorkspaceItem(i); }}>Edit</Button>
                         {i.status === 'for_sale' ? (
                             isTradeable ? (
                                 <>
@@ -916,6 +920,13 @@ export const Items: React.FC = () => {
         return baseFiltered;
     }, [items, filterStatus, characters, accounts, getAccountNumber]);
 
+    if (workspaceItem) {
+        return <ItemWorkspace item={workspaceItem} onBack={() => {
+            setWorkspaceItem(null);
+            loadData(); // Refresh list after session/edits
+        }} />;
+    }
+
     return (
         <div className="items-page">
             <Header
@@ -984,6 +995,7 @@ export const Items: React.FC = () => {
                         columns={columns}
                         keyExtractor={(i) => i.id}
                         loading={loading}
+                        onRowClick={(item) => setWorkspaceItem(item)}
                         emptyMessage="No items found with this status."
                     />
                 </Card>

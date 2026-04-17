@@ -242,6 +242,7 @@ export interface CubeSession {
 
     currency: string;
     meso_rate?: number; // Optional as older sessions might not have it
+    account_receivable_id?: string | null;
     created_at: string;
 }
 
