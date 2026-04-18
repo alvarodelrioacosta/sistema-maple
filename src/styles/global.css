@@ -32,16 +32,16 @@ body {
 
 /* ===== POTENTIAL TIERS ===== */
 :root {
-    --color-potential-rare: #60c4d4;
-    --color-potential-epic: #9d75e8;
-    --color-potential-unique: #ffd700;
-    --color-potential-legendary: #a8d626;
+    --color-potential-rare: #3d7dd6;
+    --color-potential-epic: #a259d6;
+    --color-potential-unique: #e2a93a;
+    --color-potential-legendary: #2dbf9b;
 
-    /* Subtle backgrounds for sections - increased visibility */
-    --color-potential-rare-bg: rgba(96, 196, 212, 0.25);
-    --color-potential-epic-bg: rgba(157, 117, 232, 0.25);
-    --color-potential-unique-bg: rgba(255, 215, 0, 0.25);
-    --color-potential-legendary-bg: rgba(168, 214, 38, 0.25);
+    /* Subtle backgrounds for sections */
+    --color-potential-rare-bg: rgba(61, 125, 214, 0.18);
+    --color-potential-epic-bg: rgba(162, 89, 214, 0.18);
+    --color-potential-unique-bg: rgba(226, 169, 58, 0.18);
+    --color-potential-legendary-bg: rgba(45, 191, 155, 0.18);
 }
 
 .text-rare {

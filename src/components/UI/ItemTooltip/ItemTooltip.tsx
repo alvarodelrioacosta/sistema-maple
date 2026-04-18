@@ -8,60 +8,69 @@ interface ItemTooltipProps {
     baseSlots?: number;
 }
 
+const MAX_STARS = 25;
+
+const StarTrack: React.FC<{ starForce: number }> = ({ starForce }) => {
+    const stars = Array.from({ length: MAX_STARS }, (_, i) => i < starForce);
+    const groups: boolean[][] = [];
+    for (let i = 0; i < MAX_STARS; i += 5) groups.push(stars.slice(i, i + 5));
+
+    return (
+        <div className="tooltip-star-track">
+            {groups.map((group, gi) => (
+                <span key={gi} className="tooltip-star-group">
+                    {group.map((filled, si) => (
+                        <span key={si} className={`tooltip-star ${filled ? 'filled' : 'empty'}`}>★</span>
+                    ))}
+                </span>
+            ))}
+        </div>
+    );
+};
+
 export const ItemTooltip: React.FC<ItemTooltipProps> = ({ item, image, baseSlots }) => {
-    // Helper for Tier Color
     const getTierClass = (tier?: PotentialTier | null) => tier ? `tier-${tier.toLowerCase()}` : '';
 
     return (
         <div className="item-tooltip">
-            {/* Header Section */}
+            <StarTrack starForce={item.star_force || 0} />
+
             <div className="tooltip-header">
-                {/* StarForce */}
-                <div className="star-force">
-                    {item.star_force > 0 && (
-                        <>
-                            <span className="star-icon">★</span>
-                            <span className="star-count">{item.star_force}</span>
-                        </>
+                <div className={`tooltip-item-name ${getTierClass(item.main_potential_tier)}`}>
+                    {item.name}
+                    {(item.star_force > 0) && (
+                        <span className="tooltip-sf-inline">
+                            <span className="tooltip-sf-star">★</span>
+                            {item.star_force}
+                        </span>
                     )}
                 </div>
-
-                {/* Name */}
-                <div className={`item-name ${getTierClass(item.main_potential_tier)}`}>
-                    {item.name}
-                </div>
-
-                {/* Tradeability */}
-                {item.tradeability && <div className="item-tradeability">{item.tradeability}</div>}
-
-                {/* Slots */}
-                {(baseSlots !== 0) && (
-                    <div className="item-slots">
-                        {baseSlots !== undefined ? `${baseSlots} Slots` : 'Slots Check'}
-                    </div>
-                )}
             </div>
 
-            {/* Image Section */}
             <div className="tooltip-image-container">
-                {image ? (
-                    <img src={image} alt={item.name} />
-                ) : (
-                    <div className="placeholder-img" style={{ width: 50, height: 50, background: 'rgba(255,255,255,0.1)', borderRadius: 4 }} />
+                {image
+                    ? <img src={image} alt={item.name} />
+                    : <div className="tooltip-img-placeholder" />
+                }
+            </div>
+
+            <div className="tooltip-meta">
+                {item.tradeability && <span>{item.tradeability}</span>}
+                {baseSlots !== undefined && baseSlots !== 0 && (
+                    <span>Slots: {baseSlots}</span>
                 )}
             </div>
 
-            {/* Separator */}
-            <hr style={{ borderColor: '#444', margin: '10px 0', opacity: 0.5 }} />
+            <hr className="tooltip-divider" />
 
-            {/* Potential Section */}
-            {(item.main_potential_tier) && (
-                <div className="potential-group">
-                    <div className={`potential-header ${getTierClass(item.main_potential_tier)}`}>
-                        <span className="pot-icon">P</span>
-                        Potential : {item.main_potential_tier}
+            {item.main_potential_tier && (
+                <div className="tooltip-pot-group">
+                    <div className={`tooltip-pot-header ${getTierClass(item.main_potential_tier)}`}>
+                        <span className="tooltip-pot-badge">P</span>
+                        <span>Main Potential</span>
+                        <span className="tooltip-pot-tier">[{item.main_potential_tier}]</span>
                     </div>
-                    <div className={`potential-lines ${getTierClass(item.main_potential_tier)}`}>
+                    <div className={`tooltip-pot-lines ${getTierClass(item.main_potential_tier)}`}>
                         {item.main_potential_1 && <div>{item.main_potential_1}</div>}
                         {item.main_potential_2 && <div>{item.main_potential_2}</div>}
                         {item.main_potential_3 && <div>{item.main_potential_3}</div>}
@@ -69,14 +78,14 @@ export const ItemTooltip: React.FC<ItemTooltipProps> = ({ item, image, baseSlots
                 </div>
             )}
 
-            {/* Bonus Potential Section */}
-            {(item.bonus_potential_tier) && (
-                <div className="potential-group" style={{ marginTop: 15 }}>
-                    <div className={`potential-header ${getTierClass(item.bonus_potential_tier)}`}>
-                        <span className="pot-icon">B</span>
-                        Bonus Potential : {item.bonus_potential_tier}
+            {item.bonus_potential_tier && (
+                <div className="tooltip-pot-group">
+                    <div className={`tooltip-pot-header ${getTierClass(item.bonus_potential_tier)}`}>
+                        <span className="tooltip-pot-badge">A</span>
+                        <span>Bonus Potential</span>
+                        <span className="tooltip-pot-tier">[{item.bonus_potential_tier}]</span>
                     </div>
-                    <div className={`potential-lines ${getTierClass(item.bonus_potential_tier)}`}>
+                    <div className={`tooltip-pot-lines ${getTierClass(item.bonus_potential_tier)}`}>
                         {item.bonus_potential_1 && <div>{item.bonus_potential_1}</div>}
                         {item.bonus_potential_2 && <div>{item.bonus_potential_2}</div>}
                         {item.bonus_potential_3 && <div>{item.bonus_potential_3}</div>}

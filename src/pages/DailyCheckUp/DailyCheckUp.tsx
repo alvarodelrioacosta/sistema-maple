@@ -1133,35 +1133,41 @@ const DailyCheckUp: React.FC = () => {
                                     {/* Items Section */}
                                     {showItems && (
                                         <td colSpan={4} className="cell-items-group">
-                                            <div className="items-list-vertical">
-                                                {row.itemsForSale.length > 0 ? row.itemsForSale.map(item => (
-                                                    <div key={item.id} className="ah-item-row">
-                                                        <div className="col-items item-info">
-                                                            {item && (
-                                                                <img
-                                                                    src={itemsDBMap.get(item.name) || 'https://via.placeholder.com/32?text=Item'}
-                                                                    alt={item.name}
-                                                                    className="item-mini-icon"
-                                                                />
-                                                            )}
-                                                            <div className="item-details">
-                                                                <span className="item-name">{item.name}</span>
-                                                                <span className="item-owner">
-                                                                    {allChars.find(c => c.id === item.character_id)?.name || '-'}
+                                            <div className="items-v6-list">
+                                                {row.itemsForSale.length > 0 ? row.itemsForSale.map(item => {
+                                                    const mainTier = item.main_potential_tier as string | null;
+                                                    const bonusTier = item.bonus_potential_tier as string | null;
+                                                    const TIER_LETTER: Record<string, string> = { Legendary: 'L', Unique: 'U', Epic: 'E', Rare: 'R' };
+                                                    return (
+                                                        <div key={item.id} className="item-v6-row" data-status="for_sale">
+                                                            <div className="item-v6-thumb">
+                                                                {itemsDBMap.get(item.name)
+                                                                    ? <img src={itemsDBMap.get(item.name)} alt={item.name} />
+                                                                    : <div className="item-v6-thumb-empty" />
+                                                                }
+                                                            </div>
+                                                            {item.star_force > 0 && (
+                                                                <span className="item-v6-sf">
+                                                                    <svg viewBox="0 0 24 24" width="8" height="8" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z" /></svg>
+                                                                    {item.star_force}
                                                                 </span>
+                                                            )}
+                                                            <span className="item-v6-pots">
+                                                                {mainTier && <span className={`item-v6-pot item-v6-pot--${mainTier.toLowerCase()}`}>{TIER_LETTER[mainTier] ?? 'P'}</span>}
+                                                                {bonusTier && <span className={`item-v6-pot item-v6-pot--${bonusTier.toLowerCase()}`}>{TIER_LETTER[bonusTier] ?? 'B'}</span>}
+                                                                {!mainTier && !bonusTier && <span className="item-v6-pot item-v6-pot--none">—</span>}
+                                                            </span>
+                                                            <span className="item-v6-name">{item.name}</span>
+                                                            <span className="item-v6-price">{item.estimated_value || 0}m</span>
+                                                            <div className="item-v6-timer">{renderTimer(item.ah_listed_at)}</div>
+                                                            <div className="item-v6-actions">
+                                                                <button className="item-v6-btn" onClick={() => handleListAH(item)}>AH</button>
+                                                                <button className="item-v6-btn item-v6-btn--primary" onClick={() => handleOpenSellModal(item as ItemWithCharacter)}>Sold</button>
                                                             </div>
                                                         </div>
-                                                        <div className="item-price-val">{item.estimated_value}</div>
-                                                        <div className="col-timer">{renderTimer(item.ah_listed_at)}</div>
-                                                        <div className="col-action-btn">
-                                                            <div className="action-stack">
-                                                                <button className="btn-list-ah" onClick={() => handleListAH(item)}>List AH</button>
-                                                                <button className="btn-sold" onClick={() => handleOpenSellModal(item as ItemWithCharacter)}>Sold</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                )) : (
-                                                    <div className="no-items">-</div>
+                                                    );
+                                                }) : (
+                                                    <div className="items-v6-empty">—</div>
                                                 )}
                                             </div>
                                         </td>

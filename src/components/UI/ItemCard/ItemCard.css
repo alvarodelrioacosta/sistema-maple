@@ -1,0 +1,286 @@
+/* =============================================
+   ITEM CARD — Direction A layout + Manrope typography
+   ============================================= */
+
+.item-card {
+    position: relative;
+    display: grid;
+    grid-template-columns: 44px 1fr auto auto;
+    gap: 10px;
+    align-items: center;
+    padding: 9px 12px 9px 14px;
+
+    background: #14161e;
+    border: 1px solid #272a36;
+    border-left: 3px solid var(--item-status-color, #6b6b72);
+    border-radius: 8px;
+    overflow: visible;
+
+    background-image: linear-gradient(90deg, color-mix(in srgb, var(--item-status-color, #6b6b72) 10%, transparent) 0%, transparent 40%);
+
+    transition: transform 0.12s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    cursor: default;
+}
+
+.item-card:hover {
+    transform: translateY(-1px);
+    border-color: #3a3d4c;
+    border-left-color: var(--item-status-color, #6b6b72);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+}
+
+/* Sold overlay stamp */
+.item-card__sold-stamp {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-12deg);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 15px;
+    color: rgba(214, 69, 69, 0.45);
+    border: 2px solid rgba(214, 69, 69, 0.45);
+    padding: 1px 8px;
+    border-radius: 3px;
+    letter-spacing: 0.18em;
+    pointer-events: none;
+    z-index: 3;
+}
+
+/* Thumbnail */
+.item-card__thumb {
+    width: 44px;
+    height: 44px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #2a2d38, #1a1c24);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,0.06);
+}
+
+.item-card__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+.item-card__thumb-empty {
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(135deg, rgba(255,255,255,.03) 0 5px, transparent 5px 10px);
+}
+
+/* Center info */
+.item-card__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    cursor: pointer;
+}
+
+.item-card__row1 {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Star Force */
+.item-card__sf {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 11px;
+    color: #e2a93a;
+    flex-shrink: 0;
+}
+
+/* Potential pills */
+.item-card__pots {
+    display: inline-flex;
+    gap: 3px;
+}
+
+.item-card__pot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 10px;
+    color: #fff;
+    box-shadow: inset 0 -2px 0 rgba(0,0,0,.25), 0 1px 2px rgba(0,0,0,.4);
+    flex-shrink: 0;
+}
+
+.item-card__pot--legendary { background: var(--color-pot-legend, #2dbf9b); color: #0c2a22; }
+.item-card__pot--unique    { background: var(--color-pot-unique, #e2a93a); color: #2a1f05; }
+.item-card__pot--epic      { background: var(--color-pot-epic,   #a259d6); }
+.item-card__pot--rare      { background: var(--color-pot-rare,   #3d7dd6); }
+.item-card__pot--none      { background: var(--color-pot-none,   #6b6b72); color: #d6d6dc; font-size: 12px; }
+
+/* Item name */
+.item-card__name {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: #f0f0f6;
+    letter-spacing: -0.005em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Account info */
+.item-card__account {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #6a6a74;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Right column */
+.item-card__right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+    flex-shrink: 0;
+}
+
+.item-card__price {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: 12px;
+    color: #f0f0f6;
+}
+
+.item-card__timer {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #4ade80;
+    letter-spacing: 0.04em;
+}
+
+.item-card__timer.low   { color: #e2a93a; }
+.item-card__timer.expired { color: #d64545; font-weight: 700; }
+
+.item-card__fav {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    color: rgba(255,255,255,0.15);
+    padding: 0;
+    line-height: 1;
+    transition: color 0.15s;
+}
+
+.item-card__fav.active { color: #e2a93a; }
+.item-card__fav:hover  { color: rgba(226, 169, 58, 0.6); }
+
+/* Actions column */
+.item-card__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: stretch;
+    flex-shrink: 0;
+}
+
+.item-card__btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border: 1px solid #2a2c38;
+    border-radius: 4px;
+    background: #0e0f14;
+    color: #d6d6dc;
+    cursor: pointer;
+    transition: all 0.12s;
+    white-space: nowrap;
+}
+
+.item-card__btn:hover {
+    background: #1a1c25;
+    border-color: #3a3c48;
+}
+
+.item-card__btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.item-card__btn--primary {
+    background: #f0f0f6;
+    color: #0f1014;
+    border-color: #f0f0f6;
+    font-weight: 700;
+}
+
+.item-card__btn--primary:hover {
+    background: #ffffff;
+    border-color: #ffffff;
+}
+
+.item-card__btn--return {
+    background: rgba(34, 197, 94, 0.1);
+    color: #4ade80;
+    border-color: rgba(34, 197, 94, 0.25);
+}
+
+.item-card__psok-note {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: #e2a93a;
+    letter-spacing: 0.04em;
+    text-align: center;
+}
+
+/* Hover preview panel */
+.item-card__preview {
+    position: absolute;
+    top: 0;
+    z-index: var(--z-tooltip, 600);
+    pointer-events: none;
+    animation: item-preview-in 0.12s ease;
+}
+
+.item-card__preview--right {
+    left: calc(100% + 10px);
+}
+
+.item-card__preview--left {
+    right: calc(100% + 10px);
+}
+
+@keyframes item-preview-in {
+    from { opacity: 0; transform: translateX(-4px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+.item-card__preview--left {
+    animation-name: item-preview-in-left;
+}
+
+@keyframes item-preview-in-left {
+    from { opacity: 0; transform: translateX(4px); }
+    to   { opacity: 1; transform: translateX(0); }
+}

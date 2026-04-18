@@ -15,3 +15,4 @@ export { ItemTooltip } from './ItemTooltip/ItemTooltip';
 export { ResourceHistoryPanel } from './ResourceHistoryPanel';
 export { LoadingScreen } from './LoadingScreen/LoadingScreen';
 export { AccountCell } from './AccountCell/AccountCell';
+export { ItemCard } from './ItemCard';

@@ -4,11 +4,10 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { Header } from '../../components/Layout';
-import { Button, Table, Modal, Input, Select, Card, AccountCell } from '../../components/UI';
+import { Button, Modal, Input, Select, ItemCard } from '../../components/UI';
 import { itemsService, charactersService, itemsDBService, accountsService, clientsService, accountsReceivableService, transactionsService, sharedInventoryService, appSettingsService } from '../../services';
 import type { ItemWithCharacter, ItemInsert, Character, ItemStatus, PotentialTier, ItemDB, TradeabilityType, Account, Client, SharedInventory } from '../../types';
 import { formatCurrencyValue } from '../../utils/format';
-import type { Column } from '../../components/UI/Table';
 import './Items.css';
 import { createWorker } from 'tesseract.js';
 import { ocrUtil } from '../../utils/ocr';
@@ -39,78 +38,6 @@ const TRADEABILITY_OPTIONS = [
     { value: 'Untradeable', label: 'Untradeable' }
 ];
 
-const getStatusClass = (status: ItemStatus) => {
-    const classes: Record<ItemStatus, string> = {
-        bulk: 'status-bulk',
-        in_progress: 'status-in-progress',
-        in_stock: 'status-in-stock',
-        for_sale: 'status-for-sale',
-        sold: 'status-sold',
-        Service: 'status-service',
-        in_use: 'status-in-use'
-    };
-    return classes[status];
-};
-
-// --- SUB-COMPONENT FOR EDITABLE PRICE ---
-interface EditablePriceCellProps {
-    item: ItemWithCharacter;
-    onUpdate: (id: string, value: number) => Promise<void>;
-}
-
-const EditablePriceCell: React.FC<EditablePriceCellProps> = ({ item, onUpdate }) => {
-    const [localValue, setLocalValue] = useState<string>(item.estimated_value?.toString() || '0');
-    const [isSaving, setIsSaving] = useState(false);
-
-    // Sync with external changes (e.g. if items are reloaded)
-    useEffect(() => {
-        setLocalValue(item.estimated_value?.toString() || '0');
-    }, [item.estimated_value]);
-
-    const handleBlur = async () => {
-        const newValue = parseFloat(localValue) || 0;
-        if (newValue === item.estimated_value) return;
-
-        setIsSaving(true);
-        try {
-            await onUpdate(item.id, newValue);
-        } catch (error) {
-            console.error('Error updating price:', error);
-            // Revert on error
-            setLocalValue(item.estimated_value?.toString() || '0');
-        } finally {
-            setIsSaving(false);
-        }
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') {
-            (e.target as HTMLInputElement).blur();
-        }
-    };
-
-    return (
-        <input
-            type="number"
-            value={localValue}
-            onChange={(e) => setLocalValue(e.target.value)}
-            onBlur={handleBlur}
-            onKeyDown={handleKeyDown}
-            style={{
-                width: '60px',
-                padding: '6px 10px',
-                background: isSaving ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.1)',
-                border: isSaving ? '1px solid #666' : '1px solid #444',
-                borderRadius: '4px',
-                color: isSaving ? '#888' : '#fff',
-                textAlign: 'center',
-                fontSize: '1rem',
-                transition: 'all 0.2s'
-            }}
-            disabled={isSaving}
-        />
-    );
-};
 
 export const Items: React.FC = () => {
     const [items, setItems] = useState<ItemWithCharacter[]>([]);
@@ -490,14 +417,6 @@ export const Items: React.FC = () => {
         return itemDB?.image_url;
     };
 
-    const getAccountEmail = (characterId: string | null) => {
-        if (!characterId) return '-';
-        const char = characters.find(c => c.id === characterId);
-        if (!char) return '-';
-        const account = accounts.find(a => a.id === char.account_id);
-        return account ? account.email : '-';
-    };
-
     const getAccountNumber = (characterId: string | null) => {
         if (!characterId) return null;
         const char = characters.find(c => c.id === characterId);
@@ -564,320 +483,6 @@ export const Items: React.FC = () => {
         }
     };
 
-    const columns: Column<ItemWithCharacter>[] = [
-        {
-            key: 'image_url', // Virtual key for rendering
-            header: '',
-            render: (i) => {
-                const url = getImageUrl(i.name);
-                return url ? <img src={url} alt={i.name} style={{ width: '32px', height: '32px', objectFit: 'contain' }} /> : null;
-            }
-        },
-        {
-            key: 'name',
-            header: 'Name',
-            render: (i) => (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                    <span>{i.name}</span>
-                    {i.star_force > 0 && (
-                        <span style={{ fontSize: '0.85em', color: '#facc15' }}>
-                            ⭐ {i.star_force}
-                        </span>
-                    )}
-                </div>
-            )
-        },
-        {
-            key: 'email',
-            header: 'Account',
-            width: '200px',
-            render: (i) => {
-                if (!i.character) return <span style={{ color: '#64748b' }}>-</span>;
-                const accNum = getAccountNumber(i.character.id);
-                if (accNum === null) return <span style={{ color: '#64748b' }}>-</span>;
-                return (
-                    <AccountCell
-                        number={accNum}
-                        email={getAccountEmail(i.character.id)}
-                        tag={getAccountTag(i.character.id)}
-                        charName={i.character.name}
-                    />
-                );
-            }
-        },
-        {
-            key: 'main_potential_tier',
-            header: 'Main Pot',
-            width: '180px',
-            render: (i) => {
-                if (!i.main_potential_tier) return '-';
-                const lines = [i.main_potential_1, i.main_potential_2, i.main_potential_3]
-                    .filter((l): l is string => typeof l === 'string' && l.trim() !== '');
-
-                if (lines.length === 0) return <span className={`text-${i.main_potential_tier.toLowerCase()}`}>{i.main_potential_tier}</span>;
-
-                return (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                        {lines.map((line, idx) => (
-                            <span key={idx} className={`potential-line text-${i.main_potential_tier?.toLowerCase()}`}>
-                                {line}
-                            </span>
-                        ))}
-                    </div>
-                );
-            }
-        },
-        {
-            key: 'bonus_potential_tier',
-            header: 'Bonus Pot',
-            width: '180px',
-            render: (i) => {
-                if (!i.bonus_potential_tier) return '-';
-                const lines = [i.bonus_potential_1, i.bonus_potential_2, i.bonus_potential_3]
-                    .filter((l): l is string => typeof l === 'string' && l.trim() !== '');
-
-                if (lines.length === 0) return <span className={`text-${i.bonus_potential_tier.toLowerCase()}`}>{i.bonus_potential_tier}</span>;
-
-                return (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                        {lines.map((line, idx) => (
-                            <span key={idx} className={`potential-line text-${i.bonus_potential_tier?.toLowerCase()}`}>
-                                {line}
-                            </span>
-                        ))}
-                    </div>
-                );
-            }
-        },
-        {
-            key: 'tradeability',
-            header: <div style={{ textAlign: 'center', width: '100%' }}>Tradeability</div>,
-            width: '150px',
-            render: (i) => {
-                const tradeability = i.tradeability || 'Tradeable';
-                // Check if this item type has finite slots (slots > 0 in itemsDB)
-                const itemDBEntry = itemsDB.find(db => db.name === i.name);
-                const hasFiniteSlots = itemDBEntry && itemDBEntry.slots > 0;
-                // Show slots only if the item type has finite slots
-                const showSlots = hasFiniteSlots && i.remaining_trade_slots !== null && i.remaining_trade_slots !== undefined;
-
-                return (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'center' }}>
-                        <span style={{ fontSize: '0.9rem' }}>{tradeability}</span>
-                        {showSlots && (
-                            <span style={{ fontSize: '0.85em', color: '#9ca3af' }}>
-                                {i.remaining_trade_slots} slots
-                            </span>
-                        )}
-                    </div>
-                );
-            }
-        },
-        {
-            key: 'costo_total',
-            header: 'Cost',
-            width: '40px',
-            render: (i) => {
-                const breakdown = [
-                    { label: 'Item', value: i.costo_item },
-                    { label: 'Cubes', value: i.costo_cubos },
-                    { label: 'SF', value: i.costo_sf },
-                    { label: 'PSOK', value: i.costo_psok },
-                    { label: 'Perfect Innocence', value: i.costo_perfect_innoc },
-                    { label: 'Guardian Scroll', value: i.costo_guardian_scroll },
-                    { label: 'Replacement', value: i.costo_replacement }
-                ].filter(b => b.value > 0);
-
-                const tooltip = breakdown.length > 0
-                    ? breakdown.map(b => `${b.label}: ${formatValue(b.value)}`).join('\n')
-                    : undefined;
-
-                return (
-                    <div
-                        style={{ textAlign: 'center', width: '100%', cursor: tooltip ? 'help' : 'default' }}
-                        title={tooltip}
-                    >
-                        {formatValue(i.costo_total || 0)}
-                    </div>
-                );
-            }
-        },
-        // Price/Value column shows for for_sale, sold, and in_use items
-        ...((filterStatus === 'for_sale' || filterStatus === 'sold' || filterStatus === 'in_use') ? [{
-            key: 'estimated_value' as keyof ItemWithCharacter,
-            header: (filterStatus === 'in_use' || filterStatus === 'for_sale') ? 'Value' : 'Price (b)',
-            width: '60px',
-            render: (i: ItemWithCharacter) => (
-                (filterStatus === 'for_sale' || filterStatus === 'in_use') ? (
-                    <EditablePriceCell
-                        item={i}
-                        onUpdate={async (id, newValue) => {
-                            await itemsService.updateEstimatedValue(id, newValue);
-                            setItems(prev => prev.map(item =>
-                                item.id === id ? { ...item, estimated_value: newValue } : item
-                            ));
-                        }}
-                    />
-                ) : (
-                    <div style={{ textAlign: 'center', width: '100%' }}>
-                        <span style={{ fontSize: '1rem' }}>{i.estimated_value || 0}</span>
-                    </div>
-                )
-            )
-        }] : []),
-        // AH Timer column only shows for for_sale items
-        ...(filterStatus === 'for_sale' ? [{
-            key: 'ah_listed_at' as keyof ItemWithCharacter,
-            header: <div style={{ textAlign: 'center', width: '100%' }}>AH Timer</div>,
-            width: '35px',
-            render: (i: ItemWithCharacter) => {
-                if (!i.ah_listed_at) return (
-                    <div style={{ textAlign: 'center', width: '100%' }}>
-                        <span style={{ color: '#6b7280' }}>-</span>
-                    </div>
-                );
-
-                const listedAt = new Date(i.ah_listed_at);
-                const now = new Date();
-                const diffMs = now.getTime() - listedAt.getTime();
-                const hoursElapsed = diffMs / (1000 * 60 * 60);
-
-                if (hoursElapsed >= 48) {
-                    return (
-                        <div style={{ textAlign: 'center', width: '100%' }}>
-                            <span style={{ color: '#ef4444', fontWeight: 'bold' }}>Expired</span>
-                        </div>
-                    );
-                }
-
-                const remainingMs = (48 * 60 * 60 * 1000) - diffMs;
-                const remainingHours = Math.floor(remainingMs / (1000 * 60 * 60));
-                const remainingMinutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
-
-                return (
-                    <div style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        lineHeight: '1.2'
-                    }}>
-                        <span style={{ color: remainingHours < 6 ? '#facc15' : '#4ade80' }}>
-                            {remainingHours}h
-                        </span>
-                        <span style={{ color: remainingHours < 6 ? '#facc15' : '#4ade80', fontSize: '0.85em' }}>
-                            {remainingMinutes}m
-                        </span>
-                    </div>
-                );
-            }
-        }] : []),
-        // Status column only shows when filter is 'all'
-        // - [x] Personalizar columnas de la tabla para el filtro `In Use`
-        // - [x] Añadir columna `Value` editable y desglose de `Cost` en hover
-        ...(filterStatus === 'all' ? [{
-            key: 'status' as keyof ItemWithCharacter,
-            header: 'Status',
-            render: (i: ItemWithCharacter) => (
-                <span className={`status-badge ${getStatusClass(i.status)}`}>
-                    {i.status.replace('_', ' ')}
-                </span>
-            )
-        }] : []),
-        // Favorite Star column - only for For Sale
-        ...(filterStatus === 'for_sale' ? [{
-            key: 'is_favorite' as keyof ItemWithCharacter,
-            header: <div style={{ textAlign: 'center' }}>★</div>,
-            width: '30px',
-            render: (i: ItemWithCharacter) => (
-                <div style={{ textAlign: 'center' }}>
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            handleToggleFavorite(i);
-                        }}
-                        style={{
-                            background: 'none',
-                            border: 'none',
-                            cursor: 'pointer',
-                            fontSize: '1.25rem',
-                            color: i.is_favorite ? '#facc15' : 'rgba(255,255,255,0.15)',
-                            transition: 'all 0.2s',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: '100%'
-                        }}
-                    >
-                        {i.is_favorite ? '★' : '☆'}
-                    </button>
-                </div>
-            )
-        }] : []),
-        {
-            key: 'actions',
-            header: 'Actions',
-            render: (i) => {
-                const isTradeable = i.tradeability === 'Tradeable' || i.tradeability === 'Tradeable Once';
-
-                return (
-                    <div className="table-actions">
-                        <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); setWorkspaceItem(i); }}>Edit</Button>
-                        {i.status === 'for_sale' ? (
-                            isTradeable ? (
-                                <>
-                                    <Button
-                                        size="sm"
-                                        variant="secondary"
-                                        onClick={async () => {
-                                            try {
-                                                const timestamp = new Date().toISOString();
-                                                await itemsService.updateAHListing(i.id, timestamp);
-                                                setItems(prev => prev.map(item =>
-                                                    item.id === i.id ? { ...item, ah_listed_at: timestamp } : item
-                                                ));
-                                            } catch (error) {
-                                                console.error('Error listing on AH:', error);
-                                            }
-                                        }}
-                                    >
-                                        List AH
-                                    </Button>
-                                    <Button
-                                        size="sm"
-                                        variant="primary"
-                                        onClick={() => {
-                                            setSellingItem(i);
-                                            setSalePrice(i.estimated_value || 0);
-                                            setSaleType('AH');
-                                            setSelectedClientId('');
-                                            setSellModalOpen(true);
-                                        }}
-                                    >
-                                        Sold
-                                    </Button>
-                                </>
-                            ) : (
-                                <span style={{ color: '#f59e0b', fontSize: '0.8rem' }}>
-                                    Use PSOK to sell
-                                </span>
-                            )
-                        ) : i.status === 'bulk' && filterStatus === 'bulk' ? (
-                            <Button size="sm" variant="secondary" onClick={() => handleCopy(i)}>Copy</Button>
-                        ) : i.delivered ? (
-                            <Button
-                                size="sm"
-                                variant="secondary"
-                                onClick={() => handleReturnToService(i)}
-                                style={{ background: 'rgba(34, 197, 94, 0.1)', color: '#4ade80', borderColor: 'rgba(34, 197, 94, 0.2)' }}
-                            >
-                                Return to Service
-                            </Button>
-                        ) : null}
-                    </div>
-                );
-            }
-        }
-    ];
 
     const currentItemDBId = itemsDB.find(i => i.name === formData.name)?.id || '';
 
@@ -989,16 +594,45 @@ export const Items: React.FC = () => {
             </div>
 
             <div className="page-content">
-                <Card padding="none">
-                    <Table
-                        data={filteredItems}
-                        columns={columns}
-                        keyExtractor={(i) => i.id}
-                        loading={loading}
-                        onRowClick={(item) => setWorkspaceItem(item)}
-                        emptyMessage="No items found with this status."
-                    />
-                </Card>
+                {loading ? (
+                    <div className="items-loading">Loading items…</div>
+                ) : filteredItems.length === 0 ? (
+                    <div className="items-empty">No items found with this status.</div>
+                ) : (
+                    <div className="items-card-grid">
+                        {filteredItems.map(item => (
+                            <ItemCard
+                                key={item.id}
+                                item={item}
+                                imageUrl={getImageUrl(item.name)}
+                                accountNumber={getAccountNumber(item.character_id)}
+                                accountTag={getAccountTag(item.character_id)}
+                                charName={item.character?.name}
+                                itemsDB={itemsDB}
+                                filterStatus={filterStatus}
+                                formatValue={formatValue}
+                                onEdit={() => setWorkspaceItem(item)}
+                                onSell={item.status === 'for_sale' ? () => {
+                                    setSellingItem(item);
+                                    setSalePrice(item.estimated_value || 0);
+                                    setSaleType('AH');
+                                    setSelectedClientId('');
+                                    setSellModalOpen(true);
+                                } : undefined}
+                                onListAH={item.status === 'for_sale' ? async () => {
+                                    const timestamp = new Date().toISOString();
+                                    await itemsService.updateAHListing(item.id, timestamp);
+                                    setItems(prev => prev.map(i =>
+                                        i.id === item.id ? { ...i, ah_listed_at: timestamp } : i
+                                    ));
+                                } : undefined}
+                                onToggleFavorite={filterStatus === 'for_sale' ? () => handleToggleFavorite(item) : undefined}
+                                onCopy={item.status === 'bulk' && filterStatus === 'bulk' ? () => handleCopy(item) : undefined}
+                                onReturnToService={item.delivered ? () => handleReturnToService(item) : undefined}
+                            />
+                        ))}
+                    </div>
+                )}
             </div>
 
             <Modal

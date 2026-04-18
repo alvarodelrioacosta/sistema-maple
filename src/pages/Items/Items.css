@@ -232,6 +232,24 @@ input[type="number"] {
     font-size: 0.75rem;
 }
 
+/* Items card grid */
+.items-card-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: var(--spacing-md) var(--spacing-xl);
+}
+
+.items-loading,
+.items-empty {
+    padding: var(--spacing-xl);
+    text-align: center;
+    color: var(--color-text-tertiary);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: var(--font-size-sm);
+    letter-spacing: 0.05em;
+}
+
 .potential-line {
     font-size: 0.9rem;
     line-height: 1.1;

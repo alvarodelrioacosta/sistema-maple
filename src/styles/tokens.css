@@ -48,7 +48,23 @@
   --color-chart-5: #22c55e;
   
   /* ===== TIPOGRAFÍA ===== */
-  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-family-mono: 'JetBrains Mono', 'Courier New', monospace;
+
+  /* ===== ITEM STATUS COLORS ===== */
+  --color-status-stock:  #2dbf7a;
+  --color-status-sold:   #d64545;
+  --color-status-sale:   #3d8fd6;
+  --color-status-locked: #c48a2e;
+  --color-status-bulk:   #a259d6;
+  --color-status-service:#2dd4bf;
+
+  /* ===== POTENTIAL TIER COLORS ===== */
+  --color-pot-none:    #6b6b72;
+  --color-pot-rare:    #3d7dd6;
+  --color-pot-epic:    #a259d6;
+  --color-pot-unique:  #e2a93a;
+  --color-pot-legend:  #2dbf9b;
   
   --font-size-xs: 0.75rem;    /* 12px */
   --font-size-sm: 0.875rem;   /* 14px */
