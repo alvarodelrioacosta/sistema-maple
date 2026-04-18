@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
+import ReactDOM from 'react-dom';
 import type { ItemWithCharacter, ItemStatus, ItemDB } from '../../../types';
 import { ItemTooltip } from '../ItemTooltip/ItemTooltip';
 import './ItemCard.css';
@@ -217,11 +218,12 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                 )}
             </div>
 
-            {/* Hover preview */}
-            {hovered && (
+            {/* Hover preview — rendered via portal to escape parent transform/stacking context */}
+            {hovered && ReactDOM.createPortal(
                 <div className="item-card__preview" style={previewStyle}>
                     <ItemTooltip item={item} image={imageUrl} baseSlots={baseSlots} />
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     );
