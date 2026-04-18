@@ -54,15 +54,28 @@ export const ItemCard: React.FC<ItemCardProps> = ({
     formatValue,
 }) => {
     const [hovered, setHovered] = useState(false);
-    const [previewSide, setPreviewSide] = useState<'right' | 'left'>('right');
+    const [previewStyle, setPreviewStyle] = useState<React.CSSProperties>({});
     const [isListingAH, setIsListingAH] = useState(false);
     const cardRef = useRef<HTMLDivElement>(null);
 
+    const TOOLTIP_W = 278;
+    const TOOLTIP_H = 360; // generous estimate — covers items with both potentials
+    const GAP = 10;
+
     const handleMouseEnter = useCallback(() => {
-        if (cardRef.current) {
-            const rect = cardRef.current.getBoundingClientRect();
-            setPreviewSide(window.innerWidth - rect.right >= 290 ? 'right' : 'left');
-        }
+        if (!cardRef.current) { setHovered(true); return; }
+        const r = cardRef.current.getBoundingClientRect();
+
+        // Horizontal: prefer right, fallback left
+        const left = (window.innerWidth - r.right >= TOOLTIP_W + GAP)
+            ? r.right + GAP
+            : r.left - TOOLTIP_W - GAP;
+
+        // Vertical: align to card top, clamp so tooltip stays inside viewport
+        const rawTop = r.top;
+        const top = Math.min(rawTop, window.innerHeight - TOOLTIP_H - 8);
+
+        setPreviewStyle({ position: 'fixed', top: Math.max(8, top), left, zIndex: 600, width: TOOLTIP_W });
         setHovered(true);
     }, []);
 
@@ -206,7 +219,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
 
             {/* Hover preview */}
             {hovered && (
-                <div className={`item-card__preview item-card__preview--${previewSide}`}>
+                <div className="item-card__preview" style={previewStyle}>
                     <ItemTooltip item={item} image={imageUrl} baseSlots={baseSlots} />
                 </div>
             )}
