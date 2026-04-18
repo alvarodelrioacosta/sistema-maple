@@ -11,25 +11,66 @@
     z-index: var(--z-sticky);
 }
 
-.sidebar__logo {
+.sidebar__clocks {
     display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-lg);
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px var(--spacing-md);
     border-bottom: 1px solid var(--color-border);
 }
 
-.sidebar__logo-icon {
-    font-size: var(--font-size-2xl);
+.sidebar__clock {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
 }
 
-.sidebar__logo-text {
-    font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-bold);
-    background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+.sidebar__clock--game {
+    background: rgba(124, 58, 237, 0.05);
+    border-color: rgba(124, 58, 237, 0.2);
+}
+
+.sidebar__clock-icon {
+    font-size: 14px;
+    opacity: 0.8;
+    flex-shrink: 0;
+}
+
+.sidebar__clock-tag {
+    font-family: var(--font-family-mono, 'JetBrains Mono', monospace);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--color-accent-primary);
+    background: rgba(124, 58, 237, 0.12);
+    padding: 2px 5px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
+.sidebar__clock-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    justify-content: space-between;
+}
+
+.sidebar__clock-date {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+}
+
+.sidebar__clock-time {
+    font-family: var(--font-family-mono, 'JetBrains Mono', monospace);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-text-primary);
 }
 
 .sidebar__nav {

@@ -2,7 +2,7 @@
 // SIDEBAR COMPONENT - Navegación lateral
 // =============================================
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import './Sidebar.css';
@@ -38,6 +38,17 @@ const workspaceItems: NavItem[] = [
 export const Sidebar: React.FC = () => {
     const location = useLocation();
     const { profile, signOut } = useAuth();
+    const [now, setNow] = useState(new Date());
+
+    useEffect(() => {
+        const t = setInterval(() => setNow(new Date()), 60000);
+        return () => clearInterval(t);
+    }, []);
+
+    const fmt = (date: Date, utc = false) =>
+        date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', timeZone: utc ? 'UTC' : undefined });
+    const fmtDate = (date: Date, utc = false) =>
+        date.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short', timeZone: utc ? 'UTC' : undefined }).replace('.', '');
     const isAdmin = profile?.role === 'admin';
 
     const renderNavItem = (item: NavItem) => (
@@ -55,10 +66,21 @@ export const Sidebar: React.FC = () => {
 
     return (
         <aside className="sidebar">
-            <div className="sidebar__logo">
-                <span className="sidebar__logo-icon">📦</span>
-                <span className="sidebar__logo-text">Inventory</span>
-                {profile && <span className="sidebar__role-tag">{profile.role}</span>}
+            <div className="sidebar__clocks">
+                <div className="sidebar__clock">
+                    <span className="sidebar__clock-icon">🏠</span>
+                    <div className="sidebar__clock-info">
+                        <span className="sidebar__clock-date">{fmtDate(now)}</span>
+                        <span className="sidebar__clock-time">{fmt(now)}</span>
+                    </div>
+                </div>
+                <div className="sidebar__clock sidebar__clock--game">
+                    <span className="sidebar__clock-tag">UTC</span>
+                    <div className="sidebar__clock-info">
+                        <span className="sidebar__clock-date">{fmtDate(now, true)}</span>
+                        <span className="sidebar__clock-time">{fmt(now, true)}</span>
+                    </div>
+                </div>
             </div>
 
             <nav className="sidebar__nav">

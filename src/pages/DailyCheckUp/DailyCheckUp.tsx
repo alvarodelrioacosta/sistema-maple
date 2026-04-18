@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Header } from '../../components/Layout';
-import { Card, Button, Modal, Input, LoadingScreen, AccountCell } from '../../components/UI';
+import { Card, Button, Modal, Input, LoadingScreen, AccountCell, ItemCard } from '../../components/UI';
 // Deployment trigger: force fresh commit after Vercel repository reconnection
 import {
     accountsService,
@@ -290,6 +290,20 @@ const DailyCheckUp: React.FC = () => {
         });
         return map;
     }, [unlockProgress]);
+
+    const formatValue = (value: number) => {
+        if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)}B`;
+        if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
+        if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
+        return value.toString();
+    };
+
+    const getItemAccountNumber = (characterId: string | null) => {
+        if (!characterId) return null;
+        const char = allChars.find(c => c.id === characterId);
+        if (!char) return null;
+        return accounts.find(a => a.id === char.account_id)?.number ?? null;
+    };
 
     const itemsDBMap = useMemo(() => {
         const map = new Map<string, string>();
@@ -795,41 +809,6 @@ const DailyCheckUp: React.FC = () => {
         }
     };
 
-    // Timer calculation logic from Items.tsx
-    const renderTimer = (ahListedAt: string | null) => {
-        if (!ahListedAt) return (
-            <div className="timer-not-listed">
-                <span>Not</span>
-                <span>Listed</span>
-            </div>
-        );
-
-        const listedDate = new Date(ahListedAt);
-        const now = new Date();
-        const diffMs = now.getTime() - listedDate.getTime();
-        const diffHours = diffMs / (1000 * 60 * 60);
-
-        // Assume 24h listing for now, or 48h? 
-        // User image shows "27h 35m", so likely 48h? Or it counts UP?
-        // Let's count DOWN from 48h as per common Maplestory AH
-        const remainingHoursTotal = 48 - diffHours;
-
-        if (remainingHoursTotal <= 0) {
-            return <span className="timer-expired">Expired</span>;
-        }
-
-        const h = Math.floor(remainingHoursTotal);
-        const m = Math.floor((remainingHoursTotal - h) * 60);
-
-        const isLow = remainingHoursTotal < 24;
-
-        return (
-            <div className={`ah-timer ${isLow ? 'is-low' : ''}`}>
-                <span className="timer-h">{h}h</span>
-                <span className="timer-m">{m}m</span>
-            </div>
-        );
-    };
 
 
 
@@ -1133,43 +1112,27 @@ const DailyCheckUp: React.FC = () => {
                                     {/* Items Section */}
                                     {showItems && (
                                         <td colSpan={4} className="cell-items-group">
-                                            <div className="items-v6-list">
-                                                {row.itemsForSale.length > 0 ? row.itemsForSale.map(item => {
-                                                    const mainTier = item.main_potential_tier as string | null;
-                                                    const bonusTier = item.bonus_potential_tier as string | null;
-                                                    const TIER_LETTER: Record<string, string> = { Legendary: 'L', Unique: 'U', Epic: 'E', Rare: 'R' };
-                                                    return (
-                                                        <div key={item.id} className="item-v6-row" data-status="for_sale">
-                                                            <div className="item-v6-thumb">
-                                                                {itemsDBMap.get(item.name)
-                                                                    ? <img src={itemsDBMap.get(item.name)} alt={item.name} />
-                                                                    : <div className="item-v6-thumb-empty" />
-                                                                }
-                                                            </div>
-                                                            {item.star_force > 0 && (
-                                                                <span className="item-v6-sf">
-                                                                    <svg viewBox="0 0 24 24" width="8" height="8" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z" /></svg>
-                                                                    {item.star_force}
-                                                                </span>
-                                                            )}
-                                                            <span className="item-v6-pots">
-                                                                {mainTier && <span className={`item-v6-pot item-v6-pot--${mainTier.toLowerCase()}`}>{TIER_LETTER[mainTier] ?? 'P'}</span>}
-                                                                {bonusTier && <span className={`item-v6-pot item-v6-pot--${bonusTier.toLowerCase()}`}>{TIER_LETTER[bonusTier] ?? 'B'}</span>}
-                                                                {!mainTier && !bonusTier && <span className="item-v6-pot item-v6-pot--none">—</span>}
-                                                            </span>
-                                                            <span className="item-v6-name">{item.name}</span>
-                                                            <span className="item-v6-price">{item.estimated_value || 0}m</span>
-                                                            <div className="item-v6-timer">{renderTimer(item.ah_listed_at)}</div>
-                                                            <div className="item-v6-actions">
-                                                                <button className="item-v6-btn" onClick={() => handleListAH(item)}>AH</button>
-                                                                <button className="item-v6-btn item-v6-btn--primary" onClick={() => handleOpenSellModal(item as ItemWithCharacter)}>Sold</button>
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                }) : (
-                                                    <div className="items-v6-empty">—</div>
-                                                )}
-                                            </div>
+                                            {row.itemsForSale.length > 0 ? (
+                                                <div className="daily-items-grid">
+                                                    {row.itemsForSale.map(item => (
+                                                        <ItemCard
+                                                            key={item.id}
+                                                            item={item}
+                                                            imageUrl={itemsDBMap.get(item.name)}
+                                                            accountNumber={getItemAccountNumber(item.character_id)}
+                                                            charName={allChars.find(c => c.id === item.character_id)?.name}
+                                                            itemsDB={itemsDB}
+                                                            filterStatus="for_sale"
+                                                            formatValue={formatValue}
+                                                            onEdit={() => {}}
+                                                            onSell={() => handleOpenSellModal(item as ItemWithCharacter)}
+                                                            onListAH={async () => { await handleListAH(item); }}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <div className="items-v6-empty">—</div>
+                                            )}
                                         </td>
                                     )}
                                 </tr>
