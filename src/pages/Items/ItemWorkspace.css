@@ -507,8 +507,7 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    width: 100%;
-    max-width: 240px; /* Ajustado para que quepan 15 estrellas exactamente */
+    width: 219px; /* 15 estrellas (13px c/u) + 2 espacios (12px c/u) */
     margin: 0 auto;
     gap: 0;
 }
