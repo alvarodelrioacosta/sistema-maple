@@ -806,16 +806,41 @@
 /* Outer wrapper for the whole inline bossing cell */
 .bossing-inline {
     display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
+    flex-direction: row;
     align-items: flex-start;
+    gap: 12px;
 }
 
-/* ---- Boss icon strip ---- */
+/* ---- Boss icon strip — fixed 7-col grid ---- */
 .boss-strip {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(7, 44px);
     gap: 4px;
+    flex-shrink: 0;
+}
+
+/* ---- Right panel: RP + Drops stacked ---- */
+.bossing-right-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-self: center;
+    min-width: 160px;
+}
+
+.bossing-drops-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.02);
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.bossing-drops-label {
+    font-size: 10px;
+    color: #94a3b8;
+    text-transform: uppercase;
 }
 
 .boss-icon {

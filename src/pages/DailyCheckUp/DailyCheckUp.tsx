@@ -1100,7 +1100,8 @@ const DailyCheckUp: React.FC = () => {
                                                         })}
                                                     </div>
 
-                                                    {/* RP + Register row */}
+                                                    {/* RP + Drops panel (right side) */}
+                                                    <div className="bossing-right-panel">
                                                     <div className="bossing-action-row">
                                                         <span className="bossing-current-rp">{(accountBalances[row.account.id]?.reward_points || 0).toLocaleString()} RP</span>
                                                         {isDone && <span className="bossing-done-badge">✓ DONE</span>}
@@ -1121,8 +1122,8 @@ const DailyCheckUp: React.FC = () => {
                                                             {isRegistering ? '...' : isDone ? '↺' : 'Register'}
                                                         </button>
                                                     </div>
-                                                    <div className="bossing-action-row" style={{ marginTop: '4px', display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.02)', padding: '4px 8px', borderRadius: '4px' }}>
-                                                        <span style={{ fontSize: '10px', color: '#94a3b8', textTransform: 'uppercase' }}>Drops:</span>
+                                                    <div className="bossing-drops-row">
+                                                        <span className="bossing-drops-label">Drops:</span>
                                                         <div 
                                                             style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', background: 'rgba(34, 197, 94, 0.1)', padding: '2px 6px', borderRadius: '4px', gap: '4px' }}
                                                             onClick={() => setBossDrops(prev => ({ ...prev, [accountId]: { ...prev[accountId], solidCubes: (prev[accountId]?.solidCubes || 0) + 1 } }))}
@@ -1151,6 +1152,7 @@ const DailyCheckUp: React.FC = () => {
                                                             </span>
                                                         ) : null}
                                                     </div>
+                                                    </div>{/* end bossing-right-panel */}
                                                 </div>
                                             </td>
                                         );
