@@ -8,24 +8,11 @@ interface ItemTooltipProps {
     baseSlots?: number;
 }
 
-const MAX_STARS = 25;
-
-const StarTrack: React.FC<{ starForce: number }> = ({ starForce }) => {
-    const stars = Array.from({ length: MAX_STARS }, (_, i) => i < starForce);
-    const groups: boolean[][] = [];
-    for (let i = 0; i < MAX_STARS; i += 5) groups.push(stars.slice(i, i + 5));
-
-    return (
-        <div className="tooltip-star-track">
-            {groups.map((group, gi) => (
-                <span key={gi} className="tooltip-star-group">
-                    {group.map((filled, si) => (
-                        <span key={si} className={`tooltip-star ${filled ? 'filled' : 'empty'}`}>★</span>
-                    ))}
-                </span>
-            ))}
-        </div>
-    );
+const TIER_LETTER: Record<string, string> = {
+    Legendary: 'L',
+    Unique: 'U',
+    Epic: 'E',
+    Rare: 'R',
 };
 
 export const ItemTooltip: React.FC<ItemTooltipProps> = ({ item, image, baseSlots }) => {
@@ -33,12 +20,10 @@ export const ItemTooltip: React.FC<ItemTooltipProps> = ({ item, image, baseSlots
 
     return (
         <div className="item-tooltip">
-            <StarTrack starForce={item.star_force || 0} />
-
             <div className="tooltip-header">
-                <div className={`tooltip-item-name ${getTierClass(item.main_potential_tier)}`}>
+                <div className="tooltip-item-name">
                     {item.name}
-                    {(item.star_force > 0) && (
+                    {item.star_force > 0 && (
                         <span className="tooltip-sf-inline">
                             <span className="tooltip-sf-star">★</span>
                             {item.star_force}
@@ -66,9 +51,10 @@ export const ItemTooltip: React.FC<ItemTooltipProps> = ({ item, image, baseSlots
             {item.main_potential_tier && (
                 <div className="tooltip-pot-group">
                     <div className={`tooltip-pot-header ${getTierClass(item.main_potential_tier)}`}>
-                        <span className="tooltip-pot-badge">P</span>
+                        <span className="tooltip-pot-badge">
+                            {TIER_LETTER[item.main_potential_tier] ?? 'P'}
+                        </span>
                         <span>Main Potential</span>
-                        <span className="tooltip-pot-tier">[{item.main_potential_tier}]</span>
                     </div>
                     <div className={`tooltip-pot-lines ${getTierClass(item.main_potential_tier)}`}>
                         {item.main_potential_1 && <div>{item.main_potential_1}</div>}
@@ -81,9 +67,10 @@ export const ItemTooltip: React.FC<ItemTooltipProps> = ({ item, image, baseSlots
             {item.bonus_potential_tier && (
                 <div className="tooltip-pot-group">
                     <div className={`tooltip-pot-header ${getTierClass(item.bonus_potential_tier)}`}>
-                        <span className="tooltip-pot-badge">A</span>
+                        <span className="tooltip-pot-badge">
+                            {TIER_LETTER[item.bonus_potential_tier] ?? 'B'}
+                        </span>
                         <span>Bonus Potential</span>
-                        <span className="tooltip-pot-tier">[{item.bonus_potential_tier}]</span>
                     </div>
                     <div className={`tooltip-pot-lines ${getTierClass(item.bonus_potential_tier)}`}>
                         {item.bonus_potential_1 && <div>{item.bonus_potential_1}</div>}
