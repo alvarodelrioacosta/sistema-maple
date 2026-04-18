@@ -73,7 +73,7 @@ const DailyCheckUp: React.FC = () => {
     const [dailyUnlocks, setDailyUnlocks] = useState<ContentUnlock[]>([]);
     const [allUnlocks, setAllUnlocks] = useState<ContentUnlock[]>([]);
     const [unlockProgress, setUnlockProgress] = useState<AccountUnlockProgress[]>([]);
-    const [itemsForSale, setItemsForSale] = useState<ItemWithCharacter[]>([]);
+    const [allItems, setAllItems] = useState<ItemWithCharacter[]>([]);
     const [itemsDB, setItemsDB] = useState<ItemDB[]>([]);
 
     // Progress states
@@ -88,6 +88,7 @@ const DailyCheckUp: React.FC = () => {
     const [salePrice, setSalePrice] = useState(0);
     const [showRP, setShowRP] = useState(false);
     const [showItems, setShowItems] = useState(false);
+    const [activeItemFilters, setActiveItemFilters] = useState<Set<string>>(new Set(['for_sale']));
 
     // Bossing state
     const [showBossing, setShowBossing] = useState(false);
@@ -139,20 +140,25 @@ const DailyCheckUp: React.FC = () => {
             })
             .on('postgres_changes', { event: '*', schema: 'public', table: 'items' }, (payload) => {
                 console.log('Realtime Item Change:', payload);
+                const TRACKED = ['for_sale', 'in_stock', 'bulk'];
                 if (payload.eventType === 'UPDATE') {
                     const newItem = payload.new as ItemWithCharacter;
-                    if (newItem.status === 'sold') {
-                        setItemsForSale(prev => prev.filter(i => i.id !== newItem.id));
+                    if (TRACKED.includes(newItem.status)) {
+                        setAllItems(prev => {
+                            const exists = prev.some(i => i.id === newItem.id);
+                            if (exists) return prev.map(i => i.id === newItem.id ? { ...i, ...newItem } : i);
+                            return [...prev, newItem];
+                        });
                     } else {
-                        setItemsForSale(prev => prev.map(i => i.id === newItem.id ? { ...i, ...newItem } : i));
+                        setAllItems(prev => prev.filter(i => i.id !== newItem.id));
                     }
                 } else if (payload.eventType === 'INSERT') {
                     const newItem = payload.new as ItemWithCharacter;
-                    if (newItem.status === 'for_sale') {
-                        setItemsForSale(prev => [...prev, newItem]);
+                    if (TRACKED.includes(newItem.status)) {
+                        setAllItems(prev => [...prev, newItem]);
                     }
                 } else if (payload.eventType === 'DELETE') {
-                    setItemsForSale(prev => prev.filter(i => i.id !== (payload.old as any).id));
+                    setAllItems(prev => prev.filter(i => i.id !== (payload.old as any).id));
                 }
             })
             .subscribe();
@@ -181,7 +187,9 @@ const DailyCheckUp: React.FC = () => {
                 dailyUnlocksData,
                 allUnlocksData,
                 unlockProgressData,
-                itemsData,
+                forSaleData,
+                inStockData,
+                bulkData,
                 itemsDBData,
                 bossesData,
                 weekSessionsData,
@@ -195,6 +203,8 @@ const DailyCheckUp: React.FC = () => {
                 contentUnlocksService.getAll().catch(e => { console.error('Failed to load all unlocks:', e); return []; }),
                 contentUnlocksService.getAllProgress().catch(e => { console.error('Failed to load unlock progress:', e); return []; }),
                 itemsService.getByStatus('for_sale').catch(e => { console.error('Failed to load items:', e); return []; }),
+                itemsService.getByStatus('in_stock').catch(e => { console.error('Failed to load items:', e); return []; }),
+                itemsService.getByStatus('bulk').catch(e => { console.error('Failed to load items:', e); return []; }),
                 itemsDBService.getAll().catch(e => { console.error('Failed to load itemsDB:', e); return []; }),
                 bossesService.getAll().catch(e => { console.error('Failed to load bosses:', e); return []; }),
                 bossingService.getWeekSessions(bossingService.getWeekStart()).catch(e => { console.error('Failed to load week sessions:', e); return []; }),
@@ -207,7 +217,7 @@ const DailyCheckUp: React.FC = () => {
                 characters: charsData.length,
                 events: eventsData.length,
                 dailyUnlocks: dailyUnlocksData.length,
-                items: itemsData.length
+                items: forSaleData.length + inStockData.length + bulkData.length
             });
 
             setAccounts(accountsData.sort((a: Account, b: Account) => a.number - b.number));
@@ -232,7 +242,7 @@ const DailyCheckUp: React.FC = () => {
             setDailyUnlocks(dailyUnlocksData);
             setAllUnlocks(allUnlocksData);
             setUnlockProgress(unlockProgressData);
-            setItemsForSale(itemsData);
+            setAllItems([...forSaleData, ...inStockData, ...bulkData]);
             setItemsDB(itemsDBData);
             setAllBosses(bossesData);
             setWeekSessions(weekSessionsData);
@@ -323,7 +333,7 @@ const DailyCheckUp: React.FC = () => {
                   : (mainChars || []).find(c => c.account_id === acc.id) || null;
 
                 // Filter items for this account's characters
-                const accountItems = (itemsForSale || []).filter(item => {
+                const accountItems = (allItems || []).filter(item => {
                     if (!item || !item.character_id) return false;
                     const char = (allChars || []).find(c => c.id === item.character_id);
                     return char?.account_id === acc.id;
@@ -350,7 +360,7 @@ const DailyCheckUp: React.FC = () => {
                 return {
                     account: acc,
                     mainChar,
-                    itemsForSale: accountItems,
+                    items: accountItems,
                     eventProgress: eventStates,
                     eventWeeklyCounts,
                     eventTotalCounts,
@@ -361,7 +371,7 @@ const DailyCheckUp: React.FC = () => {
             console.error('Error calculating DailyCheckUp rows:', e);
             return [];
         }
-    }, [accounts, mainChars, itemsForSale, allChars, activeEvents, dailyUnlocks, indexedEventProgress, indexedUnlockProgress]);
+    }, [accounts, mainChars, allItems, allChars, activeEvents, dailyUnlocks, indexedEventProgress, indexedUnlockProgress]);
     const formattedDate = useMemo(() => {
         try {
             return new Intl.DateTimeFormat('es-ES', {
@@ -560,11 +570,20 @@ const DailyCheckUp: React.FC = () => {
     };
 
 
+    const toggleItemFilter = (status: string) => {
+        setActiveItemFilters(prev => {
+            const next = new Set(prev);
+            if (next.has(status)) next.delete(status);
+            else next.add(status);
+            return next;
+        });
+    };
+
     const handleListAH = async (item: ItemWithCharacter) => {
         try {
             const timestamp = new Date().toISOString();
             await itemsService.updateAHListing(item.id, timestamp);
-            setItemsForSale(prev => prev.map(i => i.id === item.id ? { ...i, ah_listed_at: timestamp } : i));
+            setAllItems(prev => prev.map(i => i.id === item.id ? { ...i, ah_listed_at: timestamp } : i));
         } catch (error) {
             console.error('Error listing on AH:', error);
         }
@@ -610,7 +629,7 @@ const DailyCheckUp: React.FC = () => {
                 estimated_value: salePrice
             });
 
-            setItemsForSale(prev => prev.filter(i => i.id !== sellingItem.id));
+            setAllItems(prev => prev.filter(i => i.id !== sellingItem.id));
             setSellModalOpen(false);
             setSellingItem(null);
         } catch (error) {
@@ -826,13 +845,46 @@ const DailyCheckUp: React.FC = () => {
                         >
                             {showRP ? "Hide RP" : "Show RP"}
                         </Button>
-                        <Button
-                            variant={showItems ? "primary" : "secondary"}
-                            size="sm"
-                            onClick={() => setShowItems(!showItems)}
-                        >
-                            {showItems ? "Hide Items" : "Show Items"}
-                        </Button>
+                        {!showItems ? (
+                            <Button
+                                variant="secondary"
+                                size="sm"
+                                onClick={() => setShowItems(true)}
+                            >
+                                Show Items
+                            </Button>
+                        ) : (
+                            <>
+                                <Button
+                                    variant="primary"
+                                    size="sm"
+                                    onClick={() => { setShowItems(false); setActiveItemFilters(new Set(['for_sale'])); }}
+                                >
+                                    Hide Items
+                                </Button>
+                                <Button
+                                    variant={activeItemFilters.has('for_sale') ? "primary" : "secondary"}
+                                    size="sm"
+                                    onClick={() => toggleItemFilter('for_sale')}
+                                >
+                                    For Sale
+                                </Button>
+                                <Button
+                                    variant={activeItemFilters.has('in_stock') ? "primary" : "secondary"}
+                                    size="sm"
+                                    onClick={() => toggleItemFilter('in_stock')}
+                                >
+                                    In Stock
+                                </Button>
+                                <Button
+                                    variant={activeItemFilters.has('bulk') ? "primary" : "secondary"}
+                                    size="sm"
+                                    onClick={() => toggleItemFilter('bulk')}
+                                >
+                                    Bulk
+                                </Button>
+                            </>
+                        )}
                         <Button
                             variant={showBossing ? "primary" : "secondary"}
                             size="sm"
@@ -870,12 +922,7 @@ const DailyCheckUp: React.FC = () => {
                                 {showRP && <th rowSpan={2} className="col-rp">RP / PSOK</th>}
                                 {showBossing && <th rowSpan={2} className="col-bossing">BOSSING</th>}
                                 {showItems && (
-                                    <>
-                                        <th rowSpan={2} className="col-items">Items For Sale</th>
-                                        <th rowSpan={2} className="col-price">Price</th>
-                                        <th rowSpan={2} className="col-timer">Timer</th>
-                                        <th rowSpan={2} className="col-actions">Actions</th>
-                                    </>
+                                    <th rowSpan={2} colSpan={4} className="col-items">Items</th>
                                 )}
                             </tr>
                             <tr className="header-bottom-row">
@@ -1110,31 +1157,34 @@ const DailyCheckUp: React.FC = () => {
                                     })()}
 
                                     {/* Items Section */}
-                                    {showItems && (
-                                        <td colSpan={4} className="cell-items-group">
-                                            {row.itemsForSale.length > 0 ? (
-                                                <div className="daily-items-grid">
-                                                    {row.itemsForSale.map(item => (
-                                                        <ItemCard
-                                                            key={item.id}
-                                                            item={item}
-                                                            imageUrl={itemsDBMap.get(item.name)}
-                                                            accountNumber={getItemAccountNumber(item.character_id)}
-                                                            charName={allChars.find(c => c.id === item.character_id)?.name}
-                                                            itemsDB={itemsDB}
-                                                            filterStatus="for_sale"
-                                                            formatValue={formatValue}
-                                                            onEdit={() => {}}
-                                                            onSell={() => handleOpenSellModal(item as ItemWithCharacter)}
-                                                            onListAH={async () => { await handleListAH(item); }}
-                                                        />
-                                                    ))}
-                                                </div>
-                                            ) : (
-                                                <div className="items-v6-empty">—</div>
-                                            )}
-                                        </td>
-                                    )}
+                                    {showItems && (() => {
+                                        const visibleItems = row.items.filter(item => activeItemFilters.has(item.status));
+                                        return (
+                                            <td colSpan={4} className="cell-items-group">
+                                                {visibleItems.length > 0 ? (
+                                                    <div className="daily-items-grid">
+                                                        {visibleItems.map(item => (
+                                                            <ItemCard
+                                                                key={item.id}
+                                                                item={item}
+                                                                imageUrl={itemsDBMap.get(item.name)}
+                                                                accountNumber={getItemAccountNumber(item.character_id)}
+                                                                charName={allChars.find(c => c.id === item.character_id)?.name}
+                                                                itemsDB={itemsDB}
+                                                                filterStatus={item.status as any}
+                                                                formatValue={formatValue}
+                                                                onEdit={() => {}}
+                                                                onSell={() => handleOpenSellModal(item as ItemWithCharacter)}
+                                                                onListAH={async () => { await handleListAH(item); }}
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="items-v6-empty">—</div>
+                                                )}
+                                            </td>
+                                        );
+                                    })()}
                                 </tr>
                                 );
                             })}
