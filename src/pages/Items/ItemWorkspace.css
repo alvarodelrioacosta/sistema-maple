@@ -506,7 +506,7 @@
 .maple-stars-grid {
     display: grid;
     grid-template-columns: repeat(15, 1fr);
-    gap: 1px;
+    gap: 0;
 }
 
 .maple-star {
@@ -515,10 +515,11 @@
     color: #444;
     transition: transform 0.1s, color 0.1s;
     user-select: none;
+    line-height: 1;
 }
 
 .maple-star:nth-child(5n):not(:nth-child(15n)):not(:nth-child(30n)) {
-    margin-right: 5px;
+    margin-right: 8px;
 }
 
 .maple-star.active {
