@@ -765,21 +765,6 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                         </span>
                     ))}
                 </div>
-                {editingField === 'star_force' ? (
-                    <input
-                        autoFocus
-                        type="number"
-                        className="premium-input"
-                        style={{ width: '50px', textAlign: 'center' }}
-                        value={value}
-                        onChange={e => onChange(parseInt(e.target.value) || 0)}
-                        onBlur={() => setEditingField(null)}
-                    />
-                ) : (
-                    <div className="maple-sf-value-display premium-editable" onClick={() => setEditingField('star_force')}>
-                        {value} STAR FORCE
-                    </div>
-                )}
             </div>
         );
     };
@@ -1059,16 +1044,28 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                         {/* Item Header */}
                         <div className="maple-item-header">
                             {editingField === 'name' ? (
-                                <input
-                                    autoFocus
-                                    className="premium-input maple-item-name"
-                                    value={editingItem.name || ''}
-                                    onChange={e => setEditingItem(prev => ({ ...prev, name: e.target.value }))}
-                                    onBlur={() => setEditingField(null)}
-                                />
+                                <div style={{ display: 'flex', gap: '4px', justifyContent: 'center' }}>
+                                    <input
+                                        autoFocus
+                                        className="premium-input maple-item-name"
+                                        style={{ width: 'auto' }}
+                                        value={editingItem.name || ''}
+                                        onChange={e => setEditingItem(prev => ({ ...prev, name: e.target.value }))}
+                                        onBlur={() => setEditingField(null)}
+                                    />
+                                    <input
+                                        type="number"
+                                        className="premium-input maple-item-name"
+                                        style={{ width: '50px', color: '#facc15' }}
+                                        value={editingItem.star_force || 0}
+                                        onChange={e => setEditingItem(prev => ({ ...prev, star_force: parseInt(e.target.value) || 0 }))}
+                                        onBlur={() => setEditingField(null)}
+                                    />
+                                </div>
                             ) : (
                                 <h2 className="maple-item-name premium-editable" onClick={() => setEditingField('name')}>
                                     {editingItem.name}
+                                    <span className="maple-item-sf-suffix">★ {editingItem.star_force || 0}</span>
                                 </h2>
                             )}
 
@@ -1146,7 +1143,7 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                         </div>
 
                         {/* Bonus Potential */}
-                        <div className="maple-potential-section" style={{ borderTop: '1px dashed #555', paddingTop: '1rem' }}>
+                        <div className="maple-potential-section" style={{ borderTop: '1px dashed #555', paddingTop: '0.5rem' }}>
                             <div className="maple-potential-header">
                                 <div className="maple-potential-tier-icon" style={{ background: '#60a5fa' }}>A</div>
                                 <span style={{ color: '#60a5fa' }}>Bonus Potential</span>
