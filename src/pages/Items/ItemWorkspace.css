@@ -504,8 +504,12 @@
 }
 
 .maple-stars-grid {
-    display: grid;
-    grid-template-columns: repeat(15, 1fr);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    max-width: 240px; /* Ajustado para que quepan 15 estrellas exactamente */
+    margin: 0 auto;
     gap: 0;
 }
 
@@ -516,10 +520,13 @@
     transition: transform 0.1s, color 0.1s;
     user-select: none;
     line-height: 1;
+    width: 13px; /* Ancho fijo para eliminar gaps */
+    display: flex;
+    justify-content: center;
 }
 
 .maple-star:nth-child(5n):not(:nth-child(15n)):not(:nth-child(30n)) {
-    margin-right: 8px;
+    margin-right: 12px; /* Espacio de agrupamiento claro */
 }
 
 .maple-star.active {
