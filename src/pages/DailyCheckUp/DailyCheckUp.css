@@ -923,10 +923,12 @@
 }
 
 .bossing-current-rp {
-    font-size: 0.7rem;
-    color: #94a3b8;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #c4b5fd;
     white-space: nowrap;
     margin-right: auto;
+    font-family: 'JetBrains Mono', monospace;
 }
 
 .bossing-done-badge {

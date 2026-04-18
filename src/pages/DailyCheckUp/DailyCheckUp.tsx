@@ -86,7 +86,6 @@ const DailyCheckUp: React.FC = () => {
 
     // Sale Modal Form
     const [salePrice, setSalePrice] = useState(0);
-    const [showRP, setShowRP] = useState(false);
     const [showItems, setShowItems] = useState(false);
     const [activeItemFilters, setActiveItemFilters] = useState<Set<string>>(new Set(['for_sale']));
 
@@ -677,49 +676,6 @@ const DailyCheckUp: React.FC = () => {
         await contentUnlocksService.toggleProgress(unlockId, accountId, completed);
     };
 
-    const handleRPBlur = async (accountId: string, newValue: number) => {
-        try {
-            await resourcesService.setAbsoluteBalance(accountId, 'reward_points', newValue);
-            setAccountBalances(prev => ({
-                ...prev,
-                [accountId]: { ...prev[accountId], reward_points: newValue }
-            }));
-        } catch (error) {
-            console.error('Error updating RP:', error);
-        }
-    };
-
-    const handleBuyPSOK = async (accountId: string) => {
-        const bal = accountBalances[accountId] || {};
-        const currentRP = bal.reward_points || 0;
-        const currentPSOK = bal.psok || 0;
-        
-        if (currentRP < 4000) return;
-
-        const confirmed = window.confirm(
-            `¿Comprar 1 PSOK por 4,000 RP?\n\nRP actual: ${currentRP.toLocaleString()}\nRP después: ${(currentRP - 4000).toLocaleString()}\nPSOKs actuales: ${currentPSOK}`
-        );
-        if (!confirmed) return;
-
-        // Optimistic update
-        setAccountBalances(prev => ({
-            ...prev,
-            [accountId]: { ...prev[accountId], reward_points: currentRP - 4000, psok: currentPSOK + 1 }
-        }));
-
-        try {
-            await resourcesService.addBatch(accountId, 'psok', 1, null);
-            await resourcesService.addBatch(accountId, 'reward_points', -4000, null);
-        } catch (error) {
-            console.error('Error buying PSOK:', error);
-            // Revert on error
-            setAccountBalances(prev => ({
-                ...prev,
-                [accountId]: { ...prev[accountId], reward_points: currentRP, psok: currentPSOK }
-            }));
-        }
-    };
-
     // ---- Bossing handlers ----
 
     // cycle: 0 (unselected) → 1 (cleared ✓) → 2 (failed ✗) → 0
@@ -838,13 +794,6 @@ const DailyCheckUp: React.FC = () => {
                 subtitle={`Daily Status - ${formattedDate}`}
                 actions={
                     <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-                        <Button
-                            variant={showRP ? "primary" : "secondary"}
-                            size="sm"
-                            onClick={() => setShowRP(!showRP)}
-                        >
-                            {showRP ? "Hide RP" : "Show RP"}
-                        </Button>
                         {!showItems ? (
                             <Button
                                 variant="secondary"
@@ -919,7 +868,6 @@ const DailyCheckUp: React.FC = () => {
                                         {GROUP_LABEL_DISPLAY[group.label] || group.label}
                                     </th>
                                 ))}
-                                {showRP && <th rowSpan={2} className="col-rp">RP / PSOK</th>}
                                 {showBossing && <th rowSpan={2} className="col-bossing">BOSSING</th>}
                                 {showItems && (
                                     <th rowSpan={2} colSpan={4} className="col-items">Items</th>
@@ -1030,28 +978,6 @@ const DailyCheckUp: React.FC = () => {
                                     })}
 
                                     {/* Reward Points / PSOK */}
-                                    {showRP && (
-                                        <td className="col-rp">
-                                            <Input
-                                                key={accountBalances[row.account.id]?.reward_points || 0}
-                                                type="number"
-                                                defaultValue={accountBalances[row.account.id]?.reward_points || 0}
-                                                onBlur={(e) => handleRPBlur(row.account.id, parseInt(e.target.value) || 0)}
-                                                className="rp-input-table"
-                                            />
-                                            <div className="psok-row">
-                                                <button
-                                                    className={`psok-btn ${(accountBalances[row.account.id]?.reward_points || 0) >= 4000 ? 'psok-btn--active' : 'psok-btn--disabled'}`}
-                                                    onClick={() => handleBuyPSOK(row.account.id)}
-                                                    disabled={(accountBalances[row.account.id]?.reward_points || 0) < 4000}
-                                                    title={(accountBalances[row.account.id]?.reward_points || 0) >= 4000 ? `Comprar PSOK por 4,000 RP` : `Necesitas ${(4000 - (accountBalances[row.account.id]?.reward_points || 0)).toLocaleString()} RP más`}
-                                                >
-                                                    PSOK
-                                                </button>
-                                                <span className={`psok-count ${(accountBalances[row.account.id]?.psok || 0) > 0 ? 'psok-count--positive' : 'psok-count--zero'}`}>{accountBalances[row.account.id]?.psok || 0}</span>
-                                            </div>
-                                        </td>
-                                    )}
 
                                     {/* Bossing — inline strip */}
                                     {showBossing && (() => {
