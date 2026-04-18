@@ -42,7 +42,6 @@ export const ItemCard: React.FC<ItemCardProps> = ({
     item,
     imageUrl,
     accountNumber,
-    accountTag,
     charName,
     itemsDB,
     filterStatus,
@@ -136,7 +135,6 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                 {accountNumber != null && (
                     <div className="item-card__account">
                         #{accountNumber}
-                        {accountTag ? ` · ${accountTag}` : ''}
                         {charName ? ` · ${charName}` : ''}
                     </div>
                 )}
@@ -165,8 +163,6 @@ export const ItemCard: React.FC<ItemCardProps> = ({
 
             {/* Actions */}
             <div className="item-card__actions" onClick={(e) => e.stopPropagation()}>
-                <button className="item-card__btn" onClick={onEdit}>Edit</button>
-
                 {item.status === 'for_sale' && isTradeable && (
                     <>
                         {onListAH && (
