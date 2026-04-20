@@ -472,7 +472,7 @@ export const Characters: React.FC = () => {
                     onClose={() => setSelectedChar(null)}
                     onCharacterUpdate={(col, value) => {
                         if (!selectedChar) return;
-                        const updated = { ...selectedChar, [col]: value };
+                        const updated = { ...selectedChar, [col]: value } as typeof selectedChar;
                         setSelectedChar(updated);
                         setCharacters(prev => prev.map(c => c.id === updated.id ? updated : c));
                     }}

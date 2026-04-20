@@ -12,7 +12,7 @@ interface Props {
     character: CharacterWithAccount | null;
     classes: ClassItem[];
     onClose: () => void;
-    onCharacterUpdate?: (col: string, value: number) => void;
+    onCharacterUpdate?: (col: string, value: number | boolean | string | null) => void;
 }
 
 export const CharacterDetailModal: React.FC<Props> = ({ character: characterProp, classes, onClose, onCharacterUpdate }) => {
@@ -41,7 +41,7 @@ export const CharacterDetailModal: React.FC<Props> = ({ character: characterProp
 
     const handleSymbolUpdate = (col: string, value: number | boolean | string | null) => {
         setLocalCharacter(prev => prev ? { ...prev, [col]: value } : prev);
-        if (typeof value === 'number') onCharacterUpdate?.(col, value);
+        onCharacterUpdate?.(col, value);
     };
 
     const isSixthJobUnlocked = progress.some(p => {
