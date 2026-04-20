@@ -78,8 +78,8 @@ export const ContentUnlocksPanel: React.FC<Props> = ({ unlocks, progress, loadin
                         const done = isDone(u.id);
                         return (
                             <div key={u.id} style={{
-                                background: done ? 'rgba(251, 191, 36, 0.05)' : 'rgba(255,255,255,0.02)',
-                                border: `1px solid ${done ? '#fbbf2444' : 'rgba(255,255,255,0.05)'}`,
+                                background: done ? 'rgba(74, 222, 128, 0.05)' : 'rgba(255,255,255,0.02)',
+                                border: `1px solid ${done ? '#4ade8044' : 'rgba(255,255,255,0.05)'}`,
                                 borderRadius: '8px',
                                 padding: '8px 12px',
                                 display: 'flex',
@@ -89,18 +89,18 @@ export const ContentUnlocksPanel: React.FC<Props> = ({ unlocks, progress, loadin
                             }}>
                                 <div style={{
                                     width: '8px', height: '8px', borderRadius: '50%',
-                                    background: done ? '#fbbf24' : '#334155',
-                                    boxShadow: done ? '0 0 8px #fbbf2455' : 'none'
+                                    background: done ? '#4ade80' : '#334155',
+                                    boxShadow: done ? '0 0 8px #4ade8055' : 'none'
                                 }} />
                                 <div style={{ flex: 1 }}>
                                     <div style={{ fontSize: '0.72rem', fontWeight: 600, color: done ? '#f1f5f9' : '#64748b' }}>
                                         {u.name.includes(' — ') ? u.name.split(' — ')[1] : u.name}
                                     </div>
-                                    <div style={{ fontSize: '0.6rem', color: done ? '#fbbf24aa' : '#475569' }}>
+                                    <div style={{ fontSize: '0.6rem', color: done ? '#4ade80aa' : '#475569' }}>
                                         {u.unlocks}
                                     </div>
                                 </div>
-                                {done && <span style={{ color: '#fbbf24', fontSize: '0.8rem' }}>✓</span>}
+                                {done && <span style={{ color: '#4ade80', fontSize: '0.8rem' }}>✓</span>}
                             </div>
                         );
                     })}

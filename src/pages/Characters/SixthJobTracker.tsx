@@ -96,7 +96,7 @@ export const SixthJobTracker: React.FC<Props> = ({ character, classItem, unlocke
                     {label}
                 </div>
                 {imgUrl ? (
-                    <img src={imgUrl} alt={skillName || label} title={skillName || label} style={{ width: '38px', height: '38px', objectFit: 'contain' }} />
+                    <img src={imgUrl} alt={skillName || label} title={skillName || label} style={{ width: '38px', height: '38px', objectFit: 'contain', filter: level === 0 ? 'grayscale(1) opacity(0.35)' : 'none', transition: 'filter 0.2s' }} />
                 ) : (
                     <div style={{ width: '38px', height: '38px', background: 'rgba(255,255,255,0.05)', borderRadius: '6px' }} />
                 )}
@@ -105,7 +105,8 @@ export const SixthJobTracker: React.FC<Props> = ({ character, classItem, unlocke
                         type="number"
                         min={0}
                         max={maxLevel}
-                        value={level}
+                        value={level === 0 ? '' : level}
+                        placeholder="–"
                         onChange={e => handleChange(col, maxLevel, e.target.value)}
                         style={{
                             width: '28px',

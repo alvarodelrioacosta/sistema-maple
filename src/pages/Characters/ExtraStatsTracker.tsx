@@ -110,7 +110,7 @@ export const ExtraStatsTracker: React.FC<Props> = ({
                                 min={1}
                                 max={60}
                                 value={character.legion_artifact_level ?? ''}
-                                placeholder="—"
+                                placeholder="–"
                                 onChange={e => handleLevelInput('legion_artifact_level', 60, e.target.value)}
                                 style={{
                                     width: '28px',
