@@ -11,26 +11,37 @@ interface Props {
     character: CharacterWithAccount | null;
     classes: ClassItem[];
     onClose: () => void;
+    onCharacterUpdate?: (col: string, value: number) => void;
 }
 
-export const CharacterDetailModal: React.FC<Props> = ({ character, classes, onClose }) => {
+export const CharacterDetailModal: React.FC<Props> = ({ character: characterProp, classes, onClose, onCharacterUpdate }) => {
+    const [localCharacter, setLocalCharacter] = React.useState(characterProp);
     const [unlocks, setUnlocks] = React.useState<ContentUnlock[]>([]);
     const [progress, setProgress] = React.useState<AccountUnlockProgress[]>([]);
     const [loading, setLoading] = React.useState(true);
 
+    React.useEffect(() => { setLocalCharacter(characterProp); }, [characterProp]);
+
     React.useEffect(() => {
-        if (!character) return;
+        if (!localCharacter) return;
         setLoading(true);
         Promise.all([
             contentUnlocksService.getAll(),
             contentUnlocksService.getAllProgress()
         ]).then(([u, p]) => {
             setUnlocks(u);
-            setProgress(p.filter(pr => pr.account_id === character.account_id));
+            setProgress(p.filter(pr => pr.account_id === localCharacter.account_id));
         }).finally(() => setLoading(false));
-    }, [character?.account_id]);
+    }, [localCharacter?.account_id]);
 
-    if (!character) return null;
+    if (!localCharacter) return null;
+
+    const character = localCharacter;
+
+    const handleSymbolUpdate = (col: string, value: number) => {
+        setLocalCharacter(prev => prev ? { ...prev, [col]: value } : prev);
+        onCharacterUpdate?.(col, value);
+    };
 
     const isSixthJobUnlocked = progress.some(p => {
         const unlock = unlocks.find(u => u.id === p.unlock_id);
@@ -94,7 +105,7 @@ export const CharacterDetailModal: React.FC<Props> = ({ character, classes, onCl
             </div>
 
             {/* Tracker sections */}
-            <SymbolTracker characterId={character.id} characterLevel={character.level} />
+            <SymbolTracker character={character} characterLevel={character.level} onUpdate={handleSymbolUpdate} />
             <SixthJobTracker 
                 characterId={character.id} 
                 characterClass={character.class} 

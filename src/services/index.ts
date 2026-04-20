@@ -19,8 +19,6 @@ export { tasksService } from './tasks';
 export { appSettingsService } from './appSettings';
 export { expTnlService } from './expTnl';
 export { nexonApi } from './nexonApi';
-export { symbolProgressService } from './symbolProgress';
-export type { SymbolProgress } from './symbolProgress';
 export { sixthJobSkillsService } from './sixthJobSkills';
 export type { SixthJobSkillProgress } from './sixthJobSkills';
 export { contentUnlocksService } from './contentUnlocks';

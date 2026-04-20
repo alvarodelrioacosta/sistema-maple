@@ -5,13 +5,12 @@
 import React, { useEffect, useState } from 'react';
 import { Header } from '../../components/Layout';
 import { Button, Table, Modal, Input, Select, Card } from '../../components/UI';
-import { charactersService, accountsService, classesService, symbolProgressService } from '../../services';
-import type { SymbolProgress } from '../../services';
+import { charactersService, accountsService, classesService } from '../../services';
 import type { CharacterWithAccount, CharacterInsert, Account, JobType, ClassItem } from '../../types';
 import type { Column } from '../../components/UI/Table';
 
 import { CharacterDetailModal } from './CharacterDetailModal';
-import { getAvailableMax } from '../../constants/symbols';
+import { SYMBOLS, getAvailableMax } from '../../constants/symbols';
 import '../Accounts/Accounts.css';
 import './Characters.css';
 
@@ -46,7 +45,6 @@ export const Characters: React.FC = () => {
     const [syncingAll, setSyncingAll] = useState(false);
     const [syncProgress, setSyncProgress] = useState<{ current: number; total: number } | null>(null);
     const [selectedChar, setSelectedChar] = useState<CharacterWithAccount | null>(null);
-    const [allSymbols, setAllSymbols] = useState<SymbolProgress[]>([]);
 
     useEffect(() => {
         loadData();
@@ -54,11 +52,10 @@ export const Characters: React.FC = () => {
 
     const loadData = async () => {
         try {
-            const [charsData, accountsData, classesData, symbolsData] = await Promise.all([
+            const [charsData, accountsData, classesData] = await Promise.all([
                 charactersService.getAll(),
                 accountsService.getAll(),
                 classesService.getAll(),
-                symbolProgressService.getAll()
             ]);
 
             // Sort characters by Account Number
@@ -70,7 +67,6 @@ export const Characters: React.FC = () => {
             setCharacters(charsWithAccount);
             setAccounts(accountsData);
             setClasses(classesData);
-            setAllSymbols(symbolsData);
         } catch (error) {
             console.error('Error loading data:', error);
         } finally {
@@ -284,9 +280,9 @@ export const Characters: React.FC = () => {
             render: (c) => {
                 const max = getAvailableMax('arcane', c.level);
                 if (max === 0) return <span style={{ color: '#334155', fontSize: '0.75rem' }}>–</span>;
-                const total = allSymbols
-                    .filter(s => s.character_id === c.id && s.symbol_type === 'arcane')
-                    .reduce((sum, s) => sum + s.symbol_level, 0);
+                const total = SYMBOLS
+                    .filter(s => s.type === 'arcane')
+                    .reduce((sum, s) => sum + ((c as unknown as Record<string, number | null>)[s.column] ?? 0), 0);
                 const pct = total / max;
                 return (
                     <div style={{ fontSize: '0.8rem' }}>
@@ -307,9 +303,9 @@ export const Characters: React.FC = () => {
             render: (c) => {
                 const max = getAvailableMax('sacred', c.level);
                 if (max === 0) return <span style={{ color: '#334155', fontSize: '0.75rem' }}>–</span>;
-                const total = allSymbols
-                    .filter(s => s.character_id === c.id && s.symbol_type === 'sacred')
-                    .reduce((sum, s) => sum + s.symbol_level, 0);
+                const total = SYMBOLS
+                    .filter(s => s.type === 'sacred')
+                    .reduce((sum, s) => sum + ((c as unknown as Record<string, number | null>)[s.column] ?? 0), 0);
                 const pct = total / max;
                 return (
                     <div style={{ fontSize: '0.8rem' }}>
@@ -474,6 +470,12 @@ export const Characters: React.FC = () => {
                     character={selectedChar}
                     classes={classes}
                     onClose={() => setSelectedChar(null)}
+                    onCharacterUpdate={(col, value) => {
+                        if (!selectedChar) return;
+                        const updated = { ...selectedChar, [col]: value };
+                        setSelectedChar(updated);
+                        setCharacters(prev => prev.map(c => c.id === updated.id ? updated : c));
+                    }}
                 />
             </div>
 

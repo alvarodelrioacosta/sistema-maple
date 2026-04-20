@@ -40,13 +40,67 @@ export interface Character {
     avatar_url: string | null;
     last_synced_at: string | null;
     exp_percent: number | null;
+    // Symbol levels
+    sym_vj: number | null;
+    sym_chuchu: number | null;
+    sym_lach: number | null;
+    sym_arc: number | null;
+    sym_mor: number | null;
+    sym_esf: number | null;
+    sym_cer: number | null;
+    sym_harc: number | null;
+    sym_odi: number | null;
+    sym_sha: number | null;
+    sym_art: number | null;
+    sym_car: number | null;
+    sym_tal: number | null;
+    sym_gea: number | null;
+    // 6th job skill levels (0-30)
+    origin: number | null;
+    ascent: number | null;
+    mastery1: number | null;
+    mastery2: number | null;
+    mastery3: number | null;
+    mastery4: number | null;
+    boost1: number | null;
+    boost2: number | null;
+    boost3: number | null;
+    boost4: number | null;
+    janus: number | null;
+    hecate: number | null;
 }
 
-export type CharacterInsert = Omit<Character, 'id' | 'created_at' | 'exp' | 'avatar_url' | 'last_synced_at' | 'exp_percent'> & {
+export type CharacterInsert = Omit<Character, 'id' | 'created_at' | 'exp' | 'avatar_url' | 'last_synced_at' | 'exp_percent' | 'sym_vj' | 'sym_chuchu' | 'sym_lach' | 'sym_arc' | 'sym_mor' | 'sym_esf' | 'sym_cer' | 'sym_harc' | 'sym_odi' | 'sym_sha' | 'sym_art' | 'sym_car' | 'sym_tal' | 'sym_gea' | 'origin' | 'ascent' | 'mastery1' | 'mastery2' | 'mastery3' | 'mastery4' | 'boost1' | 'boost2' | 'boost3' | 'boost4' | 'janus' | 'hecate'> & {
     exp?: number | null;
     avatar_url?: string | null;
     last_synced_at?: string | null;
     exp_percent?: number | null;
+    sym_vj?: number | null;
+    sym_chuchu?: number | null;
+    sym_lach?: number | null;
+    sym_arc?: number | null;
+    sym_mor?: number | null;
+    sym_esf?: number | null;
+    sym_cer?: number | null;
+    sym_harc?: number | null;
+    sym_odi?: number | null;
+    sym_sha?: number | null;
+    sym_art?: number | null;
+    sym_car?: number | null;
+    sym_tal?: number | null;
+    sym_gea?: number | null;
+    origin?: number | null;
+    ascent?: number | null;
+    mastery1?: number | null;
+    mastery2?: number | null;
+    mastery3?: number | null;
+    mastery4?: number | null;
+    boost1?: number | null;
+    boost2?: number | null;
+    boost3?: number | null;
+    boost4?: number | null;
+    janus?: number | null;
+    hecate?: number | null;
 };
 export type CharacterUpdate = Partial<CharacterInsert>;
 
@@ -280,6 +334,32 @@ export interface ClassItem {
     job_2: JobType | null;
     image_1: string;
     image_2: string | null;
+    // 6th job skill image URLs
+    origin: string | null;
+    ascent: string | null;
+    mastery1: string | null;
+    mastery2: string | null;
+    mastery3: string | null;
+    mastery4: string | null;
+    boost1: string | null;
+    boost2: string | null;
+    boost3: string | null;
+    boost4: string | null;
+    janus: string | null;
+    hecate: string | null;
+    // 6th job skill names
+    origin_name: string | null;
+    ascent_name: string | null;
+    mastery1_name: string | null;
+    mastery2_name: string | null;
+    mastery3_name: string | null;
+    mastery4_name: string | null;
+    boost1_name: string | null;
+    boost2_name: string | null;
+    boost3_name: string | null;
+    boost4_name: string | null;
+    janus_name: string | null;
+    hecate_name: string | null;
 }
 
 // ===== ACCOUNTS RECEIVABLE =====
