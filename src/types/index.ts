@@ -62,6 +62,7 @@ export interface Character {
     mastery2: number | null;
     mastery3: number | null;
     mastery4: number | null;
+    mastery5: number | null;
     boost1: number | null;
     boost2: number | null;
     boost3: number | null;
@@ -70,7 +71,7 @@ export interface Character {
     hecate: number | null;
 }
 
-export type CharacterInsert = Omit<Character, 'id' | 'created_at' | 'exp' | 'avatar_url' | 'last_synced_at' | 'exp_percent' | 'sym_vj' | 'sym_chuchu' | 'sym_lach' | 'sym_arc' | 'sym_mor' | 'sym_esf' | 'sym_cer' | 'sym_harc' | 'sym_odi' | 'sym_sha' | 'sym_art' | 'sym_car' | 'sym_tal' | 'sym_gea' | 'origin' | 'ascent' | 'mastery1' | 'mastery2' | 'mastery3' | 'mastery4' | 'boost1' | 'boost2' | 'boost3' | 'boost4' | 'janus' | 'hecate'> & {
+export type CharacterInsert = Omit<Character, 'id' | 'created_at' | 'exp' | 'avatar_url' | 'last_synced_at' | 'exp_percent' | 'sym_vj' | 'sym_chuchu' | 'sym_lach' | 'sym_arc' | 'sym_mor' | 'sym_esf' | 'sym_cer' | 'sym_harc' | 'sym_odi' | 'sym_sha' | 'sym_art' | 'sym_car' | 'sym_tal' | 'sym_gea' | 'origin' | 'ascent' | 'mastery1' | 'mastery2' | 'mastery3' | 'mastery4' | 'mastery5' | 'boost1' | 'boost2' | 'boost3' | 'boost4' | 'janus' | 'hecate'> & {
     exp?: number | null;
     avatar_url?: string | null;
     last_synced_at?: string | null;
@@ -95,6 +96,7 @@ export type CharacterInsert = Omit<Character, 'id' | 'created_at' | 'exp' | 'ava
     mastery2?: number | null;
     mastery3?: number | null;
     mastery4?: number | null;
+    mastery5?: number | null;
     boost1?: number | null;
     boost2?: number | null;
     boost3?: number | null;
@@ -341,6 +343,7 @@ export interface ClassItem {
     mastery2: string | null;
     mastery3: string | null;
     mastery4: string | null;
+    mastery5: string | null;
     boost1: string | null;
     boost2: string | null;
     boost3: string | null;
@@ -354,6 +357,7 @@ export interface ClassItem {
     mastery2_name: string | null;
     mastery3_name: string | null;
     mastery4_name: string | null;
+    mastery5_name: string | null;
     boost1_name: string | null;
     boost2_name: string | null;
     boost3_name: string | null;
