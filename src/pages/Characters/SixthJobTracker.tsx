@@ -5,27 +5,27 @@ import type { Character, ClassItem } from '../../types';
 type SkillCol = 'origin' | 'ascent' | 'mastery1' | 'mastery2' | 'mastery3' | 'mastery4' | 'mastery5' | 'boost1' | 'boost2' | 'boost3' | 'boost4' | 'janus' | 'hecate';
 
 const ROW1: SkillCol[] = ['origin', 'ascent', 'mastery1', 'mastery2', 'mastery3', 'mastery4', 'mastery5'];
-const ROW2: SkillCol[] = ['boost1', 'boost2', 'boost3', 'boost4', 'janus', 'hecate'];
+const ROW2: SkillCol[] = ['janus', 'hecate', 'boost1', 'boost2', 'boost3', 'boost4'];
 
 const MAX_LEVEL: Record<SkillCol, number> = {
-    origin: 30, ascent: 20,
-    mastery1: 10, mastery2: 10, mastery3: 10, mastery4: 10, mastery5: 10,
-    boost1: 20, boost2: 20, boost3: 20, boost4: 20,
-    janus: 20, hecate: 20,
+    origin: 30, ascent: 30,
+    mastery1: 30, mastery2: 30, mastery3: 30, mastery4: 30, mastery5: 30,
+    boost1: 30, boost2: 30, boost3: 30, boost4: 30,
+    janus: 30, hecate: 30,
 };
 
 const LABEL: Record<SkillCol, string> = {
     origin: 'Origin', ascent: 'Ascent',
-    mastery1: 'Mastery', mastery2: 'Mastery', mastery3: 'Mastery', mastery4: 'Mastery', mastery5: 'Mastery',
-    boost1: 'Boost', boost2: 'Boost', boost3: 'Boost', boost4: 'Boost',
+    mastery1: 'M1', mastery2: 'M2', mastery3: 'M3', mastery4: 'M4', mastery5: 'M5',
+    boost1: 'B1', boost2: 'B2', boost3: 'B3', boost4: 'B4',
     janus: 'Janus', hecate: 'Hecate',
 };
 
 const COLOR: Record<string, string> = {
     Origin: '#fbbf24',
     Ascent: '#34d399',
-    Mastery: '#818cf8',
-    Boost: '#f472b6',
+    M1: '#818cf8', M2: '#818cf8', M3: '#818cf8', M4: '#818cf8', M5: '#818cf8',
+    B1: '#f472b6', B2: '#f472b6', B3: '#f472b6', B4: '#f472b6',
     Janus: '#60a5fa',
     Hecate: '#a78bfa',
 };
