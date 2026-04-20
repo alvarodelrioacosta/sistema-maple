@@ -39,7 +39,7 @@ export const CharacterDetailModal: React.FC<Props> = ({ character: characterProp
 
     const character = localCharacter;
 
-    const handleSymbolUpdate = (col: string, value: number | boolean) => {
+    const handleSymbolUpdate = (col: string, value: number | boolean | string | null) => {
         setLocalCharacter(prev => prev ? { ...prev, [col]: value } : prev);
         if (typeof value === 'number') onCharacterUpdate?.(col, value);
     };

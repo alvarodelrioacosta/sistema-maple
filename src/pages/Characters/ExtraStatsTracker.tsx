@@ -2,9 +2,15 @@ import React, { useState, useCallback } from 'react';
 import supabase from '../../lib/supabase';
 import type { Character } from '../../types';
 
+const PET_IMG = 'https://static.wikia.nocookie.net/maplestory/images/9/99/Pet_Kino.png/revision/latest?cb=20121026032552';
 const BOSS_POT_IMG = 'https://maplescouter.com/doping_v2/sayram.png';
 const LEGION_ARTIFACT_IMG = 'https://maplescouter.com/doping_exp/artifact.png';
 const HEXA_STAT_IMG = 'https://open.api.nexon.com/static/maplestory/skill/icon/KAPCLAPBMA';
+
+const formatDate = (iso: string) => {
+    const d = new Date(iso + 'T12:00:00');
+    return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+};
 
 const HEXA_LEVEL_REQS = [260, 265, 270] as const;
 
@@ -14,7 +20,7 @@ interface Props {
     isLegionArtifactUnlocked: boolean;
     isSixthJobDone: boolean;
     loadingUnlocks: boolean;
-    onUpdate: (col: string, value: number | boolean) => void;
+    onUpdate: (col: string, value: number | boolean | string | null) => void;
 }
 
 export const ExtraStatsTracker: React.FC<Props> = ({
@@ -26,8 +32,10 @@ export const ExtraStatsTracker: React.FC<Props> = ({
     onUpdate,
 }) => {
     const [saving, setSaving] = useState<string | null>(null);
+    const [editingPet, setEditingPet] = useState(false);
+    const [petDateInput, setPetDateInput] = useState('');
 
-    const save = useCallback(async (col: string, value: number | boolean) => {
+    const save = useCallback(async (col: string, value: number | boolean | string | null) => {
         onUpdate(col, value);
         setSaving(col);
         try {
@@ -36,6 +44,12 @@ export const ExtraStatsTracker: React.FC<Props> = ({
             setSaving(null);
         }
     }, [character.id, onUpdate]);
+
+    const savePetDate = useCallback((dateStr: string) => {
+        if (!dateStr) return;
+        save('pet_expiry_date', dateStr);
+        setEditingPet(false);
+    }, [save]);
 
     const handleLevelInput = useCallback((col: string, max: number, raw: string) => {
         const val = Math.min(max, Math.max(1, parseInt(raw) || 1));
@@ -89,6 +103,49 @@ export const ExtraStatsTracker: React.FC<Props> = ({
                 Extra Stats
             </div>
             <div style={{ display: 'flex', gap: '5px' }}>
+
+                {/* Pet */}
+                {(() => {
+                    const expiry = character.pet_expiry_date;
+                    const today = new Date().toISOString().slice(0, 10);
+                    const isExpired = !!expiry && expiry < today;
+                    const isActive = !!expiry && !isExpired;
+                    const petColor = '#ec4899';
+
+                    return (
+                        <div style={cardStyle(isActive, petColor)}>
+                            <div style={{ fontSize: '0.58rem', color: petColor, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Pet</div>
+                            <img
+                                src={PET_IMG}
+                                alt="Pet"
+                                title={expiry ? (isExpired ? `Expired ${formatDate(expiry)}` : `Expires ${formatDate(expiry)} — click to change`) : 'Click to set pet expiry'}
+                                style={{ ...imgStyle(isActive), cursor: 'pointer' }}
+                                onClick={() => { setPetDateInput(expiry ?? ''); setEditingPet(true); }}
+                            />
+                            {editingPet ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px' }}>
+                                    <input
+                                        type="date"
+                                        value={petDateInput}
+                                        autoFocus
+                                        onChange={e => setPetDateInput(e.target.value)}
+                                        onBlur={() => { if (petDateInput) savePetDate(petDateInput); else setEditingPet(false); }}
+                                        onKeyDown={e => { if (e.key === 'Enter' && petDateInput) savePetDate(petDateInput); if (e.key === 'Escape') setEditingPet(false); }}
+                                        style={{
+                                            width: '90px', fontSize: '0.55rem', background: 'rgba(0,0,0,0.4)',
+                                            border: `1px solid ${petColor}55`, borderRadius: '4px',
+                                            color: '#f1f5f9', padding: '2px 3px', outline: 'none',
+                                        }}
+                                    />
+                                </div>
+                            ) : (
+                                <div style={{ fontSize: '0.58rem', fontWeight: 600, color: isExpired ? '#ef4444' : isActive ? '#4ade80' : '#475569' }}>
+                                    {isExpired ? `Exp. ${formatDate(expiry!)}` : isActive ? formatDate(expiry!) : 'Click'}
+                                </div>
+                            )}
+                        </div>
+                    );
+                })()}
 
                 {/* Boss Pot */}
                 <div style={cardStyle(isBossPotUnlocked, '#f97316')}>
