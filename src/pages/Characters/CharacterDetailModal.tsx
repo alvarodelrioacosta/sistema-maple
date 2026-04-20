@@ -48,6 +48,7 @@ export const CharacterDetailModal: React.FC<Props> = ({ character: characterProp
         return unlock?.name === '6th Job' && p.completed;
     });
 
+    const classItem = classes.find(cls => cls.class_name === character.class) ?? null;
     const jobClass = classes.find(cls => cls.job_1 === character.job || cls.job_2 === character.job);
     const jobIcon = character.class === 'Xenon'
         ? '/xenon.png'
@@ -106,11 +107,12 @@ export const CharacterDetailModal: React.FC<Props> = ({ character: characterProp
 
             {/* Tracker sections */}
             <SymbolTracker character={character} characterLevel={character.level} onUpdate={handleSymbolUpdate} />
-            <SixthJobTracker 
-                characterId={character.id} 
-                characterClass={character.class} 
+            <SixthJobTracker
+                character={character}
+                classItem={classItem}
                 unlocked={isSixthJobUnlocked}
                 loadingUnlocks={loading}
+                onUpdate={handleSymbolUpdate}
             />
             <ContentUnlocksPanel 
                 accountId={character.account_id} 

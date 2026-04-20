@@ -15,12 +15,10 @@ export { cubeSessionsService } from './cubeSessions';
 export { sharedInventoryService } from './sharedInventory';
 export { resourceHistoryService } from './resourceHistory';
 export { eventsService } from './events';
-export { tasksService } from './tasks';
 export { appSettingsService } from './appSettings';
 export { expTnlService } from './expTnl';
 export { nexonApi } from './nexonApi';
-export { sixthJobSkillsService } from './sixthJobSkills';
-export type { SixthJobSkillProgress } from './sixthJobSkills';
+
 export { contentUnlocksService } from './contentUnlocks';
 export type { ContentUnlock, AccountUnlockProgress, UnlockCategory } from './contentUnlocks';
 export { bossesService } from './bosses';

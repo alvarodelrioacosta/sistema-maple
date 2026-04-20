@@ -525,27 +525,4 @@ export interface EventShopPurchase {
 
 export type EventShopPurchaseInsert = Omit<EventShopPurchase, 'id' | 'purchased_at'>;
 
-// =============================================
-// TASKS MODULE
-// =============================================
-
-export interface Task {
-    id: string;
-    name: string;
-    is_core: boolean;
-    is_completed: boolean;
-    show_in_daily?: boolean; // New field for Daily Check Up module
-    order_index?: number | null;
-    created_at: string;
-}
-
-export interface TaskProgress {
-    id: string;
-    task_id: string;
-    account_id: string;
-    completed: boolean;
-    updated_at: string;
-}
-
-export type TaskInsert = Omit<Task, 'id' | 'created_at' | 'is_completed'>;
 
