@@ -69,9 +69,17 @@ export interface Character {
     boost4: number | null;
     janus: number | null;
     hecate: number | null;
+    // Extra Stats
+    legion_artifact_level: number | null;
+    hexa_stat_1_level: number | null;
+    hexa_stat_1_enabled: boolean;
+    hexa_stat_2_level: number | null;
+    hexa_stat_2_enabled: boolean;
+    hexa_stat_3_level: number | null;
+    hexa_stat_3_enabled: boolean;
 }
 
-export type CharacterInsert = Omit<Character, 'id' | 'created_at' | 'exp' | 'avatar_url' | 'last_synced_at' | 'exp_percent' | 'sym_vj' | 'sym_chuchu' | 'sym_lach' | 'sym_arc' | 'sym_mor' | 'sym_esf' | 'sym_cer' | 'sym_harc' | 'sym_odi' | 'sym_sha' | 'sym_art' | 'sym_car' | 'sym_tal' | 'sym_gea' | 'origin' | 'ascent' | 'mastery1' | 'mastery2' | 'mastery3' | 'mastery4' | 'mastery5' | 'boost1' | 'boost2' | 'boost3' | 'boost4' | 'janus' | 'hecate'> & {
+export type CharacterInsert = Omit<Character, 'id' | 'created_at' | 'exp' | 'avatar_url' | 'last_synced_at' | 'exp_percent' | 'sym_vj' | 'sym_chuchu' | 'sym_lach' | 'sym_arc' | 'sym_mor' | 'sym_esf' | 'sym_cer' | 'sym_harc' | 'sym_odi' | 'sym_sha' | 'sym_art' | 'sym_car' | 'sym_tal' | 'sym_gea' | 'origin' | 'ascent' | 'mastery1' | 'mastery2' | 'mastery3' | 'mastery4' | 'mastery5' | 'boost1' | 'boost2' | 'boost3' | 'boost4' | 'janus' | 'hecate' | 'legion_artifact_level' | 'hexa_stat_1_level' | 'hexa_stat_1_enabled' | 'hexa_stat_2_level' | 'hexa_stat_2_enabled' | 'hexa_stat_3_level' | 'hexa_stat_3_enabled'> & {
     exp?: number | null;
     avatar_url?: string | null;
     last_synced_at?: string | null;
@@ -103,6 +111,13 @@ export type CharacterInsert = Omit<Character, 'id' | 'created_at' | 'exp' | 'ava
     boost4?: number | null;
     janus?: number | null;
     hecate?: number | null;
+    legion_artifact_level?: number | null;
+    hexa_stat_1_level?: number | null;
+    hexa_stat_1_enabled?: boolean;
+    hexa_stat_2_level?: number | null;
+    hexa_stat_2_enabled?: boolean;
+    hexa_stat_3_level?: number | null;
+    hexa_stat_3_enabled?: boolean;
 };
 export type CharacterUpdate = Partial<CharacterInsert>;
 

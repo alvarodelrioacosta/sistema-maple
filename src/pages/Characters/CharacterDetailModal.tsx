@@ -2,6 +2,7 @@ import React from 'react';
 import { Modal } from '../../components/UI';
 import { SymbolTracker } from './SymbolTracker';
 import { SixthJobTracker } from './SixthJobTracker';
+import { ExtraStatsTracker } from './ExtraStatsTracker';
 import { ContentUnlocksPanel } from './ContentUnlocksPanel';
 import { contentUnlocksService } from '../../services';
 import type { CharacterWithAccount, ClassItem } from '../../types';
@@ -38,14 +39,24 @@ export const CharacterDetailModal: React.FC<Props> = ({ character: characterProp
 
     const character = localCharacter;
 
-    const handleSymbolUpdate = (col: string, value: number) => {
+    const handleSymbolUpdate = (col: string, value: number | boolean) => {
         setLocalCharacter(prev => prev ? { ...prev, [col]: value } : prev);
-        onCharacterUpdate?.(col, value);
+        if (typeof value === 'number') onCharacterUpdate?.(col, value);
     };
 
     const isSixthJobUnlocked = progress.some(p => {
         const unlock = unlocks.find(u => u.id === p.unlock_id);
         return unlock?.name === '6th Job' && p.completed;
+    });
+
+    const isBossPotUnlocked = progress.some(p => {
+        const unlock = unlocks.find(u => u.id === p.unlock_id);
+        return unlock?.name === 'Extra Stats pt.2 — Boss Pots' && p.completed;
+    });
+
+    const isLegionArtifactUnlocked = progress.some(p => {
+        const unlock = unlocks.find(u => u.id === p.unlock_id);
+        return unlock?.name === 'Extra Stats pt.1 — Legion Artifact' && p.completed;
     });
 
     const classItem = classes.find(cls => cls.class_name === character.class) ?? null;
@@ -111,6 +122,14 @@ export const CharacterDetailModal: React.FC<Props> = ({ character: characterProp
                 character={character}
                 classItem={classItem}
                 unlocked={isSixthJobUnlocked}
+                loadingUnlocks={loading}
+                onUpdate={handleSymbolUpdate}
+            />
+            <ExtraStatsTracker
+                character={character}
+                isBossPotUnlocked={isBossPotUnlocked}
+                isLegionArtifactUnlocked={isLegionArtifactUnlocked}
+                isSixthJobDone={isSixthJobUnlocked}
                 loadingUnlocks={loading}
                 onUpdate={handleSymbolUpdate}
             />
