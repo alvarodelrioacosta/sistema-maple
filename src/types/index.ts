@@ -585,6 +585,11 @@ export interface CubeSessionMetadata {
     psok_price: number;
     p_innoc_price: number;
     g_scroll_price: number;
+    item_cost_enabled?: boolean;
+    item_cost?: number;
+    adjustment_enabled?: boolean;
+    adjustment?: number;
+    adjustment_label?: string;
 }
 
 export interface ClientLedgerEntry {

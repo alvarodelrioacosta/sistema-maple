@@ -81,6 +81,26 @@ export const CubeSessionDetailModal: React.FC<CubeSessionDetailModalProps> = ({ 
                                     </tr>
                                 );
                             })}
+                            {meta.item_cost_enabled && (meta.item_cost ?? 0) > 0 && (
+                                <tr>
+                                    <td style={{ color: '#a78bfa', fontWeight: 600 }}>Item Cost</td>
+                                    <td style={{ textAlign: 'center', color: '#6b7280' }}>—</td>
+                                    <td style={{ textAlign: 'right' }}>—</td>
+                                    <td style={{ textAlign: 'right' }} className="arv2-amount--charge">
+                                        {formatAmount(meta.item_cost ?? 0, entry.currency)}
+                                    </td>
+                                </tr>
+                            )}
+                            {meta.adjustment_enabled && (meta.adjustment ?? 0) !== 0 && (
+                                <tr>
+                                    <td style={{ color: '#fbbf24', fontWeight: 600 }}>{meta.adjustment_label || 'Adjustment'}</td>
+                                    <td style={{ textAlign: 'center', color: '#6b7280' }}>—</td>
+                                    <td style={{ textAlign: 'right' }}>—</td>
+                                    <td style={{ textAlign: 'right', color: (meta.adjustment ?? 0) < 0 ? '#f87171' : '#4ade80', fontWeight: 600 }}>
+                                        {formatAmount(meta.adjustment ?? 0, entry.currency)}
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                         <tfoot>
                             <tr className="arv2-detail-total-row">

@@ -35,11 +35,16 @@ interface ARPricing {
     pInnocPrice: number;
     gScrollPrice: number;
     description: string;
+    itemCostEnabled: boolean;
+    itemCost: number;
+    adjustmentEnabled: boolean;
+    adjustment: number;
+    adjustmentLabel: string;
 }
 
 const DEFAULT_AR_PRICING: ARPricing = {
     clientId: '',
-    currency: 'USD',
+    currency: 'Mesos (b)',
     brightPrice: 0,
     bonusPrice: 0,
     solidPrice: 0,
@@ -47,6 +52,11 @@ const DEFAULT_AR_PRICING: ARPricing = {
     pInnocPrice: 0,
     gScrollPrice: 0,
     description: '',
+    itemCostEnabled: false,
+    itemCost: 0,
+    adjustmentEnabled: false,
+    adjustment: 0,
+    adjustmentLabel: 'Adjustment',
 };
 
 export const CubingHistory: React.FC = () => {
@@ -234,11 +244,8 @@ export const CubingHistory: React.FC = () => {
 
         setArSession(session);
         setArFormData({
+            ...DEFAULT_AR_PRICING,
             clientId: session.clientId,
-            currency: 'USD',
-            brightPrice: 0,
-            bonusPrice: 0,
-            solidPrice: 0,
             psokPrice: resourceMeta['psok']?.mesoCost || 0,
             pInnocPrice: resourceMeta['perfect_innoc']?.mesoCost || 0,
             gScrollPrice: resourceMeta['guardian_scroll']?.mesoCost || 0,
@@ -249,7 +256,7 @@ export const CubingHistory: React.FC = () => {
 
     const calcARTotal = () => {
         if (!arSession) return 0;
-        return (
+        let total = (
             arSession.brightCubesUsed * arFormData.brightPrice +
             arSession.bonusCubesUsed * arFormData.bonusPrice +
             arSession.solidCubesUsed * arFormData.solidPrice +
@@ -257,6 +264,9 @@ export const CubingHistory: React.FC = () => {
             arSession.perfectInnocUsed * arFormData.pInnocPrice +
             arSession.gScrollUsed * arFormData.gScrollPrice
         );
+        if (arFormData.itemCostEnabled) total += arFormData.itemCost;
+        if (arFormData.adjustmentEnabled) total += arFormData.adjustment;
+        return total;
     };
 
     const handleClientChange = (clientId: string) => {
@@ -306,6 +316,11 @@ export const CubingHistory: React.FC = () => {
                     psok_price: arFormData.psokPrice,
                     p_innoc_price: arFormData.pInnocPrice,
                     g_scroll_price: arFormData.gScrollPrice,
+                    item_cost_enabled: arFormData.itemCostEnabled,
+                    item_cost: arFormData.itemCost,
+                    adjustment_enabled: arFormData.adjustmentEnabled,
+                    adjustment: arFormData.adjustment,
+                    adjustment_label: arFormData.adjustmentLabel,
                 },
             });
 
@@ -439,6 +454,73 @@ export const CubingHistory: React.FC = () => {
                                     </div>
                                 );
                             })}
+                            {/* Optional: Item Cost row */}
+                            {arFormData.itemCostEnabled && (
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 60px 120px 100px', gap: '0.5rem', padding: '0.4rem 0.75rem', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <span style={{ fontSize: '0.9rem', color: '#a78bfa', fontWeight: 600 }}>Item Cost</span>
+                                    <span style={{ textAlign: 'center', color: 'var(--color-text-tertiary)', fontSize: '0.85rem' }}>—</span>
+                                    <input
+                                        type="number"
+                                        min={0}
+                                        step="any"
+                                        value={arFormData.itemCost}
+                                        onChange={e => setArFormData(prev => ({ ...prev, itemCost: parseFloat(e.target.value) || 0 }))}
+                                        style={{ width: '100%', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(167,139,250,0.4)', borderRadius: '6px', padding: '0.25rem 0.4rem', color: 'inherit', fontSize: '0.9rem', textAlign: 'center' }}
+                                    />
+                                    <span style={{ textAlign: 'right', color: arFormData.itemCost > 0 ? '#4ade80' : 'var(--color-text-tertiary)', fontWeight: 600, fontSize: '0.9rem' }}>
+                                        {arFormData.itemCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                    </span>
+                                </div>
+                            )}
+
+                            {/* Optional: Adjustment row */}
+                            {arFormData.adjustmentEnabled && (
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 60px 120px 100px', gap: '0.5rem', padding: '0.4rem 0.75rem', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <input
+                                        type="text"
+                                        value={arFormData.adjustmentLabel}
+                                        onChange={e => setArFormData(prev => ({ ...prev, adjustmentLabel: e.target.value }))}
+                                        placeholder="Discount / Error / etc."
+                                        style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(251,191,36,0.35)', borderRadius: '6px', padding: '0.2rem 0.4rem', color: '#fbbf24', fontSize: '0.88rem', outline: 'none', width: '100%' }}
+                                    />
+                                    <span style={{ textAlign: 'center', color: 'var(--color-text-tertiary)', fontSize: '0.85rem' }}>—</span>
+                                    <input
+                                        type="number"
+                                        step="any"
+                                        value={arFormData.adjustment}
+                                        onChange={e => setArFormData(prev => ({ ...prev, adjustment: parseFloat(e.target.value) || 0 }))}
+                                        style={{ width: '100%', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(251,191,36,0.35)', borderRadius: '6px', padding: '0.25rem 0.4rem', color: 'inherit', fontSize: '0.9rem', textAlign: 'center' }}
+                                    />
+                                    <span style={{ textAlign: 'right', color: arFormData.adjustment < 0 ? '#f87171' : arFormData.adjustment > 0 ? '#4ade80' : 'var(--color-text-tertiary)', fontWeight: 600, fontSize: '0.9rem' }}>
+                                        {arFormData.adjustment.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                    </span>
+                                </div>
+                            )}
+
+                            {/* Toggle buttons for optional rows */}
+                            {(!arFormData.itemCostEnabled || !arFormData.adjustmentEnabled) && (
+                                <div style={{ display: 'flex', gap: '0.5rem', padding: '0.45rem 0.75rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                                    {!arFormData.itemCostEnabled && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setArFormData(prev => ({ ...prev, itemCostEnabled: true }))}
+                                            style={{ background: 'rgba(167,139,250,0.08)', border: '1px solid rgba(167,139,250,0.3)', borderRadius: '6px', color: '#a78bfa', padding: '0.18rem 0.6rem', fontSize: '0.72rem', cursor: 'pointer', fontWeight: 700 }}
+                                        >
+                                            + Item Cost
+                                        </button>
+                                    )}
+                                    {!arFormData.adjustmentEnabled && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setArFormData(prev => ({ ...prev, adjustmentEnabled: true }))}
+                                            style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.3)', borderRadius: '6px', color: '#fbbf24', padding: '0.18rem 0.6rem', fontSize: '0.72rem', cursor: 'pointer', fontWeight: 700 }}
+                                        >
+                                            + Adjustment
+                                        </button>
+                                    )}
+                                </div>
+                            )}
+
                             {/* Total row */}
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 60px 120px 100px', gap: '0.5rem', padding: '0.5rem 0.75rem', borderTop: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.03)' }}>
                                 <span style={{ fontWeight: 700, gridColumn: '1 / 4' }}>Total</span>
