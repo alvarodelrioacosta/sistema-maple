@@ -31,17 +31,16 @@ export const CharDetailsPanel: React.FC<Props> = ({ character: characterProp, cl
             <div className="char-panel-compact">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '6px 10px 10px', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'rgba(0,0,0,0.15)' }}>
                     <SymbolTracker character={character} characterLevel={character.level} onUpdate={handleUpdate} noWrapper />
-                    <div style={{ marginLeft: 'auto', display: 'flex', gap: '6px', flexShrink: 0 }}>
-                        <SixthJobTracker
-                            character={character}
-                            classItem={classItem}
-                            unlocked={isSixthJobUnlocked}
-                            loadingUnlocks={false}
-                            onUpdate={handleUpdate}
-                            noWrapper
-                            originAndAscentOnly
-                        />
-                    </div>
+                    <div style={{ width: 40, flexShrink: 0 }} />
+                    <SixthJobTracker
+                        character={character}
+                        classItem={classItem}
+                        unlocked={isSixthJobUnlocked}
+                        loadingUnlocks={false}
+                        onUpdate={handleUpdate}
+                        noWrapper
+                        originAndAscentOnly
+                    />
                 </div>
             </div>
         );
