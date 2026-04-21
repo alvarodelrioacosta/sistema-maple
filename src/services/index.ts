@@ -22,3 +22,4 @@ export { nexonApi } from './nexonApi';
 export { bossesService } from './bosses';
 export type { Boss } from './bosses';
 export { bossingService } from './bossingService';
+export { clientLedgerService } from './clientLedger';

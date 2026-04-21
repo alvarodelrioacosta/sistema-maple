@@ -15,3 +15,4 @@ export { default as Login } from './Login/Login';
 export { Bosses } from './Bosses';
 export { MysticFrontierPage } from './MysticFrontier';
 export { ExpeditionHistory } from './ExpeditionHistory';
+export { AccountsReceivableV2 } from './AccountsReceivableV2';

@@ -567,3 +567,34 @@ export interface MysticFrontierRewardEntry {
   collected_at: string;
 }
 
+// ===== CLIENT LEDGER (AR v2) =====
+export type LedgerEntryType = 'charge' | 'payment';
+
+export interface ClientLedgerEntry {
+    id: string;
+    client_id: string;
+    entry_type: LedgerEntryType;
+    description: string;
+    amount: number;
+    currency: string;
+    entry_date: string;  // 'YYYY-MM-DD'
+    notes: string | null;
+    created_at: string;
+    updated_at: string;
+    client?: { id: string; name: string };
+}
+
+export type ClientLedgerEntryInsert = Omit<
+    ClientLedgerEntry,
+    'id' | 'created_at' | 'updated_at' | 'client'
+> & { notes?: string | null };
+
+export type ClientLedgerEntryUpdate = Partial<ClientLedgerEntryInsert>;
+
+export interface CurrencyBalance {
+    currency: string;
+    totalCharges: number;
+    totalPayments: number;
+    balance: number;
+}
+
