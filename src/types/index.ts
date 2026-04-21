@@ -78,6 +78,7 @@ export interface Character {
     hexa_stat_2_enabled: boolean;
     hexa_stat_3_level: number | null;
     hexa_stat_3_enabled: boolean;
+    is_mystic_frontier_unlocked?: boolean;
 }
 
 export type CharacterInsert = Omit<Character, 'id' | 'created_at' | 'exp' | 'avatar_url' | 'last_synced_at' | 'exp_percent' | 'sym_vj' | 'sym_chuchu' | 'sym_lach' | 'sym_arc' | 'sym_mor' | 'sym_esf' | 'sym_cer' | 'sym_harc' | 'sym_odi' | 'sym_sha' | 'sym_art' | 'sym_car' | 'sym_tal' | 'sym_gea' | 'origin' | 'ascent' | 'mastery1' | 'mastery2' | 'mastery3' | 'mastery4' | 'mastery5' | 'boost1' | 'boost2' | 'boost3' | 'boost4' | 'janus' | 'hecate' | 'pet_expiry_date' | 'legion_artifact_level' | 'hexa_stat_1_level' | 'hexa_stat_1_enabled' | 'hexa_stat_2_level' | 'hexa_stat_2_enabled' | 'hexa_stat_3_level' | 'hexa_stat_3_enabled'> & {
@@ -542,4 +543,42 @@ export interface EventShopPurchase {
 
 export type EventShopPurchaseInsert = Omit<EventShopPurchase, 'id' | 'purchased_at'>;
 
+// ─── Mystic Frontier ─────────────────────────────────────────────────────────
+
+export type MysticFrontierSiteRank = 'Common' | 'Rare' | 'Epic' | 'Unique' | 'Legendary';
+export type MysticFrontierStatus = 'available' | 'exploring' | 'resting';
+export type MysticFrontierRewardType =
+  | 'familiar_ring_box'
+  | 'pitched_boss_accessory_box'
+  | 'black_heart'
+  | 'dawn_accessory_box'
+  | 'karma_solid_cubes'
+  | 'karma_bright_cubes'
+  | 'karma_bonus_bright_cubes';
+
+export interface MysticFrontierExpedition {
+  id: string;
+  character_id: string;
+  expedition_index: 1 | 2 | 3;
+  site_rank: MysticFrontierSiteRank;
+  status: MysticFrontierStatus;
+  exploration_started_at: string | null;
+  rest_started_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MysticFrontierRewardItem {
+  type: MysticFrontierRewardType;
+  quantity: number;
+}
+
+export interface MysticFrontierRewardEntry {
+  id: string;
+  character_id: string;
+  expedition_index: 1 | 2 | 3;
+  site_rank: MysticFrontierSiteRank;
+  rewards: MysticFrontierRewardItem[];
+  collected_at: string;
+}
 
