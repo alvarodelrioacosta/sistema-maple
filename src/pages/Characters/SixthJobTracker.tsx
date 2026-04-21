@@ -38,9 +38,10 @@ interface Props {
     onUpdate: (col: string, value: number) => void;
     compact?: boolean;
     originAndAscentOnly?: boolean;
+    noWrapper?: boolean;
 }
 
-export const SixthJobTracker: React.FC<Props> = ({ character, classItem, unlocked, loadingUnlocks, onUpdate, compact, originAndAscentOnly }) => {
+export const SixthJobTracker: React.FC<Props> = ({ character, classItem, unlocked, loadingUnlocks, onUpdate, compact, originAndAscentOnly, noWrapper }) => {
     const [saving, setSaving] = useState<string | null>(null);
 
     const handleChange = useCallback(async (col: SkillCol, maxLevel: number, raw: string) => {
@@ -54,10 +55,10 @@ export const SixthJobTracker: React.FC<Props> = ({ character, classItem, unlocke
         }
     }, [character.id, onUpdate]);
 
-    if (loadingUnlocks) return compact ? null : <div style={{ padding: '1rem', color: '#64748b', fontSize: '0.85rem' }}>Loading skills...</div>;
+    if (loadingUnlocks) return (compact || noWrapper) ? null : <div style={{ padding: '1rem', color: '#64748b', fontSize: '0.85rem' }}>Loading skills...</div>;
 
     if (unlocked === false) {
-        if (compact) return null;
+        if (compact || noWrapper) return null;
         return (
             <div style={{ padding: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'rgba(239, 68, 68, 0.03)', borderRadius: '8px', margin: '10px 0' }}>
                 <div style={{ color: '#f87171', fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -178,6 +179,11 @@ export const SixthJobTracker: React.FC<Props> = ({ character, classItem, unlocke
             </div>
         );
     };
+
+    if (noWrapper) {
+        const cols = originAndAscentOnly ? (['origin', 'ascent'] as SkillCol[]) : [...ROW1, ...ROW2];
+        return <>{cols.map(renderCompactSkill)}</>;
+    }
 
     if (compact) {
         const compactRow1 = originAndAscentOnly ? (['origin', 'ascent'] as SkillCol[]) : ROW1;

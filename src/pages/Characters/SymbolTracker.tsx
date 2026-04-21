@@ -8,6 +8,7 @@ interface Props {
     characterLevel: number;
     onUpdate: (col: string, value: number) => void;
     compact?: boolean;
+    noWrapper?: boolean;
 }
 
 const SymbolCard: React.FC<{
@@ -108,7 +109,7 @@ const SymbolThumb: React.FC<{
     </div>
 );
 
-export const SymbolTracker: React.FC<Props> = ({ character, characterLevel, onUpdate, compact }) => {
+export const SymbolTracker: React.FC<Props> = ({ character, characterLevel, onUpdate, compact, noWrapper }) => {
     const [saving, setSaving] = useState<string | null>(null);
 
     const handleChange = useCallback(async (sym: typeof SYMBOLS[0], raw: string) => {
@@ -126,11 +127,24 @@ export const SymbolTracker: React.FC<Props> = ({ character, characterLevel, onUp
     const sacred  = SYMBOLS.filter(s => s.type === 'sacred'  && characterLevel >= s.unlockLevel);
 
     if (arcane.length === 0 && sacred.length === 0) {
-        if (compact) return null;
+        if (compact || noWrapper) return null;
         return (
             <div style={{ padding: '0.75rem 1.25rem', borderTop: '1px solid rgba(255,255,255,0.06)', color: '#475569', fontSize: '0.8rem' }}>
                 Symbols unlock at level 200
             </div>
+        );
+    }
+
+    if (noWrapper) {
+        const getLevel = (sym: typeof SYMBOLS[0]) => (character as unknown as Record<string, number | null>)[sym.column] ?? 0;
+        const allVisible = [...arcane, ...sacred].filter(sym => getLevel(sym) < sym.maxLevel);
+        if (allVisible.length === 0) return null;
+        return (
+            <>
+                {allVisible.map(sym => (
+                    <SymbolThumb key={sym.column} sym={sym} level={getLevel(sym)} onChange={raw => handleChange(sym, raw)} />
+                ))}
+            </>
         );
     }
 
