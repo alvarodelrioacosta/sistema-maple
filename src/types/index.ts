@@ -239,18 +239,6 @@ export interface Client {
     name: string;
     contact_info: string | null;
     is_admin: boolean;
-
-    // Pricing configurations
-    bright_cube_price: number;
-    bonus_bright_cube_price: number;
-    solid_cubes_price: number;
-
-    // Coverage settings
-    covers_psok: boolean;
-    covers_guardian_scroll: boolean;
-    covers_perfect_innoc: boolean;
-
-    currency: string;
     next_payment_date: string | null;
     payment_agreement: string | null;
     created_at: string;

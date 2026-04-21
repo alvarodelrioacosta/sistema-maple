@@ -4,11 +4,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { Header } from '../../components/Layout';
-import { Button, Table, Modal, Input, Card, Select } from '../../components/UI';
+import { Button, Table, Modal, Input, Card } from '../../components/UI';
 import { clientsService } from '../../services';
 import type { Client, ClientInsert } from '../../types';
 import type { Column } from '../../components/UI/Table';
-import { CURRENCIES } from '../../constants/currencies';
 import '../Accounts/Accounts.css'; // Mantenemos para estilos generales de página si es necesario
 import './Clients.css'; // El nuevo diseño para el modal
 
@@ -21,13 +20,6 @@ export const Clients: React.FC = () => {
         name: '',
         contact_info: '',
         is_admin: false,
-        bright_cube_price: 0,
-        bonus_bright_cube_price: 0,
-        solid_cubes_price: 0,
-        covers_psok: false,
-        covers_guardian_scroll: false,
-        covers_perfect_innoc: false,
-        currency: 'USD'
     });
 
     useEffect(() => {
@@ -58,13 +50,6 @@ export const Clients: React.FC = () => {
                 name: client.name,
                 contact_info: client.contact_info || '',
                 is_admin: client.is_admin,
-                bright_cube_price: client.bright_cube_price || 0,
-                bonus_bright_cube_price: client.bonus_bright_cube_price || 0,
-                solid_cubes_price: client.solid_cubes_price || 0,
-                covers_psok: client.covers_psok || false,
-                covers_guardian_scroll: client.covers_guardian_scroll || false,
-                covers_perfect_innoc: client.covers_perfect_innoc || false,
-                currency: client.currency || 'USD'
             });
         } else {
             setEditingClient(null);
@@ -72,13 +57,6 @@ export const Clients: React.FC = () => {
                 name: '',
                 contact_info: '',
                 is_admin: false,
-                bright_cube_price: 0,
-                bonus_bright_cube_price: 0,
-                solid_cubes_price: 0,
-                covers_psok: false,
-                covers_guardian_scroll: false,
-                covers_perfect_innoc: false,
-                currency: 'USD'
             });
         }
         setModalOpen(true);
@@ -141,34 +119,6 @@ export const Clients: React.FC = () => {
             )
         },
         { key: 'contact_info', header: 'Contact', render: (c) => c.contact_info || '-' },
-        {
-            key: 'solid_cubes_price',
-            header: 'Solid Cube Price',
-            render: (c) => {
-                const isMesos = c.currency === 'Mesos (b)';
-                const format = (n: number) => isMesos ? n.toFixed(2) : n;
-                return <span>{format(c.solid_cubes_price || 0)}</span>;
-            }
-        },
-        {
-            key: 'bright_cube_price',
-            header: 'Bright Cube Price',
-            render: (c) => {
-                const isMesos = c.currency === 'Mesos (b)';
-                const format = (n: number) => isMesos ? n.toFixed(2) : n;
-                return <span>{format(c.bright_cube_price || 0)}</span>;
-            }
-        },
-        {
-            key: 'bonus_bright_cube_price',
-            header: 'Bonus Cube Price',
-            render: (c) => {
-                const isMesos = c.currency === 'Mesos (b)';
-                const format = (n: number) => isMesos ? n.toFixed(2) : n;
-                return <span>{format(c.bonus_bright_cube_price || 0)}</span>;
-            }
-        },
-        { key: 'currency', header: 'Currency', render: (c) => c.currency || 'USD' },
         {
             key: 'actions',
             header: 'Actions',
@@ -233,93 +183,7 @@ export const Clients: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Section 2: Cube Pricing */}
-                        <div className="client-form-section">
-                            <div className="section-header-pricing">
-                                <span className="section-icon">💎</span>
-                                <span className="section-title">Cube Pricing</span>
-                            </div>
-                            <div className="pricing-layout-grid">
-                                <div className="pricing-inputs-column">
-                                    <div className="price-input-row">
-                                        <Input
-                                            type="number"
-                                            value={formData.solid_cubes_price}
-                                            onChange={(e) => setFormData({ ...formData, solid_cubes_price: Number(e.target.value) })}
-                                        />
-                                        <span className="price-label-text">Solid Cube</span>
-                                    </div>
-                                    <div className="price-input-row">
-                                        <Input
-                                            type="number"
-                                            value={formData.bright_cube_price}
-                                            onChange={(e) => setFormData({ ...formData, bright_cube_price: Number(e.target.value) })}
-                                        />
-                                        <span className="price-label-text">Bright Cube</span>
-                                    </div>
-                                    <div className="price-input-row">
-                                        <Input
-                                            type="number"
-                                            value={formData.bonus_bright_cube_price}
-                                            onChange={(e) => setFormData({ ...formData, bonus_bright_cube_price: Number(e.target.value) })}
-                                        />
-                                        <span className="price-label-text">Bonus Cube</span>
-                                    </div>
-                                </div>
-                                <div className="currency-config-column">
-                                    <span className="currency-label-title">Currency</span>
-                                    <Select
-                                        value={formData.currency}
-                                        onChange={(value) => setFormData({ ...formData, currency: value })}
-                                        options={CURRENCIES}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Section 3: Cost Coverage (Premium Checkboxes) */}
-                        <div className="client-form-section">
-                            <div className="section-header">
-                                <span className="section-icon">🛡️</span>
-                                <span className="section-title">Cost Coverage</span>
-                            </div>
-                            <div className="client-checkbox-list">
-                                <div
-                                    className={`premium-checkbox ${formData.covers_psok ? 'active' : ''}`}
-                                    onClick={() => setFormData({ ...formData, covers_psok: !formData.covers_psok })}
-                                >
-                                    <div className="checkbox-content">
-                                        <div className="checkbox-mark"></div>
-                                        <span className="checkbox-label-text">Covers PSOK</span>
-                                    </div>
-                                    {formData.covers_psok && <span className="admin-badge">Enabled</span>}
-                                </div>
-
-                                <div
-                                    className={`premium-checkbox ${formData.covers_guardian_scroll ? 'active' : ''}`}
-                                    onClick={() => setFormData({ ...formData, covers_guardian_scroll: !formData.covers_guardian_scroll })}
-                                >
-                                    <div className="checkbox-content">
-                                        <div className="checkbox-mark"></div>
-                                        <span className="checkbox-label-text">Covers Guardian Scroll</span>
-                                    </div>
-                                    {formData.covers_guardian_scroll && <span className="admin-badge">Enabled</span>}
-                                </div>
-
-                                <div
-                                    className={`premium-checkbox ${formData.covers_perfect_innoc ? 'active' : ''}`}
-                                    onClick={() => setFormData({ ...formData, covers_perfect_innoc: !formData.covers_perfect_innoc })}
-                                >
-                                    <div className="checkbox-content">
-                                        <div className="checkbox-mark"></div>
-                                        <span className="checkbox-label-text">Covers Perfect Innocence Scroll</span>
-                                    </div>
-                                    {formData.covers_perfect_innoc && <span className="admin-badge">Enabled</span>}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Section 4: Admin Status */}
+                        {/* Section 2: Admin Status */}
                         <div className="client-form-section">
                             <div
                                 className={`premium-checkbox ${formData.is_admin ? 'active' : ''}`}

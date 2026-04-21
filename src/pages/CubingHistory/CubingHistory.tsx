@@ -224,9 +224,6 @@ export const CubingHistory: React.FC = () => {
     ];
 
     const handleOpenARModal = async (session: SessionRow) => {
-        const client = clients.find(c => c.id === session.clientId);
-
-        // Pre-fill prices from client config where available
         let resourceMeta: Record<string, { mesoCost: number }> = {};
         try {
             resourceMeta = await resourcesService.getResourceMetadata();
@@ -237,10 +234,10 @@ export const CubingHistory: React.FC = () => {
         setArSession(session);
         setArFormData({
             clientId: session.clientId,
-            currency: client?.currency || 'USD',
-            brightPrice: client?.bright_cube_price || 0,
-            bonusPrice: client?.bonus_bright_cube_price || 0,
-            solidPrice: client?.solid_cubes_price || 0,
+            currency: 'USD',
+            brightPrice: 0,
+            bonusPrice: 0,
+            solidPrice: 0,
             psokPrice: resourceMeta['psok']?.mesoCost || 0,
             pInnocPrice: resourceMeta['perfect_innoc']?.mesoCost || 0,
             gScrollPrice: resourceMeta['guardian_scroll']?.mesoCost || 0,
@@ -262,15 +259,7 @@ export const CubingHistory: React.FC = () => {
     };
 
     const handleClientChange = (clientId: string) => {
-        const client = clients.find(c => c.id === clientId);
-        setArFormData(prev => ({
-            ...prev,
-            clientId,
-            currency: client?.currency || 'USD',
-            brightPrice: client?.bright_cube_price || prev.brightPrice,
-            bonusPrice: client?.bonus_bright_cube_price || prev.bonusPrice,
-            solidPrice: client?.solid_cubes_price || prev.solidPrice,
-        }));
+        setArFormData(prev => ({ ...prev, clientId }));
     };
 
     const handleCreateAR = async () => {

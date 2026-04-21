@@ -114,14 +114,11 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
             .catch(console.error);
     }, [initialItem.id]);
 
-    // Sync coverage settings from client when session loads
+    // Sync selected client when session loads
     useEffect(() => {
         if (activeSession && clients.length > 0) {
             const client = clients.find(c => c.id === activeSession.client_id);
             if (client) {
-                setPsokConfig(prev => ({ ...prev, covered: client.covers_psok }));
-                setPInnocConfig(prev => ({ ...prev, covered: client.covers_perfect_innoc }));
-                setGScrollConfig(prev => ({ ...prev, covered: client.covers_guardian_scroll }));
                 setSelectedClientId(client.id);
             }
         }
@@ -241,10 +238,6 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
             });
 
             setActiveSession(session);
-            // Apply client coverage settings
-            setPsokConfig(prev => ({ ...prev, covered: client.covers_psok }));
-            setPInnocConfig(prev => ({ ...prev, covered: client.covers_perfect_innoc }));
-            setGScrollConfig(prev => ({ ...prev, covered: client.covers_guardian_scroll }));
 
             showMessage('success', `Sesión iniciada para ${client.name}`);
         } catch (err: any) {
