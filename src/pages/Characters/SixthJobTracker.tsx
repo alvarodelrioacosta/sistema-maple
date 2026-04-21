@@ -103,7 +103,7 @@ export const SixthJobTracker: React.FC<Props> = ({ character, classItem, unlocke
                     style={{
                         position: 'absolute', bottom: -5, right: -5,
                         width: 22, height: 15,
-                        background: level === maxLevel ? color : 'rgba(0,0,0,0.88)',
+                        background: level === maxLevel ? '#4ade80' : 'rgba(0,0,0,0.88)',
                         border: `1px solid ${level > 0 ? color + '88' : 'rgba(255,255,255,0.25)'}`,
                         borderRadius: 3,
                         color: level === maxLevel ? '#000' : '#e2e8f0',

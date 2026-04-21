@@ -113,9 +113,6 @@ export const ExtraStatsTracker: React.FC<Props> = ({
 
     return (
         <div style={{ padding: '1rem 1.25rem', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'rgba(0,0,0,0.1)' }}>
-            <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>
-                Extra Stats
-            </div>
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
 
                 {/* Pet */}

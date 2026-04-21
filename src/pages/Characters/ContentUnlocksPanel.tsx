@@ -25,8 +25,6 @@ export const ContentUnlocksPanel: React.FC<Props> = ({ character, account, onUpd
         return !!(character as any)[def.key];
     };
 
-    const completedCount = UNLOCK_DEFINITIONS.filter(isDone).length;
-
     const saveUnlock = async (def: UnlockDef, value: boolean) => {
         if (def.level === 'account') {
             if (!account) return;
@@ -57,11 +55,6 @@ export const ContentUnlocksPanel: React.FC<Props> = ({ character, account, onUpd
 
     return (
         <div style={{ padding: '20px', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'rgba(0,0,0,0.05)' }}>
-            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'flex', justifyContent: 'space-between' }}>
-                <span>Content Unlocks</span>
-                <span style={{ color: '#4ade80' }}>{completedCount} / {UNLOCK_DEFINITIONS.length}</span>
-            </div>
-
             {confirmDef && (
                 <div style={{
                     background: 'rgba(239, 68, 68, 0.1)',
@@ -143,7 +136,7 @@ export const ContentUnlocksPanel: React.FC<Props> = ({ character, account, onUpd
             {/* World Systems */}
             <div>
                 <div style={{ fontSize: '0.65rem', color: '#475569', marginBottom: '8px', fontWeight: 600 }}>WORLD SYSTEMS</div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '8px' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                     {systemUnlocks.map(def => {
                         const done = isDone(def);
                         return (
@@ -155,28 +148,38 @@ export const ContentUnlocksPanel: React.FC<Props> = ({ character, account, onUpd
                                     background: done ? 'rgba(74, 222, 128, 0.05)' : 'rgba(255,255,255,0.02)',
                                     border: `1px solid ${done ? '#4ade8044' : 'rgba(255,255,255,0.05)'}`,
                                     borderRadius: '8px',
-                                    padding: '8px 12px',
+                                    width: '88px',
+                                    height: '88px',
                                     display: 'flex',
+                                    flexDirection: 'column',
                                     alignItems: 'center',
-                                    gap: '10px',
+                                    justifyContent: 'center',
+                                    gap: '6px',
+                                    position: 'relative',
                                     transition: 'all 0.2s',
                                     cursor: 'pointer',
+                                    textAlign: 'center',
+                                    padding: '8px',
                                 }}
                             >
                                 <div style={{
                                     width: '8px', height: '8px', borderRadius: '50%',
                                     background: done ? '#4ade80' : '#334155',
                                     boxShadow: done ? '0 0 8px #4ade8055' : 'none',
+                                    flexShrink: 0,
                                 }} />
-                                <div style={{ flex: 1 }}>
-                                    <div style={{ fontSize: '0.72rem', fontWeight: 600, color: done ? '#f1f5f9' : '#64748b' }}>
-                                        {def.label}
-                                    </div>
-                                    <div style={{ fontSize: '0.6rem', color: done ? '#4ade80aa' : '#475569' }}>
-                                        {def.group}
-                                    </div>
+                                <div style={{ fontSize: '0.65rem', fontWeight: 600, color: done ? '#f1f5f9' : '#64748b', lineHeight: 1.2 }}>
+                                    {def.label}
                                 </div>
-                                {done && <span style={{ color: '#4ade80', fontSize: '0.8rem' }}>✓</span>}
+                                <div style={{ fontSize: '0.55rem', color: done ? '#4ade80aa' : '#475569' }}>
+                                    {def.group}
+                                </div>
+                                {done && (
+                                    <div style={{
+                                        position: 'absolute', bottom: '4px', right: '6px',
+                                        color: '#4ade80', fontSize: '0.7rem', fontWeight: 700,
+                                    }}>✓</div>
+                                )}
                             </div>
                         );
                     })}
