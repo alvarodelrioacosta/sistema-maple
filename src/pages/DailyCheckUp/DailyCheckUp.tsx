@@ -27,6 +27,14 @@ import type {
 import { UNLOCK_DEFINITIONS, SEQUENTIAL_UNLOCK_GROUPS, type UnlockDef } from '../../constants/unlocks';
 import './DailyCheckUp.css';
 
+const BOSS_PREQUEST_COL: Record<string, string> = {
+    'Cygnus':    'unlock_cygnus',
+    'Pink Bean': 'unlock_pink_bean',
+    'Magnus':    'unlock_magnus',
+    'Slime':     'unlock_slime',
+    'Papulatus': 'unlock_papulatus',
+};
+
 const BOSS_IMAGE_ALIAS: Record<string, string> = {
     'Slime': 'Guardian Angel Slime',
 };
@@ -88,7 +96,6 @@ const DailyCheckUp: React.FC = () => {
     const [showBossing, setShowBossing] = useState(false);
     const [allBosses, setAllBosses] = useState<Boss[]>([]);
     const [weekSessions, setWeekSessions] = useState<BossingSession[]>([]);
-    const [allPrequests, setAllPrequests] = useState<{ account_id: string; boss_id: string }[]>([]);
     const [bossStates, setBossStates] = useState<Record<string, Record<string, 0 | 1 | 2>>>({});
 
     const [accountBalances, setAccountBalances] = useState<Record<string, Record<string, number>>>({});
@@ -171,7 +178,6 @@ const DailyCheckUp: React.FC = () => {
                 itemsDBData,
                 bossesData,
                 weekSessionsData,
-                prequestsData,
                 resourcesMetadataData
             ] = await Promise.all([
                 accountsService.getAll().catch(e => { console.error('Failed to load accounts:', e); return []; }),
@@ -183,7 +189,6 @@ const DailyCheckUp: React.FC = () => {
                 itemsDBService.getAll().catch(e => { console.error('Failed to load itemsDB:', e); return []; }),
                 bossesService.getAll().catch(e => { console.error('Failed to load bosses:', e); return []; }),
                 bossingService.getWeekSessions(bossingService.getWeekStart()).catch(e => { console.error('Failed to load week sessions:', e); return []; }),
-                bossingService.getAllPrequests().catch(e => { console.error('Failed to load prequests:', e); return []; }),
                 resourcesService.getResourceMetadata().catch(e => { console.error('Failed to load resourceMetadata:', e); return {}; })
             ]);
 
@@ -209,7 +214,6 @@ const DailyCheckUp: React.FC = () => {
             setItemsDB(itemsDBData);
             setAllBosses(bossesData);
             setWeekSessions(weekSessionsData);
-            setAllPrequests(prequestsData);
 
             const mapImages: Record<string, string> = {};
             Object.keys(resourcesMetadataData).forEach(k => mapImages[k] = (resourcesMetadataData as any)[k]?.image);
@@ -430,14 +434,6 @@ const DailyCheckUp: React.FC = () => {
             });
     }, [allBosses]);
 
-    const prequestMap = useMemo(() => {
-        const map: Record<string, Set<string>> = {};
-        allPrequests.forEach(({ account_id, boss_id }) => {
-            if (!map[account_id]) map[account_id] = new Set();
-            map[account_id].add(boss_id);
-        });
-        return map;
-    }, [allPrequests]);
 
     if (loading) {
         return <LoadingScreen message="Cargando Dashboard Diario..." />;
@@ -614,14 +610,16 @@ const DailyCheckUp: React.FC = () => {
     };
 
     const handleToggleBossPrequest = async (accountId: string, bossId: string) => {
-        const currentlyDone = prequestMap[accountId]?.has(bossId) ?? false;
+        const boss = allBosses.find(b => b.id === bossId);
+        const unlockCol = boss ? BOSS_PREQUEST_COL[boss.name] : undefined;
+        if (!unlockCol) return;
+        const mainChar = mainChars.find(c => c.account_id === accountId);
+        if (!mainChar) return;
+        const currentlyDone = !!(mainChar as unknown as Record<string, boolean>)[unlockCol];
         const newState = !currentlyDone;
-        setAllPrequests(prev =>
-            newState
-                ? [...prev, { account_id: accountId, boss_id: bossId }]
-                : prev.filter(p => !(p.account_id === accountId && p.boss_id === bossId))
-        );
-        await bossingService.setPrequest(accountId, bossId, newState);
+        setMainChars(prev => prev.map(c => c.id === mainChar.id ? { ...c, [unlockCol]: newState } : c));
+        setAllChars(prev => prev.map(c => c.id === mainChar.id ? { ...c, [unlockCol]: newState } : c));
+        await supabase.from('characters').update({ [unlockCol]: newState }).eq('id', mainChar.id);
     };
 
     const handleRegisterBossing = async (accountId: string) => {
@@ -871,7 +869,6 @@ const DailyCheckUp: React.FC = () => {
                                         {showBossing && (() => {
                                             const accountId = row.account.id;
                                             const session = weekSessions.find(s => s.account_id === accountId);
-                                            const accountPreqs = prequestMap[accountId] || new Set<string>();
                                             const states = bossStates[accountId] || {};
                                             const clearedCount = Object.values(states).filter(s => s === 1).length;
                                             const calculated = clearedCount * 200;
@@ -885,7 +882,8 @@ const DailyCheckUp: React.FC = () => {
                                                     <div className="bossing-inline">
                                                         <div className="boss-strip">
                                                             {visibleBosses.map(boss => {
-                                                                const locked = boss.needs_prequest && !accountPreqs.has(boss.id);
+                                                                const unlockCol = BOSS_PREQUEST_COL[boss.name];
+                                                                const locked = boss.needs_prequest && (!unlockCol || !(row.mainChar as unknown as Record<string, boolean>)?.[unlockCol]);
                                                                 const state = states[boss.id] ?? 0;
                                                                 return (
                                                                     <div

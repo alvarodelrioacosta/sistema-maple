@@ -82,41 +82,6 @@ export const bossingService = {
         return data as BossingSession;
     },
 
-    // ---- Prequest management ----
-
-    async getAllPrequests(): Promise<{ account_id: string; boss_id: string }[]> {
-        const { data, error } = await supabase
-            .from('account_boss_prequests')
-            .select('account_id, boss_id');
-        if (error) throw error;
-        return data || [];
-    },
-
-    async getAccountPrequests(accountId: string): Promise<string[]> {
-        const { data, error } = await supabase
-            .from('account_boss_prequests')
-            .select('boss_id')
-            .eq('account_id', accountId);
-        if (error) throw error;
-        return (data || []).map(row => row.boss_id);
-    },
-
-    async setPrequest(accountId: string, bossId: string, done: boolean): Promise<void> {
-        if (done) {
-            const { error } = await supabase
-                .from('account_boss_prequests')
-                .insert({ account_id: accountId, boss_id: bossId });
-            // Ignore duplicate-key errors (already done)
-            if (error && error.code !== '23505') throw error;
-        } else {
-            const { error } = await supabase
-                .from('account_boss_prequests')
-                .delete()
-                .eq('account_id', accountId)
-                .eq('boss_id', bossId);
-            if (error) throw error;
-        }
-    },
 };
 
 export default bossingService;
