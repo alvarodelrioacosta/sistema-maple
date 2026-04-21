@@ -79,7 +79,7 @@ const SymbolThumb: React.FC<{
             alt={sym.shortName}
             title={`${sym.name} — Lv.${level}/${sym.maxLevel}`}
             style={{
-                width: 36, height: 36, display: 'block', objectFit: 'contain',
+                width: 40, height: 40, display: 'block', objectFit: 'contain',
                 borderRadius: 6,
                 border: `1px solid ${level > 0 ? sym.color + '66' : 'rgba(255,255,255,0.08)'}`,
                 background: 'rgba(255,255,255,0.04)',

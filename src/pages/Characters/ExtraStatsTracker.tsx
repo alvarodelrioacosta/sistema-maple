@@ -79,49 +79,36 @@ export const ExtraStatsTracker: React.FC<Props> = ({
     const hexaEnabledCols = ['hexa_stat_1_enabled', 'hexa_stat_2_enabled', 'hexa_stat_3_enabled'] as const;
     const hexaLevelCols = ['hexa_stat_1_level', 'hexa_stat_2_level', 'hexa_stat_3_level'] as const;
 
-    const imgStyle = (unlocked: boolean): React.CSSProperties => ({
-        width: '38px',
-        height: '38px',
+    const artifactLevel = account?.legion_artifact_level ?? null;
+
+    const imgStyle = (active: boolean, color: string): React.CSSProperties => ({
+        width: 40,
+        height: 40,
+        display: 'block',
         objectFit: 'contain',
-        filter: unlocked ? 'none' : 'grayscale(1) opacity(0.35)',
+        borderRadius: 6,
+        border: `1px solid ${active ? color + '66' : 'rgba(255,255,255,0.08)'}`,
+        background: 'rgba(255,255,255,0.04)',
+        filter: active ? 'none' : 'grayscale(0.8) opacity(0.35)',
         transition: 'filter 0.2s',
     });
 
-    const cardStyle = (active: boolean, color: string): React.CSSProperties => ({
-        background: 'rgba(255,255,255,0.04)',
-        border: `1px solid ${active ? color + '55' : 'rgba(255,255,255,0.08)'}`,
-        borderRadius: '8px',
-        padding: '6px 4px',
-        flex: '1 1 0',
-        position: 'relative',
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: '4px',
-    });
-
-    const artifactLevel = account?.legion_artifact_level ?? null;
-
-    const levelBadgeStyle: React.CSSProperties = {
+    const badgeStyle = (active: boolean, color: string): React.CSSProperties => ({
         position: 'absolute',
-        bottom: '3px',
-        right: '2px',
-        display: 'flex',
-        alignItems: 'baseline',
-        gap: '1px',
-    };
-
-    const levelInputStyle = (color: string, isBold: boolean): React.CSSProperties => ({
-        width: '22px',
-        background: 'transparent',
-        border: 'none',
-        color: isBold ? color : '#f1f5f9',
-        fontWeight: isBold ? 700 : 400,
-        fontSize: '0.72rem',
-        textAlign: 'right',
-        outline: 'none',
+        bottom: -5,
+        right: -5,
+        width: 22,
+        height: 15,
+        background: active ? color : 'rgba(0,0,0,0.88)',
+        border: `1px solid ${active ? color + '88' : 'rgba(255,255,255,0.25)'}`,
+        borderRadius: 3,
+        color: active ? '#000' : '#e2e8f0',
+        fontSize: '0.58rem',
+        fontWeight: 700,
+        textAlign: 'center',
         padding: 0,
+        outline: 'none',
+        lineHeight: '14px',
     });
 
     return (
@@ -129,7 +116,7 @@ export const ExtraStatsTracker: React.FC<Props> = ({
             <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>
                 Extra Stats
             </div>
-            <div style={{ display: 'flex', gap: '5px' }}>
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
 
                 {/* Pet */}
                 {(() => {
@@ -140,16 +127,16 @@ export const ExtraStatsTracker: React.FC<Props> = ({
                     const petColor = '#ec4899';
 
                     return (
-                        <div style={cardStyle(isActive, petColor)}>
+                        <div style={{ position: 'relative', flexShrink: 0 }}>
                             <img
                                 src={PET_IMG}
                                 alt="Pet"
                                 title={expiry ? (isExpired ? `Expired ${formatDate(expiry)}` : `Expires ${formatDate(expiry)} — click to change`) : 'Click to set pet expiry'}
-                                style={{ ...imgStyle(isActive), cursor: 'pointer' }}
+                                style={{ ...imgStyle(isActive, petColor), cursor: 'pointer' }}
                                 onClick={() => { setPetDateInput(expiry ?? ''); setEditingPet(true); }}
                             />
                             {editingPet ? (
-                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px' }}>
+                                <div style={{ position: 'absolute', top: '100%', right: 0, zIndex: 20, paddingTop: 4 }}>
                                     <input
                                         type="date"
                                         value={petDateInput}
@@ -158,15 +145,20 @@ export const ExtraStatsTracker: React.FC<Props> = ({
                                         onBlur={() => { if (petDateInput) savePetDate(petDateInput); else setEditingPet(false); }}
                                         onKeyDown={e => { if (e.key === 'Enter' && petDateInput) savePetDate(petDateInput); if (e.key === 'Escape') setEditingPet(false); }}
                                         style={{
-                                            width: '90px', fontSize: '0.55rem', background: 'rgba(0,0,0,0.4)',
+                                            width: '110px', fontSize: '0.6rem', background: 'rgba(15,20,30,0.95)',
                                             border: `1px solid ${petColor}55`, borderRadius: '4px',
-                                            color: '#f1f5f9', padding: '2px 3px', outline: 'none',
+                                            color: '#f1f5f9', padding: '3px 4px', outline: 'none',
                                         }}
                                     />
                                 </div>
                             ) : (
-                                <div style={{ fontSize: '0.58rem', fontWeight: 600, color: isExpired ? '#ef4444' : isActive ? '#4ade80' : '#475569' }}>
-                                    {isExpired ? `Exp. ${formatDate(expiry!)}` : isActive ? formatDate(expiry!) : 'Click'}
+                                <div style={{
+                                    ...badgeStyle(isActive, petColor),
+                                    background: isExpired ? '#ef444488' : isActive ? petColor : 'rgba(0,0,0,0.88)',
+                                    color: isActive ? '#fff' : isExpired ? '#fff' : '#94a3b8',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                }}>
+                                    {isExpired ? 'Exp' : isActive ? formatDate(expiry!).replace(' ', '') : '—'}
                                 </div>
                             )}
                         </div>
@@ -174,34 +166,40 @@ export const ExtraStatsTracker: React.FC<Props> = ({
                 })()}
 
                 {/* Boss Pot */}
-                <div style={cardStyle(isBossPotUnlocked, '#f97316')}>
-                    <img src={BOSS_POT_IMG} alt="Boss Pot" title="Boss Pot" style={imgStyle(isBossPotUnlocked)} />
+                <div style={{ position: 'relative', flexShrink: 0 }}>
+                    <img
+                        src={BOSS_POT_IMG}
+                        alt="Boss Pot"
+                        title="Boss Pot"
+                        style={imgStyle(isBossPotUnlocked, '#f97316')}
+                    />
                     {isBossPotUnlocked && (
                         <div style={{
-                            position: 'absolute', bottom: '3px', right: '3px',
-                            background: '#4ade80', color: '#000', borderRadius: '50%',
-                            width: '14px', height: '14px', fontSize: '9px',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900,
+                            ...badgeStyle(true, '#4ade80'),
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
                         }}>✓</div>
                     )}
                 </div>
 
                 {/* Legion Artifact — per-account */}
-                <div style={cardStyle(isLegionArtifactUnlocked, '#fbbf24')}>
-                    <img src={LEGION_ARTIFACT_IMG} alt="Legion Artifact" title="Legion Artifact (account-wide)" style={imgStyle(isLegionArtifactUnlocked)} />
+                <div style={{ position: 'relative', flexShrink: 0 }}>
+                    <img
+                        src={LEGION_ARTIFACT_IMG}
+                        alt="Legion Artifact"
+                        title="Legion Artifact (account-wide)"
+                        style={imgStyle(isLegionArtifactUnlocked, '#fbbf24')}
+                    />
                     {isLegionArtifactUnlocked && (
-                        <div style={levelBadgeStyle}>
-                            <input
-                                type="number"
-                                min={1}
-                                max={60}
-                                value={artifactLevel ?? ''}
-                                placeholder="–"
-                                onChange={e => handleArtifactLevelInput(60, e.target.value)}
-                                style={levelInputStyle('#fbbf24', artifactLevel === 60)}
-                            />
-                            <span style={{ fontSize: '0.55rem', color: '#475569' }}>/60</span>
-                        </div>
+                        <input
+                            type="number"
+                            min={1}
+                            max={60}
+                            value={artifactLevel ?? ''}
+                            placeholder="–"
+                            onChange={e => handleArtifactLevelInput(60, e.target.value)}
+                            className="char-compact-badge-input"
+                            style={badgeStyle(artifactLevel === 60, '#fbbf24')}
+                        />
                     )}
                 </div>
 
@@ -214,44 +212,27 @@ export const ExtraStatsTracker: React.FC<Props> = ({
                     const isActive = prereqsMet && enabled;
 
                     return (
-                        <div key={i} style={cardStyle(isActive, color)}>
-                            {isActive && (
-                                <div style={{
-                                    position: 'absolute', bottom: 0, left: 0,
-                                    width: `${((lv ?? 0) / 20) * 100}%`, height: '3px',
-                                    background: color, transition: 'width 0.2s',
-                                }} />
-                            )}
+                        <div key={i} style={{ position: 'relative', flexShrink: 0 }}>
                             <img
                                 src={HEXA_STAT_IMG}
                                 alt={`Hexa Stat ${i + 1}`}
                                 title={prereqsMet
                                     ? (enabled ? `Hexa Stat ${i + 1}` : `Click to enable Hexa Stat ${i + 1}`)
                                     : `Requires Lv.${HEXA_LEVEL_REQS[i]} + 6th Job`}
-                                style={{ ...imgStyle(isActive), cursor: prereqsMet && !enabled ? 'pointer' : 'default' }}
+                                style={{ ...imgStyle(isActive, color), cursor: prereqsMet && !enabled ? 'pointer' : 'default' }}
                                 onClick={() => { if (prereqsMet && !enabled) save(hexaEnabledCols[i], true); }}
                             />
-                            {isActive ? (
-                                <div style={{ ...levelBadgeStyle, bottom: '5px' }}>
-                                    <input
-                                        type="number"
-                                        min={1}
-                                        max={20}
-                                        value={lv ?? ''}
-                                        placeholder="—"
-                                        onChange={e => handleLevelInput(hexaLevelCols[i], 20, e.target.value)}
-                                        style={levelInputStyle(color, lv === 20)}
-                                    />
-                                    <span style={{ fontSize: '0.55rem', color: '#475569' }}>/20</span>
-                                </div>
-                            ) : (
-                                <div style={{
-                                    position: 'absolute', bottom: '3px', right: '3px',
-                                    fontSize: '0.55rem',
-                                    color: prereqsMet ? '#94a3b8' : '#334155',
-                                }}>
-                                    {prereqsMet ? 'Click' : `Lv.${HEXA_LEVEL_REQS[i]}`}
-                                </div>
+                            {isActive && (
+                                <input
+                                    type="number"
+                                    min={1}
+                                    max={20}
+                                    value={lv ?? ''}
+                                    placeholder="—"
+                                    onChange={e => handleLevelInput(hexaLevelCols[i], 20, e.target.value)}
+                                    className="char-compact-badge-input"
+                                    style={badgeStyle(lv === 20, color)}
+                                />
                             )}
                         </div>
                     );
