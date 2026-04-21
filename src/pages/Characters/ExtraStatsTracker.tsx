@@ -33,29 +33,18 @@ export const ExtraStatsTracker: React.FC<Props> = ({
     onUpdate,
     onAccountUpdate,
 }) => {
-    const [saving, setSaving] = useState<string | null>(null);
     const [editingPet, setEditingPet] = useState(false);
     const [petDateInput, setPetDateInput] = useState('');
 
     const save = useCallback(async (col: string, value: number | boolean | string | null) => {
         onUpdate(col, value);
-        setSaving(col);
-        try {
-            await supabase.from('characters').update({ [col]: value }).eq('id', character.id);
-        } finally {
-            setSaving(null);
-        }
+        await supabase.from('characters').update({ [col]: value }).eq('id', character.id);
     }, [character.id, onUpdate]);
 
     const saveAccount = useCallback(async (col: string, value: number | boolean | string | null) => {
         if (!account) return;
         onAccountUpdate(col, value);
-        setSaving(col);
-        try {
-            await supabase.from('accounts').update({ [col]: value }).eq('id', account.id);
-        } finally {
-            setSaving(null);
-        }
+        await supabase.from('accounts').update({ [col]: value }).eq('id', account.id);
     }, [account, onAccountUpdate]);
 
     const savePetDate = useCallback((dateStr: string) => {
@@ -75,7 +64,6 @@ export const ExtraStatsTracker: React.FC<Props> = ({
     }, [saveAccount]);
 
     const level = character.level ?? 0;
-
     const hexaStatMet = (idx: number) => isSixthJobDone && level >= HEXA_LEVEL_REQS[idx];
 
     const hexaEnabled = [
@@ -115,6 +103,27 @@ export const ExtraStatsTracker: React.FC<Props> = ({
 
     const artifactLevel = account?.legion_artifact_level ?? null;
 
+    const levelBadgeStyle: React.CSSProperties = {
+        position: 'absolute',
+        bottom: '3px',
+        right: '2px',
+        display: 'flex',
+        alignItems: 'baseline',
+        gap: '1px',
+    };
+
+    const levelInputStyle = (color: string, isBold: boolean): React.CSSProperties => ({
+        width: '22px',
+        background: 'transparent',
+        border: 'none',
+        color: isBold ? color : '#f1f5f9',
+        fontWeight: isBold ? 700 : 400,
+        fontSize: '0.72rem',
+        textAlign: 'right',
+        outline: 'none',
+        padding: 0,
+    });
+
     return (
         <div style={{ padding: '1rem 1.25rem', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'rgba(0,0,0,0.1)' }}>
             <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>
@@ -132,7 +141,6 @@ export const ExtraStatsTracker: React.FC<Props> = ({
 
                     return (
                         <div style={cardStyle(isActive, petColor)}>
-                            <div style={{ fontSize: '0.58rem', color: petColor, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Pet</div>
                             <img
                                 src={PET_IMG}
                                 alt="Pet"
@@ -167,19 +175,22 @@ export const ExtraStatsTracker: React.FC<Props> = ({
 
                 {/* Boss Pot */}
                 <div style={cardStyle(isBossPotUnlocked, '#f97316')}>
-                    <div style={{ fontSize: '0.58rem', color: '#f97316', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Boss Pot</div>
                     <img src={BOSS_POT_IMG} alt="Boss Pot" title="Boss Pot" style={imgStyle(isBossPotUnlocked)} />
-                    <div style={{ fontSize: '0.6rem', color: isBossPotUnlocked ? '#4ade80' : '#475569', fontWeight: 600 }}>
-                        {isBossPotUnlocked ? '✓' : '✗'}
-                    </div>
+                    {isBossPotUnlocked && (
+                        <div style={{
+                            position: 'absolute', bottom: '3px', right: '3px',
+                            background: '#4ade80', color: '#000', borderRadius: '50%',
+                            width: '14px', height: '14px', fontSize: '9px',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900,
+                        }}>✓</div>
+                    )}
                 </div>
 
-                {/* Legion Artifact — per-account, affects all characters in the account */}
+                {/* Legion Artifact — per-account */}
                 <div style={cardStyle(isLegionArtifactUnlocked, '#fbbf24')}>
-                    <div style={{ fontSize: '0.58rem', color: '#fbbf24', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Artifact</div>
                     <img src={LEGION_ARTIFACT_IMG} alt="Legion Artifact" title="Legion Artifact (account-wide)" style={imgStyle(isLegionArtifactUnlocked)} />
-                    {isLegionArtifactUnlocked ? (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                    {isLegionArtifactUnlocked && (
+                        <div style={levelBadgeStyle}>
                             <input
                                 type="number"
                                 min={1}
@@ -187,23 +198,10 @@ export const ExtraStatsTracker: React.FC<Props> = ({
                                 value={artifactLevel ?? ''}
                                 placeholder="–"
                                 onChange={e => handleArtifactLevelInput(60, e.target.value)}
-                                style={{
-                                    width: '28px',
-                                    background: 'transparent',
-                                    border: 'none',
-                                    color: artifactLevel === 60 ? '#fbbf24' : '#f1f5f9',
-                                    fontWeight: artifactLevel === 60 ? 700 : 400,
-                                    fontSize: '0.88rem',
-                                    textAlign: 'center',
-                                    outline: 'none',
-                                    padding: 0,
-                                }}
+                                style={levelInputStyle('#fbbf24', artifactLevel === 60)}
                             />
-                            <span style={{ fontSize: '0.6rem', color: '#475569' }}>/60</span>
-                            {saving === 'legion_artifact_level' && <span style={{ fontSize: '0.55rem', color: '#64748b' }}>✓</span>}
+                            <span style={{ fontSize: '0.55rem', color: '#475569' }}>/60</span>
                         </div>
-                    ) : (
-                        <div style={{ fontSize: '0.6rem', color: '#475569', fontWeight: 600 }}>✗</div>
                     )}
                 </div>
 
@@ -221,28 +219,20 @@ export const ExtraStatsTracker: React.FC<Props> = ({
                                 <div style={{
                                     position: 'absolute', bottom: 0, left: 0,
                                     width: `${((lv ?? 0) / 20) * 100}%`, height: '3px',
-                                    background: color, transition: 'width 0.2s'
+                                    background: color, transition: 'width 0.2s',
                                 }} />
                             )}
-                            <div style={{ fontSize: '0.58rem', color, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                HS {i + 1}
-                            </div>
                             <img
                                 src={HEXA_STAT_IMG}
                                 alt={`Hexa Stat ${i + 1}`}
                                 title={prereqsMet
                                     ? (enabled ? `Hexa Stat ${i + 1}` : `Click to enable Hexa Stat ${i + 1}`)
                                     : `Requires Lv.${HEXA_LEVEL_REQS[i]} + 6th Job`}
-                                style={{
-                                    ...imgStyle(isActive),
-                                    cursor: prereqsMet && !enabled ? 'pointer' : 'default',
-                                }}
-                                onClick={() => {
-                                    if (prereqsMet && !enabled) save(hexaEnabledCols[i], true);
-                                }}
+                                style={{ ...imgStyle(isActive), cursor: prereqsMet && !enabled ? 'pointer' : 'default' }}
+                                onClick={() => { if (prereqsMet && !enabled) save(hexaEnabledCols[i], true); }}
                             />
                             {isActive ? (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                <div style={{ ...levelBadgeStyle, bottom: '5px' }}>
                                     <input
                                         type="number"
                                         min={1}
@@ -250,23 +240,16 @@ export const ExtraStatsTracker: React.FC<Props> = ({
                                         value={lv ?? ''}
                                         placeholder="—"
                                         onChange={e => handleLevelInput(hexaLevelCols[i], 20, e.target.value)}
-                                        style={{
-                                            width: '28px',
-                                            background: 'transparent',
-                                            border: 'none',
-                                            color: lv === 20 ? color : '#f1f5f9',
-                                            fontWeight: lv === 20 ? 700 : 400,
-                                            fontSize: '0.88rem',
-                                            textAlign: 'center',
-                                            outline: 'none',
-                                            padding: 0,
-                                        }}
+                                        style={levelInputStyle(color, lv === 20)}
                                     />
-                                    <span style={{ fontSize: '0.6rem', color: '#475569' }}>/20</span>
-                                    {saving === hexaLevelCols[i] && <span style={{ fontSize: '0.55rem', color: '#64748b' }}>✓</span>}
+                                    <span style={{ fontSize: '0.55rem', color: '#475569' }}>/20</span>
                                 </div>
                             ) : (
-                                <div style={{ fontSize: '0.6rem', color: prereqsMet ? '#94a3b8' : '#334155', fontWeight: 600 }}>
+                                <div style={{
+                                    position: 'absolute', bottom: '3px', right: '3px',
+                                    fontSize: '0.55rem',
+                                    color: prereqsMet ? '#94a3b8' : '#334155',
+                                }}>
                                     {prereqsMet ? 'Click' : `Lv.${HEXA_LEVEL_REQS[i]}`}
                                 </div>
                             )}

@@ -110,8 +110,11 @@ export const CharacterDetailModal: React.FC<Props> = ({ character: characterProp
                 onAccountUpdate={handleAccountUpdate}
             />
             <ContentUnlocksPanel
+                key={character.id}
                 character={character}
                 account={character.account}
+                onUpdate={handleSymbolUpdate}
+                onAccountUpdate={handleAccountUpdate}
             />
 
         </Modal>

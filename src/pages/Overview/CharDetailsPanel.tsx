@@ -3,6 +3,7 @@ import { SymbolTracker } from '../Characters/SymbolTracker';
 import { SixthJobTracker } from '../Characters/SixthJobTracker';
 import { ExtraStatsTracker } from '../Characters/ExtraStatsTracker';
 import { ContentUnlocksPanel } from '../Characters/ContentUnlocksPanel';
+import { UNLOCK_DEFINITIONS } from '../../constants/unlocks';
 import type { CharacterWithAccount, ClassItem } from '../../types';
 
 interface Props {
@@ -13,8 +14,10 @@ interface Props {
 
 export const CharDetailsPanel: React.FC<Props> = ({ character: characterProp, classes, onCharacterUpdate }) => {
     const [localCharacter, setLocalCharacter] = React.useState<CharacterWithAccount>(characterProp);
+    const [showContentUnlocks, setShowContentUnlocks] = React.useState(false);
 
     React.useEffect(() => { setLocalCharacter(characterProp); }, [characterProp]);
+    React.useEffect(() => { setShowContentUnlocks(false); }, [characterProp.id]);
 
     const character = localCharacter;
 
@@ -39,6 +42,11 @@ export const CharDetailsPanel: React.FC<Props> = ({ character: characterProp, cl
     const jobIcon = character.class === 'Xenon'
         ? '/xenon.png'
         : jobClass ? (jobClass.job_1 === character.job ? jobClass.image_1 : jobClass.image_2) : null;
+
+    const completedUnlocks = UNLOCK_DEFINITIONS.filter(def => {
+        if (def.level === 'account') return !!(character.account as any)?.[def.key];
+        return !!(character as any)[def.key];
+    }).length;
 
     return (
         <div className="char-panel-compact">
@@ -71,7 +79,42 @@ export const CharDetailsPanel: React.FC<Props> = ({ character: characterProp, cl
                 onUpdate={handleUpdate}
                 onAccountUpdate={handleAccountUpdate}
             />
-            <ContentUnlocksPanel character={character} account={character.account} />
+
+            <button
+                onClick={() => setShowContentUnlocks(v => !v)}
+                style={{
+                    width: '100%',
+                    background: 'none',
+                    border: 'none',
+                    borderTop: '1px solid rgba(255,255,255,0.06)',
+                    padding: '12px 20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                }}
+            >
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#64748b' }}>
+                    Content Unlocks
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ color: '#4ade80', fontSize: '0.75rem', fontWeight: 700 }}>
+                        {completedUnlocks} / {UNLOCK_DEFINITIONS.length}
+                    </span>
+                    <span style={{ fontSize: '0.65rem', color: '#475569' }}>{showContentUnlocks ? '▲' : '▼'}</span>
+                </div>
+            </button>
+
+            {showContentUnlocks && (
+                <ContentUnlocksPanel
+                    key={character.id}
+                    character={character}
+                    account={character.account}
+                    onUpdate={handleUpdate}
+                    onAccountUpdate={handleAccountUpdate}
+                />
+            )}
         </div>
     );
 };
