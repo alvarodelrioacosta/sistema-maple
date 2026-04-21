@@ -9,10 +9,10 @@ export interface Account {
     number: number;
     email: string | null;
     tag: string | null;
-    mesos_b: number; // Billions of mesos usually, or just raw? User said "mesos_b". implied billion? Or just a key.
-    // Assuming big integer mapping to number (might need care with JS Number safety > 2^53, but mesos usually < 9 quadrillion?)
-    // Maplestory mesos cap is ~100b or 1000b? JS safe integer is 9 quadrillion.
+    mesos_b: number;
     created_at: string;
+    legion_artifact: boolean;
+    legion_artifact_level: number | null;
 }
 
 export interface SharedInventory {
@@ -21,7 +21,10 @@ export interface SharedInventory {
     perfect_innocence_stock: number;
 }
 
-export type AccountInsert = Omit<Account, 'id' | 'created_at'>;
+export type AccountInsert = Omit<Account, 'id' | 'created_at' | 'legion_artifact' | 'legion_artifact_level'> & {
+    legion_artifact?: boolean;
+    legion_artifact_level?: number | null;
+};
 export type AccountUpdate = Partial<AccountInsert>;
 
 // ===== CHARACTERS =====
@@ -71,17 +74,25 @@ export interface Character {
     hecate: number | null;
     // Extra Stats
     pet_expiry_date: string | null;
-    legion_artifact_level: number | null;
     hexa_stat_1_level: number | null;
     hexa_stat_1_enabled: boolean;
     hexa_stat_2_level: number | null;
     hexa_stat_2_enabled: boolean;
     hexa_stat_3_level: number | null;
     hexa_stat_3_enabled: boolean;
-    is_mystic_frontier_unlocked?: boolean;
+    // Content unlock booleans
+    unlock_cygnus: boolean;
+    unlock_pink_bean: boolean;
+    unlock_magnus: boolean;
+    unlock_slime: boolean;
+    unlock_papulatus: boolean;
+    unlock_6th_job: boolean;
+    unlock_boss_pots: boolean;
+    unlock_mf_8_fams: boolean;
+    unlock_mf_9_fams: boolean;
 }
 
-export type CharacterInsert = Omit<Character, 'id' | 'created_at' | 'exp' | 'avatar_url' | 'last_synced_at' | 'exp_percent' | 'sym_vj' | 'sym_chuchu' | 'sym_lach' | 'sym_arc' | 'sym_mor' | 'sym_esf' | 'sym_cer' | 'sym_harc' | 'sym_odi' | 'sym_sha' | 'sym_art' | 'sym_car' | 'sym_tal' | 'sym_gea' | 'origin' | 'ascent' | 'mastery1' | 'mastery2' | 'mastery3' | 'mastery4' | 'mastery5' | 'boost1' | 'boost2' | 'boost3' | 'boost4' | 'janus' | 'hecate' | 'pet_expiry_date' | 'legion_artifact_level' | 'hexa_stat_1_level' | 'hexa_stat_1_enabled' | 'hexa_stat_2_level' | 'hexa_stat_2_enabled' | 'hexa_stat_3_level' | 'hexa_stat_3_enabled'> & {
+export type CharacterInsert = Omit<Character, 'id' | 'created_at' | 'exp' | 'avatar_url' | 'last_synced_at' | 'exp_percent' | 'sym_vj' | 'sym_chuchu' | 'sym_lach' | 'sym_arc' | 'sym_mor' | 'sym_esf' | 'sym_cer' | 'sym_harc' | 'sym_odi' | 'sym_sha' | 'sym_art' | 'sym_car' | 'sym_tal' | 'sym_gea' | 'origin' | 'ascent' | 'mastery1' | 'mastery2' | 'mastery3' | 'mastery4' | 'mastery5' | 'boost1' | 'boost2' | 'boost3' | 'boost4' | 'janus' | 'hecate' | 'pet_expiry_date' | 'hexa_stat_1_level' | 'hexa_stat_1_enabled' | 'hexa_stat_2_level' | 'hexa_stat_2_enabled' | 'hexa_stat_3_level' | 'hexa_stat_3_enabled' | 'unlock_cygnus' | 'unlock_pink_bean' | 'unlock_magnus' | 'unlock_slime' | 'unlock_papulatus' | 'unlock_6th_job' | 'unlock_boss_pots' | 'unlock_mf_8_fams' | 'unlock_mf_9_fams'> & {
     exp?: number | null;
     avatar_url?: string | null;
     last_synced_at?: string | null;
@@ -114,7 +125,6 @@ export type CharacterInsert = Omit<Character, 'id' | 'created_at' | 'exp' | 'ava
     janus?: number | null;
     hecate?: number | null;
     pet_expiry_date?: string | null;
-    legion_artifact_level?: number | null;
     hexa_stat_1_level?: number | null;
     hexa_stat_1_enabled?: boolean;
     hexa_stat_2_level?: number | null;

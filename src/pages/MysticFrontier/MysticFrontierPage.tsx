@@ -44,7 +44,7 @@ const CharacterRow: React.FC<CharacterRowProps> = ({
   unlockLoading,
 }) => {
   const [historyOpen, setHistoryOpen] = useState(false);
-  const isUnlocked = !!character.is_mystic_frontier_unlocked;
+  const isUnlocked = !!character.unlock_mf_8_fams;
 
   const expByNumber = (n: 1 | 2 | 3): MysticFrontierExpedition | null =>
     expeditions.find(e => e.expedition_index === n) ?? null;

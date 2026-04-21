@@ -133,7 +133,7 @@ export const MysticFrontierModal: React.FC<Props> = ({ character, onClose }) => 
     if (!character) return;
     setUnlockLoading(true);
     try {
-      await setUnlocked(character.id, !character.is_mystic_frontier_unlocked);
+      await setUnlocked(character.id, !character.unlock_mf_8_fams);
       await fetchData();
     } finally {
       setUnlockLoading(false);
@@ -143,7 +143,7 @@ export const MysticFrontierModal: React.FC<Props> = ({ character, onClose }) => 
   const expByNumber = (n: 1 | 2 | 3): MysticFrontierExpedition | null =>
     expeditions.find(e => e.expedition_index === n) ?? null;
 
-  const isUnlocked = !!character?.is_mystic_frontier_unlocked;
+  const isUnlocked = !!character?.unlock_mf_8_fams;
 
   return (
     <Modal isOpen={!!character} onClose={onClose} title="Mystic Frontier" size="lg">

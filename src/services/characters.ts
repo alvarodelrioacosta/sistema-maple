@@ -240,6 +240,14 @@ export const charactersService = {
         return { synced, failed, skipped };
     },
 
+    async setUnlock(id: string, key: string, value: boolean): Promise<void> {
+        const { error } = await supabase
+            .from('characters')
+            .update({ [key]: value })
+            .eq('id', id);
+        if (error) throw error;
+    },
+
     async recalculateCategorization(accountId: string): Promise<void> {
         try {
             console.log(`%c[Categorization] --- RECALCULATING ACCOUNT: ${accountId} ---`, 'background: #222; color: #bada55');

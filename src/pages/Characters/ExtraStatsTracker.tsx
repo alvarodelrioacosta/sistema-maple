@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import supabase from '../../lib/supabase';
-import type { Character } from '../../types';
+import type { Character, Account } from '../../types';
 
 const PET_IMG = 'https://static.wikia.nocookie.net/maplestory/images/9/99/Pet_Kino.png/revision/latest?cb=20121026032552';
 const BOSS_POT_IMG = 'https://maplescouter.com/doping_v2/sayram.png';
@@ -16,20 +16,22 @@ const HEXA_LEVEL_REQS = [260, 265, 270] as const;
 
 interface Props {
     character: Character;
+    account: Account | undefined;
     isBossPotUnlocked: boolean;
     isLegionArtifactUnlocked: boolean;
     isSixthJobDone: boolean;
-    loadingUnlocks: boolean;
     onUpdate: (col: string, value: number | boolean | string | null) => void;
+    onAccountUpdate: (col: string, value: number | boolean | string | null) => void;
 }
 
 export const ExtraStatsTracker: React.FC<Props> = ({
     character,
+    account,
     isBossPotUnlocked,
     isLegionArtifactUnlocked,
     isSixthJobDone,
-    loadingUnlocks,
     onUpdate,
+    onAccountUpdate,
 }) => {
     const [saving, setSaving] = useState<string | null>(null);
     const [editingPet, setEditingPet] = useState(false);
@@ -45,6 +47,17 @@ export const ExtraStatsTracker: React.FC<Props> = ({
         }
     }, [character.id, onUpdate]);
 
+    const saveAccount = useCallback(async (col: string, value: number | boolean | string | null) => {
+        if (!account) return;
+        onAccountUpdate(col, value);
+        setSaving(col);
+        try {
+            await supabase.from('accounts').update({ [col]: value }).eq('id', account.id);
+        } finally {
+            setSaving(null);
+        }
+    }, [account, onAccountUpdate]);
+
     const savePetDate = useCallback((dateStr: string) => {
         if (!dateStr) return;
         save('pet_expiry_date', dateStr);
@@ -55,6 +68,11 @@ export const ExtraStatsTracker: React.FC<Props> = ({
         const val = Math.min(max, Math.max(1, parseInt(raw) || 1));
         save(col, val);
     }, [save]);
+
+    const handleArtifactLevelInput = useCallback((max: number, raw: string) => {
+        const val = Math.min(max, Math.max(1, parseInt(raw) || 1));
+        saveAccount('legion_artifact_level', val);
+    }, [saveAccount]);
 
     const level = character.level ?? 0;
 
@@ -95,7 +113,7 @@ export const ExtraStatsTracker: React.FC<Props> = ({
         gap: '4px',
     });
 
-    if (loadingUnlocks) return null;
+    const artifactLevel = account?.legion_artifact_level ?? null;
 
     return (
         <div style={{ padding: '1rem 1.25rem', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'rgba(0,0,0,0.1)' }}>
@@ -156,25 +174,25 @@ export const ExtraStatsTracker: React.FC<Props> = ({
                     </div>
                 </div>
 
-                {/* Legion Artifact */}
+                {/* Legion Artifact — per-account, affects all characters in the account */}
                 <div style={cardStyle(isLegionArtifactUnlocked, '#fbbf24')}>
                     <div style={{ fontSize: '0.58rem', color: '#fbbf24', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Artifact</div>
-                    <img src={LEGION_ARTIFACT_IMG} alt="Legion Artifact" title="Legion Artifact" style={imgStyle(isLegionArtifactUnlocked)} />
+                    <img src={LEGION_ARTIFACT_IMG} alt="Legion Artifact" title="Legion Artifact (account-wide)" style={imgStyle(isLegionArtifactUnlocked)} />
                     {isLegionArtifactUnlocked ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                             <input
                                 type="number"
                                 min={1}
                                 max={60}
-                                value={character.legion_artifact_level ?? ''}
+                                value={artifactLevel ?? ''}
                                 placeholder="–"
-                                onChange={e => handleLevelInput('legion_artifact_level', 60, e.target.value)}
+                                onChange={e => handleArtifactLevelInput(60, e.target.value)}
                                 style={{
                                     width: '28px',
                                     background: 'transparent',
                                     border: 'none',
-                                    color: character.legion_artifact_level === 60 ? '#fbbf24' : '#f1f5f9',
-                                    fontWeight: character.legion_artifact_level === 60 ? 700 : 400,
+                                    color: artifactLevel === 60 ? '#fbbf24' : '#f1f5f9',
+                                    fontWeight: artifactLevel === 60 ? 700 : 400,
                                     fontSize: '0.88rem',
                                     textAlign: 'center',
                                     outline: 'none',

@@ -68,6 +68,22 @@ export const accountsService = {
         return data?.reduce((sum, acc) => sum + (acc.mesos_b || 0), 0) || 0;
     },
 
+    async setLegionArtifact(id: string, value: boolean): Promise<void> {
+        const { error } = await supabase
+            .from('accounts')
+            .update({ legion_artifact: value })
+            .eq('id', id);
+        if (error) throw error;
+    },
+
+    async setLegionArtifactLevel(id: string, level: number): Promise<void> {
+        const { error } = await supabase
+            .from('accounts')
+            .update({ legion_artifact_level: level })
+            .eq('id', id);
+        if (error) throw error;
+    },
+
 };
 
 export default accountsService;

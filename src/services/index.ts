@@ -19,8 +19,6 @@ export { appSettingsService } from './appSettings';
 export { expTnlService } from './expTnl';
 export { nexonApi } from './nexonApi';
 
-export { contentUnlocksService } from './contentUnlocks';
-export type { ContentUnlock, AccountUnlockProgress, UnlockCategory } from './contentUnlocks';
 export { bossesService } from './bosses';
 export type { Boss } from './bosses';
 export { bossingService } from './bossingService';

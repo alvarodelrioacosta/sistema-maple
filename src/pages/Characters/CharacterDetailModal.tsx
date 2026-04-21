@@ -5,9 +5,7 @@ import { SixthJobTracker } from './SixthJobTracker';
 import { ExtraStatsTracker } from './ExtraStatsTracker';
 import { ContentUnlocksPanel } from './ContentUnlocksPanel';
 import { MysticFrontierModal } from './MysticFrontierModal';
-import { contentUnlocksService } from '../../services';
 import type { CharacterWithAccount, ClassItem } from '../../types';
-import type { ContentUnlock, AccountUnlockProgress } from '../../services';
 
 interface Props {
     character: CharacterWithAccount | null;
@@ -18,24 +16,9 @@ interface Props {
 
 export const CharacterDetailModal: React.FC<Props> = ({ character: characterProp, classes, onClose, onCharacterUpdate }) => {
     const [localCharacter, setLocalCharacter] = React.useState(characterProp);
-    const [unlocks, setUnlocks] = React.useState<ContentUnlock[]>([]);
-    const [progress, setProgress] = React.useState<AccountUnlockProgress[]>([]);
-    const [loading, setLoading] = React.useState(true);
     const [mfOpen, setMfOpen] = React.useState(false);
 
     React.useEffect(() => { setLocalCharacter(characterProp); }, [characterProp]);
-
-    React.useEffect(() => {
-        if (!localCharacter) return;
-        setLoading(true);
-        Promise.all([
-            contentUnlocksService.getAll(),
-            contentUnlocksService.getAllProgress()
-        ]).then(([u, p]) => {
-            setUnlocks(u);
-            setProgress(p.filter(pr => pr.account_id === localCharacter.account_id));
-        }).finally(() => setLoading(false));
-    }, [localCharacter?.account_id]);
 
     if (!localCharacter) return null;
 
@@ -46,20 +29,13 @@ export const CharacterDetailModal: React.FC<Props> = ({ character: characterProp
         onCharacterUpdate?.(col, value);
     };
 
-    const isSixthJobUnlocked = progress.some(p => {
-        const unlock = unlocks.find(u => u.id === p.unlock_id);
-        return unlock?.name === '6th Job' && p.completed;
-    });
+    const handleAccountUpdate = (col: string, value: number | boolean | string | null) => {
+        setLocalCharacter(prev => prev ? { ...prev, account: prev.account ? { ...prev.account, [col]: value } : prev.account } : prev);
+    };
 
-    const isBossPotUnlocked = progress.some(p => {
-        const unlock = unlocks.find(u => u.id === p.unlock_id);
-        return unlock?.name === 'Extra Stats pt.2 — Boss Pots' && p.completed;
-    });
-
-    const isLegionArtifactUnlocked = progress.some(p => {
-        const unlock = unlocks.find(u => u.id === p.unlock_id);
-        return unlock?.name === 'Extra Stats pt.1 — Legion Artifact' && p.completed;
-    });
+    const isSixthJobUnlocked = character.unlock_6th_job;
+    const isBossPotUnlocked = character.unlock_boss_pots;
+    const isLegionArtifactUnlocked = character.account?.legion_artifact ?? false;
 
     const classItem = classes.find(cls => cls.class_name === character.class) ?? null;
     const jobClass = classes.find(cls => cls.job_1 === character.job || cls.job_2 === character.job);
@@ -124,22 +100,21 @@ export const CharacterDetailModal: React.FC<Props> = ({ character: characterProp
                 character={character}
                 classItem={classItem}
                 unlocked={isSixthJobUnlocked}
-                loadingUnlocks={loading}
+                loadingUnlocks={false}
                 onUpdate={handleSymbolUpdate}
             />
             <ExtraStatsTracker
                 character={character}
+                account={character.account}
                 isBossPotUnlocked={isBossPotUnlocked}
                 isLegionArtifactUnlocked={isLegionArtifactUnlocked}
                 isSixthJobDone={isSixthJobUnlocked}
-                loadingUnlocks={loading}
                 onUpdate={handleSymbolUpdate}
+                onAccountUpdate={handleAccountUpdate}
             />
             <ContentUnlocksPanel
-                accountId={character.account_id}
-                unlocks={unlocks}
-                progress={progress}
-                loading={loading}
+                character={character}
+                account={character.account}
             />
 
             {/* Mystic Frontier */}

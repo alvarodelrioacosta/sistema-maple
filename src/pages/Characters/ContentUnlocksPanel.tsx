@@ -1,45 +1,41 @@
 import React from 'react';
-import type { ContentUnlock, AccountUnlockProgress } from '../../services';
+import type { Character, Account } from '../../types';
+import { UNLOCK_DEFINITIONS } from '../../constants/unlocks';
 
 interface Props {
-    accountId: string;
-    unlocks: ContentUnlock[];
-    progress: AccountUnlockProgress[];
-    loading: boolean;
+    character: Character;
+    account: Account | undefined;
 }
 
-const BOSS_IMAGE_ALIAS: Record<string, string> = {
-    'Slime': 'Guardian Angel Slime',
-};
+const BOSS_IMAGE_URL = (bossImageName: string) =>
+    `https://media.maplestorywiki.net/yetidb/Maple_Guide_-_${bossImageName.replace(/ /g, '_')}.png`;
 
-const BOSS_IMAGE_URL = (bossName: string) => {
-    const imgName = BOSS_IMAGE_ALIAS[bossName] ?? bossName;
-    return `https://media.maplestorywiki.net/yetidb/Maple_Guide_-_${imgName.replace(/ /g, '_')}.png`;
-};
+export const ContentUnlocksPanel: React.FC<Props> = ({ character, account }) => {
+    const bossUnlocks = UNLOCK_DEFINITIONS.filter(d => d.category === 'boss');
+    const systemUnlocks = UNLOCK_DEFINITIONS.filter(d => d.category === 'system');
 
-export const ContentUnlocksPanel: React.FC<Props> = ({ unlocks, progress, loading }) => {
-    if (loading || unlocks.length === 0) return null;
+    const isDone = (def: typeof UNLOCK_DEFINITIONS[0]): boolean => {
+        if (def.level === 'account') return !!(account as any)?.[def.key];
+        return !!(character as any)[def.key];
+    };
 
-    const bossUnlocks = unlocks.filter(u => u.category === 'boss');
-    const systemUnlocks = unlocks.filter(u => u.category === 'system');
-
-    const isDone = (id: string) => progress.some(p => p.unlock_id === id && p.completed);
+    const completedCount = UNLOCK_DEFINITIONS.filter(isDone).length;
 
     return (
         <div style={{ padding: '20px', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'rgba(0,0,0,0.05)' }}>
             <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'flex', justifyContent: 'space-between' }}>
                 <span>Content Unlocks</span>
-                <span style={{ color: '#4ade80' }}>{unlocks.filter(u => isDone(u.id)).length} / {unlocks.length}</span>
+                <span style={{ color: '#4ade80' }}>{completedCount} / {UNLOCK_DEFINITIONS.length}</span>
             </div>
 
             {/* Bosses Section */}
             <div style={{ marginBottom: '24px' }}>
                 <div style={{ fontSize: '0.65rem', color: '#475569', marginBottom: '8px', fontWeight: 600 }}>BOSS PREQUESTS</div>
                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                    {bossUnlocks.map(u => {
-                        const done = isDone(u.id);
+                    {bossUnlocks.map(def => {
+                        const done = isDone(def);
                         return (
-                            <div key={u.id} style={{
+                            <div key={def.key} style={{
                                 position: 'relative',
                                 width: '56px',
                                 height: '56px',
@@ -51,10 +47,10 @@ export const ContentUnlocksPanel: React.FC<Props> = ({ unlocks, progress, loadin
                                 filter: done ? 'none' : 'grayscale(1) opacity(0.4)'
                             }}>
                                 <img
-                                    src={BOSS_IMAGE_URL(u.unlocks)}
-                                    alt={u.unlocks}
+                                    src={BOSS_IMAGE_URL(def.bossImageName!)}
+                                    alt={def.label}
                                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                    title={`${u.unlocks} ${done ? '✓' : '✗'}`}
+                                    title={`${def.label} ${done ? '✓' : '✗'}`}
                                 />
                                 {done && (
                                     <div style={{
@@ -74,10 +70,10 @@ export const ContentUnlocksPanel: React.FC<Props> = ({ unlocks, progress, loadin
             <div>
                 <div style={{ fontSize: '0.65rem', color: '#475569', marginBottom: '8px', fontWeight: 600 }}>WORLD SYSTEMS</div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '8px' }}>
-                    {systemUnlocks.map(u => {
-                        const done = isDone(u.id);
+                    {systemUnlocks.map(def => {
+                        const done = isDone(def);
                         return (
-                            <div key={u.id} style={{
+                            <div key={def.key} style={{
                                 background: done ? 'rgba(74, 222, 128, 0.05)' : 'rgba(255,255,255,0.02)',
                                 border: `1px solid ${done ? '#4ade8044' : 'rgba(255,255,255,0.05)'}`,
                                 borderRadius: '8px',
@@ -94,10 +90,10 @@ export const ContentUnlocksPanel: React.FC<Props> = ({ unlocks, progress, loadin
                                 }} />
                                 <div style={{ flex: 1 }}>
                                     <div style={{ fontSize: '0.72rem', fontWeight: 600, color: done ? '#f1f5f9' : '#64748b' }}>
-                                        {u.name.includes(' — ') ? u.name.split(' — ')[1] : u.name}
+                                        {def.label}
                                     </div>
                                     <div style={{ fontSize: '0.6rem', color: done ? '#4ade80aa' : '#475569' }}>
-                                        {u.unlocks}
+                                        {def.group}
                                     </div>
                                 </div>
                                 {done && <span style={{ color: '#4ade80', fontSize: '0.8rem' }}>✓</span>}
