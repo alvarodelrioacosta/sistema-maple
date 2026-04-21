@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { clientLedgerService } from '../../services';
 import { Header } from '../../components/Layout';
 import { Button, Card, Table, ResourceHistoryPanel, Modal, Input, Select } from '../../components/UI';
 import { cubeSessionsService, clientsService, itemsService, accountsService, accountsReceivableService, resourcesService } from '../../services';
@@ -280,6 +281,32 @@ export const CubingHistory: React.FC = () => {
 
             await cubeSessionsService.update(arSession.id, {
                 account_receivable_id: ar.id,
+            });
+
+            await clientLedgerService.addEntry({
+                client_id: arFormData.clientId,
+                entry_type: 'charge',
+                description: arFormData.description,
+                amount: total,
+                currency: arFormData.currency,
+                entry_date: new Date().toISOString().split('T')[0],
+                cube_session_id: arSession.id,
+                source_metadata: {
+                    item_name: arSession.itemName,
+                    account_number: arSession.accountNumber,
+                    bright_cubes_used: arSession.brightCubesUsed,
+                    bonus_bright_cubes_used: arSession.bonusCubesUsed,
+                    solid_cubes_used: arSession.solidCubesUsed,
+                    psok_used: arSession.psokUsed,
+                    perfect_innoc_used: arSession.perfectInnocUsed,
+                    guardian_scroll_used: arSession.gScrollUsed,
+                    bright_price: arFormData.brightPrice,
+                    bonus_price: arFormData.bonusPrice,
+                    solid_price: arFormData.solidPrice,
+                    psok_price: arFormData.psokPrice,
+                    p_innoc_price: arFormData.pInnocPrice,
+                    g_scroll_price: arFormData.gScrollPrice,
+                },
             });
 
             setArModalOpen(false);

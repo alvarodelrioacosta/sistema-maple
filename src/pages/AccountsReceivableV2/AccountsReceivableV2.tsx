@@ -5,6 +5,7 @@ import { clientLedgerService, clientsService } from '../../services';
 import type { Client, ClientLedgerEntry, CurrencyBalance, LedgerEntryType } from '../../types';
 import { AddEntryModal } from './AddEntryModal';
 import { EditEntryModal } from './EditEntryModal';
+import { CubeSessionDetailModal } from './CubeSessionDetailModal';
 import './AccountsReceivableV2.css';
 
 // ---- Formatters ----
@@ -51,6 +52,8 @@ export const AccountsReceivableV2: React.FC = () => {
     const [addModalDefaultType, setAddModalDefaultType] = useState<LedgerEntryType>('charge');
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingEntry, setEditingEntry] = useState<ClientLedgerEntry | null>(null);
+    const [isDetailOpen, setIsDetailOpen] = useState(false);
+    const [detailEntry, setDetailEntry] = useState<ClientLedgerEntry | null>(null);
 
     const loadData = useCallback(async () => {
         setLoading(true);
@@ -239,6 +242,15 @@ export const AccountsReceivableV2: React.FC = () => {
                                                     <td className="arv2-notes">{entry.notes || '—'}</td>
                                                     <td>
                                                         <div className="arv2-actions">
+                                                            {entry.cube_session_id && (
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="ghost"
+                                                                    onClick={() => { setDetailEntry(entry); setIsDetailOpen(true); }}
+                                                                >
+                                                                    Detail
+                                                                </Button>
+                                                            )}
                                                             <Button
                                                                 size="sm"
                                                                 variant="ghost"
@@ -305,6 +317,12 @@ export const AccountsReceivableV2: React.FC = () => {
                 onClose={() => { setIsEditModalOpen(false); setEditingEntry(null); }}
                 entry={editingEntry}
                 onSuccess={handleEntryUpdated}
+            />
+
+            <CubeSessionDetailModal
+                isOpen={isDetailOpen}
+                onClose={() => { setIsDetailOpen(false); setDetailEntry(null); }}
+                entry={detailEntry}
             />
         </div>
     );

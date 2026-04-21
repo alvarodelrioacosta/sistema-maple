@@ -570,6 +570,23 @@ export interface MysticFrontierRewardEntry {
 // ===== CLIENT LEDGER (AR v2) =====
 export type LedgerEntryType = 'charge' | 'payment';
 
+export interface CubeSessionMetadata {
+    item_name: string;
+    account_number: number;
+    bright_cubes_used: number;
+    bonus_bright_cubes_used: number;
+    solid_cubes_used: number;
+    psok_used: number;
+    perfect_innoc_used: number;
+    guardian_scroll_used: number;
+    bright_price: number;
+    bonus_price: number;
+    solid_price: number;
+    psok_price: number;
+    p_innoc_price: number;
+    g_scroll_price: number;
+}
+
 export interface ClientLedgerEntry {
     id: string;
     client_id: string;
@@ -579,15 +596,24 @@ export interface ClientLedgerEntry {
     currency: string;
     entry_date: string;  // 'YYYY-MM-DD'
     notes: string | null;
+    cube_session_id: string | null;
+    source_metadata: CubeSessionMetadata | null;
     created_at: string;
     updated_at: string;
     client?: { id: string; name: string };
 }
 
-export type ClientLedgerEntryInsert = Omit<
-    ClientLedgerEntry,
-    'id' | 'created_at' | 'updated_at' | 'client'
-> & { notes?: string | null };
+export interface ClientLedgerEntryInsert {
+    client_id: string;
+    entry_type: LedgerEntryType;
+    description: string;
+    amount: number;
+    currency: string;
+    entry_date: string;
+    notes?: string | null;
+    cube_session_id?: string | null;
+    source_metadata?: CubeSessionMetadata | null;
+}
 
 export type ClientLedgerEntryUpdate = Partial<ClientLedgerEntryInsert>;
 
