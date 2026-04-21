@@ -39,6 +39,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
         const handleClickOutside = (event: MouseEvent) => {
             if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
                 setIsOpen(false);
+                setSearchTerm('');
             }
         };
 
@@ -49,9 +50,6 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
     useEffect(() => {
         if (isOpen && searchable && searchInputRef.current) {
             searchInputRef.current.focus();
-        }
-        if (!isOpen) {
-            setSearchTerm(''); // Reset search when closed
         }
     }, [isOpen, searchable]);
 
@@ -77,7 +75,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
 
             <div
                 className={`select-field custom-select-trigger ${disabled ? 'disabled' : ''}`}
-                onClick={() => !disabled && setIsOpen(!isOpen)}
+                onClick={() => { if (!disabled) { if (isOpen) setSearchTerm(''); setIsOpen(!isOpen); } }}
                 style={{
                     cursor: disabled ? 'not-allowed' : 'pointer',
                     display: 'flex',

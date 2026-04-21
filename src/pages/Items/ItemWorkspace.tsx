@@ -550,8 +550,8 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                 const totalFunds = accountMesos + vaultMesos;
                 if (totalFunds < mesoPrice) throw new Error(`Mesos insuficientes. Costo: ${mesoPrice}B, Disponible: ${totalFunds.toFixed(2)}B`);
 
-                let deductFromAcc = Math.min(accountMesos, mesoPrice);
-                let deductFromVault = mesoPrice - deductFromAcc;
+                const deductFromAcc = Math.min(accountMesos, mesoPrice);
+                const deductFromVault = mesoPrice - deductFromAcc;
 
                 const updatePs: Promise<any>[] = [];
                 if (deductFromAcc > 0) updatePs.push(accountsService.update(account.id, { mesos_b: accountMesos - deductFromAcc }));

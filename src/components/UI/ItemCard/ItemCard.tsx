@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useMemo } from 'react';
 import ReactDOM from 'react-dom';
 import type { ItemWithCharacter, ItemStatus, ItemDB } from '../../../types';
 import { ItemTooltip } from '../ItemTooltip/ItemTooltip';
@@ -87,9 +87,11 @@ export const ItemCard: React.FC<ItemCardProps> = ({
     const itemDBEntry = itemsDB.find(db => db.name === item.name);
     const baseSlots = itemDBEntry?.slots;
 
-    const ahTimer = (() => {
+    const [renderTime] = useState(Date.now);
+
+    const ahTimer = useMemo(() => {
         if (!item.ah_listed_at) return null;
-        const diffMs = Date.now() - new Date(item.ah_listed_at).getTime();
+        const diffMs = renderTime - new Date(item.ah_listed_at).getTime();
         if (diffMs >= 48 * 3600 * 1000) return { expired: true, hours: 0, minutes: 0 };
         const rem = 48 * 3600 * 1000 - diffMs;
         return {
@@ -97,7 +99,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
             hours: Math.floor(rem / 3600000),
             minutes: Math.floor((rem % 3600000) / 60000),
         };
-    })();
+    }, [item.ah_listed_at, renderTime]);
 
     return (
         <div
