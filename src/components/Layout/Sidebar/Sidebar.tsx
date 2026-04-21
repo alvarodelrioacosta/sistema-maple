@@ -96,11 +96,11 @@ export const Sidebar: React.FC = () => {
                 )}
 
                 <NavLink
-                    to="/daily-checkup"
-                    className={`sidebar__link sidebar__link--daily ${location.pathname === '/daily-checkup' ? 'sidebar__link--active' : ''}`}
+                    to="/overview"
+                    className={`sidebar__link sidebar__link--daily ${location.pathname === '/overview' ? 'sidebar__link--active' : ''}`}
                 >
-                    <span className="sidebar__icon">📅</span>
-                    <span className="sidebar__label">Daily Check Up</span>
+                    <span className="sidebar__icon">📊</span>
+                    <span className="sidebar__label">Overview</span>
                 </NavLink>
 
                 {isAdmin && (

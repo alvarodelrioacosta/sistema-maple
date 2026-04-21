@@ -24,7 +24,7 @@ function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' });
 }
 
-interface CharacterRowProps {
+export interface CharacterRowProps {
   character: CharacterWithAccount;
   expeditions: MysticFrontierExpedition[];
   history: MysticFrontierRewardEntry[];
@@ -34,7 +34,7 @@ interface CharacterRowProps {
   unlockLoading: boolean;
 }
 
-const CharacterRow: React.FC<CharacterRowProps> = ({
+export const CharacterRow: React.FC<CharacterRowProps> = ({
   character,
   expeditions,
   history,

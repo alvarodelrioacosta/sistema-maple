@@ -19,7 +19,7 @@ import {
     Settings,
     CubingHistory,
     Tasks,
-    DailyCheckUp,
+    Overview,
     Events,
     Login,
     Bosses,
@@ -47,7 +47,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactElement; adminOnly?: boole
     }
 
     if (adminOnly && profile?.role !== 'admin') {
-        return <Navigate to="/daily-checkup" />;
+        return <Navigate to="/overview" />;
     }
 
     return children;
@@ -58,11 +58,11 @@ function AppRoutes() {
 
     return (
         <Routes>
-            <Route path="/login" element={!user ? <Login /> : <Navigate to={profile?.role === 'worker' ? '/daily-checkup' : '/'} />} />
+            <Route path="/login" element={!user ? <Login /> : <Navigate to={profile?.role === 'worker' ? '/overview' : '/'} />} />
 
             <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
                 <Route index element={<ProtectedRoute adminOnly><Dashboard /></ProtectedRoute>} />
-                <Route path="daily-checkup" element={<DailyCheckUp />} />
+                <Route path="overview" element={<Overview />} />
 
                 {/* Admin Only Routes */}
                 <Route path="accounts" element={<ProtectedRoute adminOnly><Accounts /></ProtectedRoute>} />
