@@ -105,30 +105,17 @@
 /* Locked state */
 .mfp-row__locked {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
+  gap: 0.5rem;
   padding: 0.5rem 0;
-}
-
-.mfp-row__lock-icon {
-  font-size: 1.4rem;
-  flex-shrink: 0;
+  text-align: center;
 }
 
 .mfp-row__locked p {
   font-size: 0.82rem;
   color: var(--color-text-muted);
   margin: 0;
-  flex: 1;
-  min-width: 200px;
-}
-
-/* Main content: expeditions + history side by side */
-.mfp-row__main {
-  display: flex;
-  gap: 0.75rem;
-  align-items: flex-start;
 }
 
 /* Expedition cards in a row */
@@ -142,118 +129,6 @@
 .mfp-row__expeditions .mf-expedition-card {
   width: 160px;
   min-width: 0;
-}
-
-/* History side panel (to the right of cards) */
-.mfp-row__history-side {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  min-width: 190px;
-  max-width: 260px;
-  border-left: 1px solid rgba(255,255,255,0.06);
-  padding-left: 0.75rem;
-}
-
-/* History toggle button */
-.mfp-row__history-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  background: none;
-  border: none;
-  color: var(--color-text-muted);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  cursor: pointer;
-  padding: 0.25rem 0;
-  transition: color 150ms ease;
-  align-self: flex-start;
-}
-
-.mfp-row__history-toggle:hover,
-.mfp-row__history-toggle.open {
-  color: var(--color-text-secondary);
-}
-
-.mfp-row__history-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  border-radius: 9999px;
-  background: rgba(255,255,255,0.08);
-  font-size: 0.65rem;
-}
-
-/* History panel */
-.mfp-row__history {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  padding: 0.5rem 0;
-  border-top: 1px solid rgba(255,255,255,0.06);
-}
-
-.mfp-row__history-empty {
-  font-size: 0.8rem;
-  color: var(--color-text-muted);
-  margin: 0;
-  padding: 0.25rem 0;
-}
-
-.mfp-history-entry {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.35rem 0.6rem;
-  background: rgba(255,255,255,0.025);
-  border-radius: 4px;
-  font-size: 0.78rem;
-}
-
-.mfp-history-rank {
-  padding: 0.1rem 0.45rem;
-  border-radius: 9999px;
-  font-size: 0.68rem;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-
-.mfp-history-exp {
-  font-size: 0.7rem;
-  color: var(--color-text-muted);
-  flex-shrink: 0;
-}
-
-.mfp-history-rewards {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  flex-wrap: wrap;
-  flex: 1;
-}
-
-.mfp-history-icon {
-  width: 20px;
-  height: 20px;
-  object-fit: contain;
-}
-
-.mfp-history-qty {
-  font-size: 0.68rem;
-  color: var(--color-text-muted);
-  margin-right: 0.15rem;
-}
-
-.mfp-history-date {
-  font-size: 0.68rem;
-  color: var(--color-text-muted);
-  flex-shrink: 0;
-  margin-left: auto;
 }
 
 /* ─── Responsive ─────────────────────────────────────────────────────────────── */

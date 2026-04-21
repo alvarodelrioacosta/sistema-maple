@@ -26,14 +26,12 @@ import type {
     ItemDB,
     BossingSession,
     MysticFrontierExpedition,
-    MysticFrontierRewardEntry,
     MysticFrontierRewardType,
 } from '../../types';
 import { EXPIRING_RESOURCE_TYPES, RESOURCE_LABELS } from '../../types';
 import { UNLOCK_DEFINITIONS, SEQUENTIAL_UNLOCK_GROUPS, type UnlockDef } from '../../constants/unlocks';
 import {
     getExpeditions,
-    getRewardHistory,
     CUBE_RESOURCE_KEYS,
 } from '../../services/mysticFrontierService';
 import { CharacterRow } from '../MysticFrontier/MysticFrontierPage';
@@ -127,7 +125,6 @@ const Overview: React.FC = () => {
 
     // Mystic Frontier panel data
     const [mfExpeditions, setMfExpeditions] = useState<Record<string, MysticFrontierExpedition[]>>({});
-    const [mfHistory, setMfHistory] = useState<Record<string, MysticFrontierRewardEntry[]>>({});
     const [mfDataLoaded, setMfDataLoaded] = useState(false);
 
     const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
@@ -275,19 +272,11 @@ const Overview: React.FC = () => {
     const loadMFData = useCallback(async (charIds: string[]) => {
         if (charIds.length === 0) return;
         const results = await Promise.all(
-            charIds.map(id =>
-                Promise.all([getExpeditions(id), getRewardHistory(id)])
-                    .then(([exps, hist]) => ({ id, exps, hist }))
-            )
+            charIds.map(id => getExpeditions(id).then(exps => ({ id, exps })))
         );
         setMfExpeditions(prev => {
             const next = { ...prev };
             results.forEach(r => { next[r.id] = r.exps; });
-            return next;
-        });
-        setMfHistory(prev => {
-            const next = { ...prev };
-            results.forEach(r => { next[r.id] = r.hist; });
             return next;
         });
     }, []);
@@ -694,9 +683,8 @@ const Overview: React.FC = () => {
     };
 
     const handleMFRefresh = async (characterId: string) => {
-        const [exps, hist] = await Promise.all([getExpeditions(characterId), getRewardHistory(characterId)]);
+        const exps = await getExpeditions(characterId);
         setMfExpeditions(prev => ({ ...prev, [characterId]: exps }));
-        setMfHistory(prev => ({ ...prev, [characterId]: hist }));
     };
 
     const handleMFUnlockToggle = async (characterId: string, col: 'unlock_mf_8_fams' | 'unlock_mf_9_fams', currentValue: boolean) => {
@@ -1081,7 +1069,6 @@ const Overview: React.FC = () => {
                                                             : <CharacterRow
                                                                 character={charWithAccount}
                                                                 expeditions={mfExpeditions[charWithAccount.id] ?? []}
-                                                                history={mfHistory[charWithAccount.id] ?? []}
                                                                 cubeImages={mfCubeImages}
                                                                 onRefresh={handleMFRefresh}
                                                                 onUnlockToggle={handleMFUnlockToggle}

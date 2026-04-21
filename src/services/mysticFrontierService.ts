@@ -210,6 +210,15 @@ export async function getRewardHistory(characterId: string): Promise<MysticFront
   return (data ?? []) as MysticFrontierRewardEntry[];
 }
 
+export async function getAllRewardHistory(): Promise<MysticFrontierRewardEntry[]> {
+  const { data, error } = await supabase
+    .from('mystic_frontier_reward_history')
+    .select('*')
+    .order('collected_at', { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as MysticFrontierRewardEntry[];
+}
+
 export async function setUnlocked(characterId: string, unlocked: boolean): Promise<void> {
   const { error } = await supabase
     .from('characters')

@@ -242,6 +242,27 @@ export const ExpeditionCard: React.FC<ExpeditionCardProps> = ({
       {liveStatus !== 'available' && (
         <>
           <span style={rankBadgeStyle}>{activeRank}</span>
+          {(() => {
+            const selected = ALL_REWARD_TYPES.filter(type =>
+              CUBE_REWARDS.has(type) ? (cubeQtys[type] ?? 0) > 0 : !!nonCubeChecked[type]
+            );
+            if (selected.length === 0) return null;
+            return (
+              <div className="mf-active-rewards">
+                {selected.map(type => {
+                  const meta = REWARD_METADATA[type];
+                  const imgSrc = CUBE_REWARDS.has(type) ? cubeImages[type] : meta.image_url;
+                  const qty = CUBE_REWARDS.has(type) ? (cubeQtys[type] ?? 0) : 1;
+                  return (
+                    <React.Fragment key={type}>
+                      {imgSrc && <img src={imgSrc} alt={meta.label} title={meta.label} className="mf-reward-img" style={{ width: 22, height: 22 }} />}
+                      {qty > 1 && <span style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)' }}>×{qty}</span>}
+                    </React.Fragment>
+                  );
+                })}
+              </div>
+            );
+          })()}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <div className="mf-timer" style={{ flex: 1 }}>
               {timerDone

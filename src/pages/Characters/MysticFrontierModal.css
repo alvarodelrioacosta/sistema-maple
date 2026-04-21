@@ -203,65 +203,10 @@
   margin-top: 0.75rem;
 }
 
-/* History */
-.mf-history-section {
-  margin-top: 1.5rem;
-}
-
-.mf-history-title {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--color-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-bottom: 0.75rem;
-  cursor: pointer;
+/* Pre-selected reward strip shown during active exploration/rest */
+.mf-active-rewards {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-}
-
-.mf-history-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.mf-history-entry {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: var(--radius-sm, 4px);
-  background: var(--color-surface-2, rgba(255,255,255,0.04));
-  font-size: 0.8rem;
-  color: var(--color-text-secondary);
-}
-
-.mf-history-rank-badge {
-  padding: 0.15rem 0.5rem;
-  border-radius: 9999px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  flex-shrink: 0;
-}
-
-.mf-history-rewards {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
+  gap: 0.25rem;
   flex-wrap: wrap;
-  flex: 1;
-}
-
-.mf-history-reward-icon {
-  width: 22px;
-  height: 22px;
-  object-fit: contain;
-}
-
-.mf-history-date {
-  font-size: 0.72rem;
-  color: var(--color-text-muted);
-  flex-shrink: 0;
 }

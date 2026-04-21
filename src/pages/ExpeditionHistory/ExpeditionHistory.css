@@ -1,0 +1,148 @@
+.exp-history-page {
+  padding: 1.5rem 2rem;
+  max-width: 1200px;
+}
+
+.exp-history-header {
+  margin-bottom: 1.5rem;
+}
+
+.exp-history-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 0.25rem;
+}
+
+.exp-history-subtitle {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.exp-history-loading,
+.exp-history-empty {
+  padding: 3rem;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.exp-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.exp-history-row {
+  display: grid;
+  grid-template-columns: 160px 150px 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  background: var(--color-surface-2, rgba(255,255,255,0.03));
+  border: 1px solid var(--color-border, rgba(255,255,255,0.08));
+  border-radius: var(--radius-md, 8px);
+  padding: 0.6rem 1rem;
+}
+
+.exp-history-char {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.exp-history-char-top {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.exp-history-account {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.exp-history-tag {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.05rem 0.35rem;
+  border-radius: 9999px;
+  background: rgba(124, 58, 237, 0.15);
+  color: #a78bfa;
+  border: 1px solid rgba(124, 58, 237, 0.3);
+}
+
+.exp-history-charname {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.exp-history-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.exp-history-expnum {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.exp-history-rank {
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.exp-history-rewards {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.exp-history-reward-icon {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+.exp-history-qty {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  margin-right: 0.15rem;
+}
+
+.exp-history-dates {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.2rem;
+  min-width: 90px;
+}
+
+.exp-history-collected {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+.exp-history-expires {
+  font-size: 0.68rem;
+  color: var(--color-text-muted);
+}
+
+.exp-history-expired-badge {
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}

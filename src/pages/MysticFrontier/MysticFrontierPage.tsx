@@ -4,9 +4,6 @@ import { charactersService } from '../../services/characters';
 import { resourcesService } from '../../services/resources';
 import {
   getExpeditions,
-  getRewardHistory,
-  REWARD_METADATA,
-  CUBE_REWARDS,
   CUBE_RESOURCE_KEYS,
 } from '../../services/mysticFrontierService';
 
@@ -15,7 +12,6 @@ const USEFUL_FAMS_IMG = 'https://static.wikia.nocookie.net/maplestory/images/d/d
 import type {
   CharacterWithAccount,
   MysticFrontierExpedition,
-  MysticFrontierRewardEntry,
   MysticFrontierRewardType,
 } from '../../types';
 import { ExpeditionCard } from './ExpeditionCard';
@@ -26,7 +22,6 @@ import '../Characters/MysticFrontierModal.css';
 export interface CharacterRowProps {
   character: CharacterWithAccount;
   expeditions: MysticFrontierExpedition[];
-  history: MysticFrontierRewardEntry[];
   cubeImages: Record<MysticFrontierRewardType, string>;
   onRefresh: (characterId: string) => void;
   onUnlockToggle: (characterId: string, col: 'unlock_mf_8_fams' | 'unlock_mf_9_fams', currentValue: boolean) => void;
@@ -35,12 +30,10 @@ export interface CharacterRowProps {
 export const CharacterRow: React.FC<CharacterRowProps> = ({
   character,
   expeditions,
-  history,
   cubeImages,
   onRefresh,
   onUnlockToggle,
 }) => {
-  const [historyOpen, setHistoryOpen] = useState(false);
   const isUnlocked = !!character.unlock_mf_8_fams && !!character.unlock_mf_9_fams;
 
   const expByNumber = (n: 1 | 2 | 3): MysticFrontierExpedition | null =>
@@ -64,9 +57,8 @@ export const CharacterRow: React.FC<CharacterRowProps> = ({
       <div className="mfp-row__content">
         {!isUnlocked ? (
           <div className="mfp-row__locked">
-            <span className="mfp-row__lock-icon">🔒</span>
             <p>Activate <strong>8 Badge Fams</strong> and <strong>9 Useful Fams</strong> to unlock Mystic Frontier.</p>
-            <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
               {([
                 { col: 'unlock_mf_8_fams', img: FAM_BADGE_IMG, label: '8 Badge Fams', active: !!character.unlock_mf_8_fams },
                 { col: 'unlock_mf_9_fams', img: USEFUL_FAMS_IMG, label: '9 Useful Fams', active: !!character.unlock_mf_9_fams },
@@ -102,59 +94,18 @@ export const CharacterRow: React.FC<CharacterRowProps> = ({
             </div>
           </div>
         ) : (
-          <>
-            <div className="mfp-row__main">
-              <div className="mfp-row__expeditions">
-                {([1, 2, 3] as const).map(n => (
-                  <ExpeditionCard
-                    key={n}
-                    expeditionNumber={n}
-                    expedition={expByNumber(n)}
-                    characterId={character.id}
-                    cubeImages={cubeImages}
-                    onRefresh={() => onRefresh(character.id)}
-                  />
-                ))}
-              </div>
-
-              <div className="mfp-row__history-side">
-                <button
-                  className={`mfp-row__history-toggle ${historyOpen ? 'open' : ''}`}
-                  onClick={() => setHistoryOpen(p => !p)}
-                >
-                  {historyOpen ? '▾' : '▸'} HISTORY
-                  {history.filter(e => e.rewards.length > 0).length > 0 && (
-                    <span className="mfp-row__history-count">{history.filter(e => e.rewards.length > 0).length}</span>
-                  )}
-                </button>
-
-            {historyOpen && (
-              <div className="mfp-row__history">
-                {(() => {
-                  const withRewards = history.filter(e => e.rewards.length > 0);
-                  if (withRewards.length === 0) return <p className="mfp-row__history-empty">No rewards collected yet.</p>;
-                  return withRewards.map(entry => (
-                    <div key={entry.id} className="mfp-history-entry">
-                      <div className="mfp-history-rewards">
-                        {entry.rewards.map((r, i) => {
-                          const meta = REWARD_METADATA[r.type];
-                          const imgSrc = CUBE_REWARDS.has(r.type) ? cubeImages[r.type] : meta?.image_url;
-                          return (
-                            <React.Fragment key={i}>
-                              {imgSrc && <img src={imgSrc} alt={meta?.label ?? r.type} className="mfp-history-icon" title={meta?.label} />}
-                              {r.quantity > 1 && <span className="mfp-history-qty">×{r.quantity}</span>}
-                            </React.Fragment>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ));
-                })()}
-              </div>
-            )}
-              </div>
-            </div>
-          </>
+          <div className="mfp-row__expeditions">
+            {([1, 2, 3] as const).map(n => (
+              <ExpeditionCard
+                key={n}
+                expeditionNumber={n}
+                expedition={expByNumber(n)}
+                characterId={character.id}
+                cubeImages={cubeImages}
+                onRefresh={() => onRefresh(character.id)}
+              />
+            ))}
+          </div>
         )}
       </div>
     </div>
@@ -166,19 +117,14 @@ export const CharacterRow: React.FC<CharacterRowProps> = ({
 export const MysticFrontierPage: React.FC = () => {
   const [characters, setCharacters] = useState<CharacterWithAccount[]>([]);
   const [expeditions, setExpeditions] = useState<Record<string, MysticFrontierExpedition[]>>({});
-  const [history, setHistory] = useState<Record<string, MysticFrontierRewardEntry[]>>({});
   const [cubeImages, setCubeImages] = useState<Record<MysticFrontierRewardType, string>>(
     {} as Record<MysticFrontierRewardType, string>,
   );
   const [loading, setLoading] = useState(true);
 
   const fetchCharacterData = useCallback(async (characterId: string) => {
-    const [exps, hist] = await Promise.all([
-      getExpeditions(characterId),
-      getRewardHistory(characterId),
-    ]);
+    const exps = await getExpeditions(characterId);
     setExpeditions(prev => ({ ...prev, [characterId]: exps }));
-    setHistory(prev => ({ ...prev, [characterId]: hist }));
   }, []);
 
   useEffect(() => {
@@ -187,7 +133,6 @@ export const MysticFrontierPage: React.FC = () => {
       try {
         const all = await charactersService.getAll();
         const mains = all.filter(c => c.main === 'Main');
-        // Sort by account number
         mains.sort((a, b) => (a.account?.number ?? 0) - (b.account?.number ?? 0));
         setCharacters(mains);
 
@@ -231,7 +176,6 @@ export const MysticFrontierPage: React.FC = () => {
               key={char.id}
               character={char}
               expeditions={expeditions[char.id] ?? []}
-              history={history[char.id] ?? []}
               cubeImages={cubeImages}
               onRefresh={fetchCharacterData}
               onUnlockToggle={handleUnlockToggle}
