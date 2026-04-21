@@ -299,7 +299,7 @@ export const CubingHistory: React.FC = () => {
                 description: arFormData.description,
                 amount: total,
                 currency: arFormData.currency,
-                entry_date: new Date().toISOString().split('T')[0],
+                entry_date: arSession.createdAt.split('T')[0],
                 cube_session_id: arSession.id,
                 source_metadata: {
                     item_name: arSession.itemName,
