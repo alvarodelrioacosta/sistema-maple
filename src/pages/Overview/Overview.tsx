@@ -622,7 +622,8 @@ const Overview: React.FC = () => {
         const boss = allBosses.find(b => b.id === bossId);
         const unlockCol = boss ? BOSS_PREQUEST_COL[boss.name] : undefined;
         if (!unlockCol) return;
-        const mainChar = mainChars.find(c => c.account_id === accountId);
+        const row = rows.find(r => r.account.id === accountId);
+        const mainChar = row?.mainChar;
         if (!mainChar) return;
         const currentlyDone = !!(mainChar as unknown as Record<string, boolean>)[unlockCol];
         const newState = !currentlyDone;

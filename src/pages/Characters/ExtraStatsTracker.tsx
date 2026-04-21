@@ -167,8 +167,9 @@ export const ExtraStatsTracker: React.FC<Props> = ({
                     <img
                         src={BOSS_POT_IMG}
                         alt="Boss Pot"
-                        title="Boss Pot"
-                        style={imgStyle(isBossPotUnlocked, '#f97316')}
+                        title={isBossPotUnlocked ? 'Boss Pot — click to disable' : 'Boss Pot — click to enable'}
+                        style={{ ...imgStyle(isBossPotUnlocked, '#f97316'), cursor: 'pointer' }}
+                        onClick={() => save('unlock_boss_pots', !isBossPotUnlocked)}
                     />
                     {isBossPotUnlocked && (
                         <div style={{
@@ -183,8 +184,9 @@ export const ExtraStatsTracker: React.FC<Props> = ({
                     <img
                         src={LEGION_ARTIFACT_IMG}
                         alt="Legion Artifact"
-                        title="Legion Artifact (account-wide)"
-                        style={imgStyle(isLegionArtifactUnlocked, '#fbbf24')}
+                        title={isLegionArtifactUnlocked ? 'Legion Artifact — click to disable' : 'Legion Artifact — click to enable'}
+                        style={{ ...imgStyle(isLegionArtifactUnlocked, '#fbbf24'), cursor: 'pointer' }}
+                        onClick={() => saveAccount('legion_artifact', !isLegionArtifactUnlocked)}
                     />
                     {isLegionArtifactUnlocked && (
                         <input
