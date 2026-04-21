@@ -1,0 +1,212 @@
+.mf-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.mf-unlock-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.mf-locked {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2.5rem 1rem;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.mf-expedition-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.mf-expedition-card {
+  background: var(--color-surface-2, rgba(255,255,255,0.04));
+  border: 1px solid var(--color-border, rgba(255,255,255,0.08));
+  border-radius: var(--radius-md, 8px);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mf-expedition-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-secondary, #a0aec0);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mf-rank-select {
+  width: 100%;
+}
+
+.mf-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.mf-status-badge.available {
+  background: rgba(72, 187, 120, 0.15);
+  color: #48bb78;
+}
+
+.mf-status-badge.exploring {
+  background: rgba(66, 153, 225, 0.15);
+  color: #4299e1;
+}
+
+.mf-status-badge.resting {
+  background: rgba(237, 137, 54, 0.15);
+  color: #ed8936;
+}
+
+.mf-timer {
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary, #e2e8f0);
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+
+.mf-action-btn {
+  width: 100%;
+  margin-top: auto;
+}
+
+/* Reward picker */
+.mf-reward-picker {
+  border: 1px solid var(--color-border, rgba(255,255,255,0.08));
+  border-radius: var(--radius-md, 8px);
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  background: var(--color-surface-3, rgba(255,255,255,0.02));
+}
+
+.mf-reward-picker-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mf-reward-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.mf-reward-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary, #a0aec0);
+}
+
+.mf-reward-img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.mf-reward-qty-input {
+  width: 52px;
+  padding: 0.2rem 0.4rem;
+  border-radius: var(--radius-sm, 4px);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-2, rgba(255,255,255,0.04));
+  color: var(--color-text-primary);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.mf-picker-confirm {
+  width: 100%;
+  margin-top: 0.75rem;
+}
+
+/* History */
+.mf-history-section {
+  margin-top: 1.5rem;
+}
+
+.mf-history-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.mf-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mf-history-entry {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm, 4px);
+  background: var(--color-surface-2, rgba(255,255,255,0.04));
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.mf-history-rank-badge {
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.mf-history-rewards {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.mf-history-reward-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+.mf-history-date {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
