@@ -304,7 +304,7 @@ export interface CubeSession {
     client_id: string | null;
     account_id: string;
 
-    // Usage fields
+    // Usage counts only — pricing lives in the AR created from Cubing History
     psok_used: number;
     bright_cubes_used: number;
     bonus_bright_cubes_used: number;
@@ -312,20 +312,7 @@ export interface CubeSession {
     gaurdian_scroll_used: number;
     solid_cubes_used: number;
 
-    // Price fields
-    psok_price: number;
-    bright_cubes_price: number;
-    bonus_bright_cubes_price: number;
-    perfect_innoc_price: number;
-    gaurdian_scroll_price: number;
-    solid_cubes_price: number;
-
-    // Totals and Status
-    cubing_session_total: number;
     cubing_session_status: CubingSessionStatus;
-
-    currency: string;
-    meso_rate?: number; // Optional as older sessions might not have it
     account_receivable_id?: string | null;
     created_at: string;
 }

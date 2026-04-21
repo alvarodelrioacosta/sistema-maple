@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Header } from '../../components/Layout';
-import { Button, Card, Table, ResourceHistoryPanel, Modal, Input } from '../../components/UI';
-import { cubeSessionsService, clientsService, itemsService, accountsService, appSettingsService, accountsReceivableService } from '../../services';
+import { Button, Card, Table, ResourceHistoryPanel, Modal, Input, Select } from '../../components/UI';
+import { cubeSessionsService, clientsService, itemsService, accountsService, accountsReceivableService, resourcesService } from '../../services';
 import type { Column } from '../../components/UI/Table';
+import type { Client } from '../../types';
 import './CubingHistory.css';
 
 interface SessionRow {
@@ -14,22 +15,42 @@ interface SessionRow {
     bonusCubesUsed: number;
     psokUsed: number;
     solidCubesUsed: number;
-    total: number;
-    currency: string;
-    mesoRate: number;
+    perfectInnocUsed: number;
+    gScrollUsed: number;
     status: string;
     createdAt: string;
     accountReceivableId: string | null;
     clientId: string;
     itemId: string;
+}
+
+interface ARPricing {
+    clientId: string;
+    currency: string;
     brightPrice: number;
     bonusPrice: number;
     solidPrice: number;
     psokPrice: number;
+    pInnocPrice: number;
+    gScrollPrice: number;
+    description: string;
 }
+
+const DEFAULT_AR_PRICING: ARPricing = {
+    clientId: '',
+    currency: 'USD',
+    brightPrice: 0,
+    bonusPrice: 0,
+    solidPrice: 0,
+    psokPrice: 0,
+    pInnocPrice: 0,
+    gScrollPrice: 0,
+    description: '',
+};
 
 export const CubingHistory: React.FC = () => {
     const [sessions, setSessions] = useState<SessionRow[]>([]);
+    const [clients, setClients] = useState<Client[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
     const [historyOpen, setHistoryOpen] = useState(true);
@@ -38,10 +59,7 @@ export const CubingHistory: React.FC = () => {
     // AR Creation Modal State
     const [arModalOpen, setArModalOpen] = useState(false);
     const [arSession, setArSession] = useState<SessionRow | null>(null);
-    const [arFormData, setArFormData] = useState({
-        amount: 0,
-        description: ''
-    });
+    const [arFormData, setArFormData] = useState<ARPricing>(DEFAULT_AR_PRICING);
     const [isCreatingAR, setIsCreatingAR] = useState(false);
 
     useEffect(() => {
@@ -51,13 +69,14 @@ export const CubingHistory: React.FC = () => {
     const loadSessions = async () => {
         setLoading(true);
         try {
-            const [sessionsData, clientsData, itemsData, accountsData, fallbackRate] = await Promise.all([
+            const [sessionsData, clientsData, itemsData, accountsData] = await Promise.all([
                 cubeSessionsService.getAll(),
                 clientsService.getAll(),
                 itemsService.getAll(),
                 accountsService.getAll(),
-                appSettingsService.getMesoUsdRate()
             ]);
+
+            setClients(clientsData);
 
             const rows: SessionRow[] = sessionsData.map(session => {
                 const client = clientsData.find(c => c.id === session.client_id);
@@ -73,22 +92,16 @@ export const CubingHistory: React.FC = () => {
                     bonusCubesUsed: session.bonus_bright_cubes_used || 0,
                     psokUsed: session.psok_used || 0,
                     solidCubesUsed: session.solid_cubes_used || 0,
-                    total: session.cubing_session_total || 0,
-                    currency: session.currency || 'USD',
-                    mesoRate: session.meso_rate || fallbackRate,
+                    perfectInnocUsed: session.perfect_innoc_used || 0,
+                    gScrollUsed: session.gaurdian_scroll_used || 0,
                     status: session.cubing_session_status || 'unknown',
                     createdAt: session.created_at,
                     accountReceivableId: session.account_receivable_id || null,
                     clientId: session.client_id || '',
                     itemId: session.item_id || '',
-                    brightPrice: session.bright_cubes_price || 0,
-                    bonusPrice: session.bonus_bright_cubes_price || 0,
-                    solidPrice: session.solid_cubes_price || 0,
-                    psokPrice: session.psok_price || 0
                 };
             });
 
-            // Sort by date descending
             rows.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
             setSessions(rows);
         } catch (error) {
@@ -126,28 +139,6 @@ export const CubingHistory: React.FC = () => {
         );
     };
 
-    const calculateMesos = (row: SessionRow) => {
-        if (row.currency === 'Mesos (b)' || row.currency === 'mesos') {
-            return row.total;
-        }
-        // USD -> Mesos (USD / Rate)
-        if (row.mesoRate > 0) {
-            return row.total / row.mesoRate;
-        }
-        return 0;
-    };
-
-    const calculateUSD = (row: SessionRow) => {
-        if (row.currency !== 'Mesos (b)' && row.currency !== 'mesos') {
-            return row.total;
-        }
-        // Mesos -> USD (Mesos * Rate)
-        if (row.mesoRate > 0) {
-            return row.total * row.mesoRate;
-        }
-        return 0;
-    };
-
     const columns: Column<SessionRow>[] = [
         {
             key: 'createdAt',
@@ -181,26 +172,6 @@ export const CubingHistory: React.FC = () => {
         {
             key: 'psokUsed',
             header: 'PSOK'
-        },
-        {
-            key: 'totalUSD',
-            header: 'Total USD',
-            render: (row) => {
-                const val = calculateUSD(row);
-                return <span className="total-value" style={{ color: '#4ade80' }}>
-                    ${val.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
-                </span>
-            }
-        },
-        {
-            key: 'totalMesos',
-            header: 'Total Mesos',
-            render: (row) => {
-                const val = calculateMesos(row);
-                return <span className="total-value" style={{ color: '#fbbf24' }}>
-                    {val.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} B
-                </span>
-            }
         },
         {
             key: 'status',
@@ -252,33 +223,74 @@ export const CubingHistory: React.FC = () => {
         }
     ];
 
-    const handleOpenARModal = (session: SessionRow) => {
+    const handleOpenARModal = async (session: SessionRow) => {
+        const client = clients.find(c => c.id === session.clientId);
+
+        // Pre-fill prices from client config where available
+        let resourceMeta: Record<string, { mesoCost: number }> = {};
+        try {
+            resourceMeta = await resourcesService.getResourceMetadata();
+        } catch {
+            // non-critical, leave defaults
+        }
+
         setArSession(session);
         setArFormData({
-            amount: session.total,
-            description: `Cubing Session: ${session.itemName}`
+            clientId: session.clientId,
+            currency: client?.currency || 'USD',
+            brightPrice: client?.bright_cube_price || 0,
+            bonusPrice: client?.bonus_bright_cube_price || 0,
+            solidPrice: client?.solid_cubes_price || 0,
+            psokPrice: resourceMeta['psok']?.mesoCost || 0,
+            pInnocPrice: resourceMeta['perfect_innoc']?.mesoCost || 0,
+            gScrollPrice: resourceMeta['guardian_scroll']?.mesoCost || 0,
+            description: `Cubing Session: ${session.itemName}`,
         });
         setArModalOpen(true);
     };
 
+    const calcARTotal = () => {
+        if (!arSession) return 0;
+        return (
+            arSession.brightCubesUsed * arFormData.brightPrice +
+            arSession.bonusCubesUsed * arFormData.bonusPrice +
+            arSession.solidCubesUsed * arFormData.solidPrice +
+            arSession.psokUsed * arFormData.psokPrice +
+            arSession.perfectInnocUsed * arFormData.pInnocPrice +
+            arSession.gScrollUsed * arFormData.gScrollPrice
+        );
+    };
+
+    const handleClientChange = (clientId: string) => {
+        const client = clients.find(c => c.id === clientId);
+        setArFormData(prev => ({
+            ...prev,
+            clientId,
+            currency: client?.currency || 'USD',
+            brightPrice: client?.bright_cube_price || prev.brightPrice,
+            bonusPrice: client?.bonus_bright_cube_price || prev.bonusPrice,
+            solidPrice: client?.solid_cubes_price || prev.solidPrice,
+        }));
+    };
+
     const handleCreateAR = async () => {
         if (!arSession || isCreatingAR) return;
+        const total = calcARTotal();
+        if (total <= 0) { alert('El total debe ser mayor a 0'); return; }
 
         try {
             setIsCreatingAR(true);
-            
-            // 1. Create AR
+
             const ar = await accountsReceivableService.create({
-                client_id: arSession.clientId,
+                client_id: arFormData.clientId,
                 item_id: arSession.itemId,
-                amount: arFormData.amount,
-                currency: arSession.currency,
-                description: arFormData.description
+                amount: total,
+                currency: arFormData.currency,
+                description: arFormData.description,
             });
 
-            // 2. Link Session to AR
             await cubeSessionsService.update(arSession.id, {
-                account_receivable_id: ar.id
+                account_receivable_id: ar.id,
             });
 
             setArModalOpen(false);
@@ -290,6 +302,17 @@ export const CubingHistory: React.FC = () => {
             setIsCreatingAR(false);
         }
     };
+
+    const arTotal = calcARTotal();
+
+    const resourceRows = arSession ? [
+        { label: 'Bright Cubes', qty: arSession.brightCubesUsed, field: 'brightPrice' as const },
+        { label: 'Bonus Bright', qty: arSession.bonusCubesUsed, field: 'bonusPrice' as const },
+        { label: 'Solid Cubes', qty: arSession.solidCubesUsed, field: 'solidPrice' as const },
+        { label: 'PSOK', qty: arSession.psokUsed, field: 'psokPrice' as const },
+        { label: 'Perfect Innoc.', qty: arSession.perfectInnocUsed, field: 'pInnocPrice' as const },
+        { label: 'Guardian Scroll', qty: arSession.gScrollUsed, field: 'gScrollPrice' as const },
+    ].filter(r => r.qty > 0) : [];
 
     return (
         <div className="cubing-history-page">
@@ -349,37 +372,84 @@ export const CubingHistory: React.FC = () => {
                 title="Create Account Receivable"
                 size="md"
             >
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', padding: '0.5rem' }}>
-                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '8px' }}>
-                        <h4 style={{ margin: '0 0 0.5rem 0', color: '#a78bfa' }}>Session Summary</h4>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', fontSize: '0.9rem' }}>
-                            <span>Bright Cubes: {arSession?.brightCubesUsed}</span>
-                            <span>Bonus Bright: {arSession?.bonusCubesUsed}</span>
-                            <span>Solid Cubes: {arSession?.solidCubesUsed}</span>
-                            <span>PSOKs: {arSession?.psokUsed}</span>
-                        </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', padding: '0.5rem' }}>
+
+                    {/* Billing Info */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                        <Select
+                            label="Client"
+                            value={arFormData.clientId}
+                            onChange={handleClientChange}
+                            options={clients.map(c => ({ value: c.id, label: c.name }))}
+                        />
+                        <Select
+                            label="Currency"
+                            value={arFormData.currency}
+                            onChange={(v) => setArFormData(prev => ({ ...prev, currency: v }))}
+                            options={[
+                                { value: 'USD', label: 'USD' },
+                                { value: 'Mesos (b)', label: 'Mesos (b)' },
+                            ]}
+                        />
                     </div>
 
-                    <Input
-                        label={`Total Amount (${arSession?.currency})`}
-                        type="number"
-                        value={arFormData.amount}
-                        onChange={(e) => setArFormData({ ...arFormData, amount: parseFloat(e.target.value) || 0 })}
-                    />
+                    {/* Per-resource pricing table */}
+                    {resourceRows.length > 0 ? (
+                        <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '8px', overflow: 'hidden' }}>
+                            {/* Header */}
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 60px 120px 100px', gap: '0.5rem', padding: '0.5rem 0.75rem', background: 'rgba(255,255,255,0.06)', fontSize: '0.75rem', color: 'var(--color-text-tertiary)', fontWeight: 600, textTransform: 'uppercase' }}>
+                                <span>Resource</span>
+                                <span style={{ textAlign: 'center' }}>Used</span>
+                                <span style={{ textAlign: 'center' }}>Price / unit</span>
+                                <span style={{ textAlign: 'right' }}>Subtotal</span>
+                            </div>
+                            {resourceRows.map(r => {
+                                const subtotal = r.qty * arFormData[r.field];
+                                return (
+                                    <div key={r.field} style={{ display: 'grid', gridTemplateColumns: '1fr 60px 120px 100px', gap: '0.5rem', padding: '0.4rem 0.75rem', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                                        <span style={{ fontSize: '0.9rem' }}>{r.label}</span>
+                                        <span style={{ textAlign: 'center', fontWeight: 600 }}>{r.qty}</span>
+                                        <input
+                                            type="number"
+                                            min={0}
+                                            step="any"
+                                            value={arFormData[r.field]}
+                                            onChange={e => setArFormData(prev => ({ ...prev, [r.field]: parseFloat(e.target.value) || 0 }))}
+                                            style={{ width: '100%', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', padding: '0.25rem 0.4rem', color: 'inherit', fontSize: '0.9rem', textAlign: 'center' }}
+                                        />
+                                        <span style={{ textAlign: 'right', color: subtotal > 0 ? '#4ade80' : 'var(--color-text-tertiary)', fontWeight: 600, fontSize: '0.9rem' }}>
+                                            {subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                        </span>
+                                    </div>
+                                );
+                            })}
+                            {/* Total row */}
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 60px 120px 100px', gap: '0.5rem', padding: '0.5rem 0.75rem', borderTop: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.03)' }}>
+                                <span style={{ fontWeight: 700, gridColumn: '1 / 4' }}>Total</span>
+                                <span style={{ textAlign: 'right', fontWeight: 700, color: '#4ade80', fontSize: '1rem' }}>
+                                    {arTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {arFormData.currency}
+                                </span>
+                            </div>
+                        </div>
+                    ) : (
+                        <p style={{ color: 'var(--color-text-tertiary)', textAlign: 'center', fontSize: '0.9rem' }}>
+                            No resources recorded for this session.
+                        </p>
+                    )}
 
                     <Input
                         label="Description"
                         value={arFormData.description}
-                        onChange={(e) => setArFormData({ ...arFormData, description: e.target.value })}
+                        onChange={(e) => setArFormData(prev => ({ ...prev, description: e.target.value }))}
                     />
 
-                    <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
+                    <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
                         <Button variant="secondary" onClick={() => setArModalOpen(false)}>Cancel</Button>
-                        <Button 
-                            variant="primary" 
-                            onClick={handleCreateAR} 
+                        <Button
+                            variant="primary"
+                            onClick={handleCreateAR}
                             loading={isCreatingAR}
-                            disabled={isCreatingAR || arFormData.amount <= 0}
+                            disabled={isCreatingAR || arTotal <= 0 || !arFormData.clientId}
                         >
                             Confirm & Create Invoice
                         </Button>

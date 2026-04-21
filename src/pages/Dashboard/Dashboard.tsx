@@ -5,7 +5,7 @@
 import React, { useEffect, useState } from 'react';
 import { Header } from '../../components/Layout';
 import { KPICard, Card, LoadingScreen } from '../../components/UI';
-import { itemsService, accountsService, resourcesService, sharedInventoryService, accountsReceivableService, appSettingsService, cubeSessionsService, clientsService } from '../../services';
+import { itemsService, accountsService, resourcesService, sharedInventoryService, accountsReceivableService, appSettingsService } from '../../services';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import type { DashboardKPIs, ItemStatus } from '../../types';
 import './Dashboard.css';
@@ -79,8 +79,6 @@ export const Dashboard: React.FC = () => {
                     sharedInventory,
                     receivables,
                     mesoUsdRate,
-                    cubeSessions,
-                    clients
                 ] = await Promise.all([
                     itemsService.getItemBreakdown(),
                     accountsService.getAll(),
@@ -88,8 +86,6 @@ export const Dashboard: React.FC = () => {
                     sharedInventoryService.get(),
                     accountsReceivableService.getAll(),
                     appSettingsService.getMesoUsdRate(),
-                    cubeSessionsService.getAll(),
-                    clientsService.getAll()
                 ]);
 
                 const balancesArr = await Promise.all(accounts.map(acc => resourcesService.getAllBalances(acc.id)));
@@ -115,20 +111,12 @@ export const Dashboard: React.FC = () => {
                 const totalMesosSum = totalMesosInAccounts + (sharedInventory?.mesos_stock || 0);
                 const totalMesosValueUSD = totalMesosSum * mesoUsdRate;
 
-                // Accounts Receivable in USD (AR + Ongoing Cube Sessions)
+                // Accounts Receivable in USD (confirmed ARs only)
                 const activeReceivables = receivables.filter(ar => ar.status !== 'paid' && (ar.amount - (ar.paid || 0)) > 0);
-                const activeCubeSessions = cubeSessions.filter(s => s.cubing_session_status === 'Ongoing');
 
-                const arTotalUSD = activeReceivables.reduce((sum, ar) => {
+                const receivableTotalUSD = activeReceivables.reduce((sum, ar) => {
                     return sum + (ar.amount - (ar.paid || 0));
                 }, 0);
-
-                const cubingTotalUSD = activeCubeSessions.reduce((sum, s) => {
-                    const rate = s.meso_rate && s.currency === 'Mesos (b)' ? s.meso_rate : 1;
-                    return sum + ((s.cubing_session_total || 0) * rate);
-                }, 0);
-
-                const receivableTotalUSD = arTotalUSD + cubingTotalUSD;
 
                 // Item Breakdown
                 const itemsByCategory = [
@@ -193,15 +181,6 @@ export const Dashboard: React.FC = () => {
                     if (!arByClient[clientName]) arByClient[clientName] = { count: 0, balanceUSD: 0 };
                     arByClient[clientName].count++;
                     arByClient[clientName].balanceUSD += pending;
-                });
-                activeCubeSessions.forEach(s => {
-                    const client = clients.find(c => c.id === s.client_id);
-                    const clientName = client?.name || 'Unknown Client';
-                    const rate = s.meso_rate && s.currency === 'Mesos (b)' ? s.meso_rate : 1;
-                    const pendingUSD = (s.cubing_session_total || 0) * rate;
-                    if (!arByClient[clientName]) arByClient[clientName] = { count: 0, balanceUSD: 0 };
-                    arByClient[clientName].count++;
-                    arByClient[clientName].balanceUSD += pendingUSD;
                 });
 
                 const sortedClients = Object.entries(arByClient)

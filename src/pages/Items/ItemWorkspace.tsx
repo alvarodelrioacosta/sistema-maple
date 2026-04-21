@@ -10,7 +10,7 @@ import { Button, Select, ResourceHistoryPanel } from '../../components/UI';
 import {
     itemsService, clientsService, accountsService, resourcesService,
     charactersService, itemsDBService, cubeSessionsService, sharedInventoryService,
-    resourceHistoryService, appSettingsService, transactionsService
+    resourceHistoryService, transactionsService
 } from '../../services';
 import type {
     Item, Client, Account, ResourceType, Character, ItemDB,
@@ -58,7 +58,6 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
     const [sharedChest, setSharedChest] = useState<SharedInventory | null>(null);
     const [accountBalances, setAccountBalances] = useState<Record<string, Record<string, number>>>({});
     const [resourceMetadata, setResourceMetadata] = useState<Record<string, { image: string; rpCost: number; mesoCost: number }>>({});
-    const [usdToMesosRate, setUsdToMesosRate] = useState<number>(0);
 
     // ---- Item editing ----
     const [editingItem, setEditingItem] = useState<Partial<Item>>(initialItem);
@@ -95,7 +94,6 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
     const [saving, setSaving] = useState<boolean>(false);
     const [ocrLoading, setOcrLoading] = useState<boolean>(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
-    const [showTotalInUSD, setShowTotalInUSD] = useState<boolean>(true);
     const [historyPanelOpen, setHistoryPanelOpen] = useState<boolean>(false);
     const [editingField, setEditingField] = useState<string | null>(null);
 
@@ -149,14 +147,13 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
     const loadData = async () => {
         setLoading(true);
         try {
-            const [clientsData, accountsData, charsData, dbData, metaData, sharedData, exchangeRate] = await Promise.all([
+            const [clientsData, accountsData, charsData, dbData, metaData, sharedData] = await Promise.all([
                 clientsService.getAll(),
                 accountsService.getAll(),
                 charactersService.getAll(),
                 itemsDBService.getAll(),
                 resourcesService.getResourceMetadata(),
                 sharedInventoryService.get().catch(() => null),
-                appSettingsService.getMesoUsdRate().catch(() => 0),
             ]);
 
             setClients(clientsData);
@@ -165,7 +162,6 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
             setItemDBs(dbData);
             setResourceMetadata(metaData);
             if (sharedData) setSharedChest(sharedData);
-            setUsdToMesosRate(exchangeRate);
 
             // Fetch all account balances
             const balancesArr = await Promise.all(accountsData.map(acc => resourcesService.getAllBalances(acc.id)));
@@ -210,25 +206,6 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
     const getActiveClient = (): Client | undefined =>
         clients.find(c => c.id === (activeSession?.client_id || selectedClientId));
 
-    const calcSessionTotals = () => {
-        const currentTotal = activeSession?.cubing_session_total || 0;
-        const client = getActiveClient();
-        const isMeso = client?.currency === 'Mesos (b)';
-        const rate = activeSession?.meso_rate || usdToMesosRate || 0;
-
-        let totalUSD = 0;
-        let totalMesos = 0;
-
-        if (isMeso) {
-            totalMesos = currentTotal;
-            totalUSD = totalMesos * rate;
-        } else {
-            totalUSD = currentTotal;
-            totalMesos = rate > 0 ? totalUSD / rate : 0;
-        }
-        return { totalUSD, totalMesos };
-    };
-
     const getFastCubingTotals = () => {
         let bc = 0, bbc = 0, sc = 0;
         Object.entries(fastCubingSelection).forEach(([accId, sel]) => {
@@ -253,13 +230,6 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
         setSaving(true);
         try {
             const client = clients.find(c => c.id === selectedClientId)!;
-            const metaBright = resourceMetadata['bright_cubes']?.mesoCost || 0;
-            const metaBonus = resourceMetadata['bonus_bright_cubes']?.mesoCost || 0;
-            const metaSolid = resourceMetadata['solid_cubes']?.mesoCost || 0.05;
-
-            const bcPrice = client.bright_cube_price > 0 ? client.bright_cube_price : metaBright;
-            const bbcPrice = client.bonus_bright_cube_price > 0 ? client.bonus_bright_cube_price : metaBonus;
-            const scPrice = client.solid_cubes_price > 0 ? client.solid_cubes_price : metaSolid;
 
             const session = await cubeSessionsService.create({
                 item_id: initialItem.id,
@@ -267,15 +237,7 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                 account_id: itemAccountId,
                 psok_used: 0, bright_cubes_used: 0, bonus_bright_cubes_used: 0,
                 solid_cubes_used: 0, perfect_innoc_used: 0, gaurdian_scroll_used: 0,
-                psok_price: 0,
-                bright_cubes_price: bcPrice,
-                bonus_bright_cubes_price: bbcPrice,
-                solid_cubes_price: scPrice,
-                perfect_innoc_price: 0, gaurdian_scroll_price: 0,
-                cubing_session_total: 0,
                 cubing_session_status: 'Ongoing',
-                currency: client.currency || 'USD',
-                meso_rate: usdToMesosRate,
             });
 
             setActiveSession(session);
@@ -389,10 +351,6 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                     ].filter(d => d.qty > 0);
 
                     let mesoCostForAlvaro = 0;
-                    let sessionValue = 0;
-                    const bcPrice = client?.bright_cube_price || 0;
-                    const bbcPrice = client?.bonus_bright_cube_price || 0;
-                    const scPrice = client?.solid_cubes_price || 0;
 
                     for (const d of historyItems) {
                         await resourceHistoryService.add({
@@ -406,9 +364,7 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                             meso_cost: 0, rp_cost: 0,
                             covered_by_me: false, target_account_id: null, notes: null,
                         });
-                        if (d.type === 'bright_cubes') { sessionValue += d.qty * bcPrice; mesoCostForAlvaro += d.qty * d.meso; }
-                        else if (d.type === 'bonus_bright_cubes') { sessionValue += d.qty * bbcPrice; mesoCostForAlvaro += d.qty * d.meso; }
-                        else if (d.type === 'solid_cubes') { sessionValue += d.qty * scPrice; mesoCostForAlvaro += d.qty * d.meso; }
+                        mesoCostForAlvaro += d.qty * d.meso;
                     }
 
                     if (activeSession) {
@@ -416,7 +372,6 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                             bright_cubes_used: (activeSession.bright_cubes_used || 0) + brightCubesUsed,
                             bonus_bright_cubes_used: (activeSession.bonus_bright_cubes_used || 0) + bonusCubesUsed,
                             solid_cubes_used: (activeSession.solid_cubes_used || 0) + solidCubesUsed,
-                            cubing_session_total: (activeSession.cubing_session_total || 0) + sessionValue,
                         };
                         await cubeSessionsService.update(activeSession.id, sessionUpdates);
                         setActiveSession(prev => prev ? { ...prev, ...sessionUpdates } : null);
@@ -446,10 +401,6 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
 
                 if (deductions.length > 0) {
                     let totalMesoCost = 0;
-                    let totalSessionValue = 0;
-                    const bcPrice = client?.bright_cube_price || 0;
-                    const bbcPrice = client?.bonus_bright_cube_price || 0;
-                    const scPrice = client?.solid_cubes_price || 0;
                     const sessionUpdates: any = {
                         bright_cubes_used: activeSession?.bright_cubes_used || 0,
                         bonus_bright_cubes_used: activeSession?.bonus_bright_cubes_used || 0,
@@ -468,15 +419,14 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                             notes: 'Fast Cubing',
                         });
 
-                        if (d.type === 'bright_cubes') { sessionUpdates.bright_cubes_used += d.qty; totalSessionValue += d.qty * bcPrice; totalMesoCost += d.qty * bcMeso; }
-                        else if (d.type === 'bonus_bright_cubes') { sessionUpdates.bonus_bright_cubes_used += d.qty; totalSessionValue += d.qty * bbcPrice; totalMesoCost += d.qty * bbcMeso; }
-                        else if (d.type === 'solid_cubes') { sessionUpdates.solid_cubes_used += d.qty; totalSessionValue += d.qty * scPrice; totalMesoCost += d.qty * scMeso; }
+                        if (d.type === 'bright_cubes') { sessionUpdates.bright_cubes_used += d.qty; totalMesoCost += d.qty * bcMeso; }
+                        else if (d.type === 'bonus_bright_cubes') { sessionUpdates.bonus_bright_cubes_used += d.qty; totalMesoCost += d.qty * bbcMeso; }
+                        else if (d.type === 'solid_cubes') { sessionUpdates.solid_cubes_used += d.qty; totalMesoCost += d.qty * scMeso; }
                     }
 
                     if (activeSession) {
-                        const newTotal = (activeSession.cubing_session_total || 0) + totalSessionValue;
-                        await cubeSessionsService.update(activeSession.id, { ...sessionUpdates, cubing_session_total: newTotal });
-                        setActiveSession(prev => prev ? { ...prev, ...sessionUpdates, cubing_session_total: newTotal } : null);
+                        await cubeSessionsService.update(activeSession.id, sessionUpdates);
+                        setActiveSession(prev => prev ? { ...prev, ...sessionUpdates } : null);
                     }
 
                     if (client?.name === 'Alvaro' && totalMesoCost > 0) {
@@ -582,20 +532,11 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                 covered_by_me: isCovered, target_account_id: null, notes: null,
             });
 
-            // Update session totals
-            let sessionAddedValue = 0;
-            if (!isCovered) {
-                const client = getActiveClient();
-                const clientCurrency = client?.currency || 'USD';
-                const rate = activeSession.meso_rate || usdToMesosRate || 0;
-                sessionAddedValue = clientCurrency === 'Mesos (b)' ? mesoPrice : mesoPrice * rate;
-            }
-
+            // Update session usage counts
             const sessionUpdates: any = {};
             if (type === 'psok') sessionUpdates.psok_used = (activeSession.psok_used || 0) + 1;
             else if (type === 'perfect_innoc') sessionUpdates.perfect_innoc_used = (activeSession.perfect_innoc_used || 0) + 1;
             else if (type === 'guardian_scroll') sessionUpdates.gaurdian_scroll_used = (activeSession.gaurdian_scroll_used || 0) + 1;
-            sessionUpdates.cubing_session_total = (activeSession.cubing_session_total || 0) + sessionAddedValue;
 
             await cubeSessionsService.update(activeSession.id, sessionUpdates);
             setActiveSession(prev => prev ? { ...prev, ...sessionUpdates } : null);
@@ -772,7 +713,6 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
     // ========================= RENDER =========================
 
     const dbInfo = getItemDBInfo(editingItem.name as string);
-    const { totalUSD, totalMesos } = calcSessionTotals();
     const fcTotals = getFastCubingTotals();
     const itemBal = accountBalances[itemAccountId] || {};
 
@@ -895,17 +835,6 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                                     <div className="session-metric-box">
                                         <label>GScroll</label>
                                         <span>{activeSession.gaurdian_scroll_used || 0}</span>
-                                    </div>
-                                </div>
-
-                                {/* Session Total */}
-                                <div className="session-total-box" onClick={() => setShowTotalInUSD(!showTotalInUSD)} title="Click para cambiar moneda">
-                                    <div className="total-label">Total ({showTotalInUSD ? 'USD' : 'Mesos B'}) ⟳</div>
-                                    <div className={`total-value ${!showTotalInUSD ? 'mesos' : ''}`}>
-                                        {showTotalInUSD
-                                            ? `$${totalUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-                                            : `${totalMesos.toFixed(2)}B`
-                                        }
                                     </div>
                                 </div>
 
