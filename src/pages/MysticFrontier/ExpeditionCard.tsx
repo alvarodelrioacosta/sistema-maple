@@ -148,7 +148,6 @@ export const ExpeditionCard: React.FC<ExpeditionCardProps> = ({
 
   const renderRewardPicker = (isCollection: boolean) => (
     <div className="mf-reward-picker">
-      <div className="mf-reward-picker-title">{isCollection ? 'Rewards Received' : 'Select Rewards'}</div>
       <div className="mf-reward-list">
         {ALL_REWARD_TYPES.map(type => {
           const meta = REWARD_METADATA[type];
@@ -160,25 +159,27 @@ export const ExpeditionCard: React.FC<ExpeditionCardProps> = ({
                 ? <img src={imgSrc} alt={meta.label} title={meta.label} className="mf-reward-img" />
                 : <div style={{ width: 28, height: 28, background: 'rgba(255,255,255,0.06)', borderRadius: 4, flexShrink: 0 }} />
               }
-              {isCube ? (
-                <input
-                  type="number" min={0} max={10}
-                  className="mf-reward-qty-input"
-                  value={cubeQtys[type] ?? 0}
-                  onChange={e => setCubeQtys(prev => ({
-                    ...prev,
-                    [type]: Math.min(10, Math.max(0, parseInt(e.target.value) || 0)),
-                  }))}
-                />
-              ) : (
-                <input
-                  type="checkbox"
-                  id={`mf-chk-${expeditionNumber}-${characterId.slice(0, 6)}-${type}-${isCollection ? 'c' : 'p'}`}
-                  checked={!!nonCubeChecked[type]}
-                  onChange={e => setNonCubeChecked(prev => ({ ...prev, [type]: e.target.checked }))}
-                  style={{ width: 14, height: 14, cursor: 'pointer', accentColor: 'var(--color-accent-primary)' }}
-                />
-              )}
+              <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+                {isCube ? (
+                  <input
+                    type="number" min={0} max={10}
+                    className="mf-reward-qty-input"
+                    value={cubeQtys[type] ?? 0}
+                    onChange={e => setCubeQtys(prev => ({
+                      ...prev,
+                      [type]: Math.min(10, Math.max(0, parseInt(e.target.value) || 0)),
+                    }))}
+                  />
+                ) : (
+                  <input
+                    type="checkbox"
+                    id={`mf-chk-${expeditionNumber}-${characterId.slice(0, 6)}-${type}-${isCollection ? 'c' : 'p'}`}
+                    checked={!!nonCubeChecked[type]}
+                    onChange={e => setNonCubeChecked(prev => ({ ...prev, [type]: e.target.checked }))}
+                    style={{ width: 14, height: 14, cursor: 'pointer', accentColor: 'var(--color-accent-primary)' }}
+                  />
+                )}
+              </div>
             </div>
           );
         })}
