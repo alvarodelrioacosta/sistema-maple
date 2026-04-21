@@ -1060,6 +1060,11 @@
     text-align: center;
 }
 
+/* MF column: fixed width = 3×160px cards + 2×0.5rem gaps + 2×0.75rem row padding */
+.overview-mf-col {
+    width: 520px;
+}
+
 /* Hide redundant account column when CharacterRow is embedded in a table cell */
 .overview-mf-col .mfp-row {
     grid-template-columns: 1fr;
