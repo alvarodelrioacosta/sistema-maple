@@ -92,7 +92,6 @@ export const ContentUnlocksPanel: React.FC<Props> = ({ character, account, onUpd
 
             {/* Boss Prequests */}
             <div style={{ marginBottom: '24px' }}>
-                <div style={{ fontSize: '0.65rem', color: '#475569', marginBottom: '8px', fontWeight: 600 }}>BOSS PREQUESTS</div>
                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                     {bossUnlocks.map(def => {
                         const done = isDone(def);
@@ -135,7 +134,6 @@ export const ContentUnlocksPanel: React.FC<Props> = ({ character, account, onUpd
 
             {/* World Systems */}
             <div>
-                <div style={{ fontSize: '0.65rem', color: '#475569', marginBottom: '8px', fontWeight: 600 }}>WORLD SYSTEMS</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                     {systemUnlocks.map(def => {
                         const done = isDone(def);
@@ -162,12 +160,6 @@ export const ContentUnlocksPanel: React.FC<Props> = ({ character, account, onUpd
                                     padding: '4px',
                                 }}
                             >
-                                <div style={{
-                                    width: '6px', height: '6px', borderRadius: '50%',
-                                    background: done ? '#4ade80' : '#334155',
-                                    boxShadow: done ? '0 0 6px #4ade8055' : 'none',
-                                    flexShrink: 0,
-                                }} />
                                 <div style={{ fontSize: '0.48rem', fontWeight: 600, color: done ? '#f1f5f9' : '#64748b', lineHeight: 1.2, wordBreak: 'break-word', overflow: 'hidden' }}>
                                     {def.label}
                                 </div>
