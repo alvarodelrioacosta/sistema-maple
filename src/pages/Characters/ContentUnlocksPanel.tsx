@@ -103,9 +103,9 @@ export const ContentUnlocksPanel: React.FC<Props> = ({ character, account, onUpd
                                 title={`${def.label} — ${done ? 'Click to unmark' : 'Click to mark as done'}`}
                                 style={{
                                     position: 'relative',
-                                    width: '56px',
-                                    height: '56px',
-                                    borderRadius: '10px',
+                                    width: '40px',
+                                    height: '40px',
+                                    borderRadius: '8px',
                                     overflow: 'hidden',
                                     border: `2px solid ${done ? '#4ade8055' : 'rgba(255,255,255,0.05)'}`,
                                     background: 'rgba(0,0,0,0.2)',
@@ -148,36 +148,33 @@ export const ContentUnlocksPanel: React.FC<Props> = ({ character, account, onUpd
                                     background: done ? 'rgba(74, 222, 128, 0.05)' : 'rgba(255,255,255,0.02)',
                                     border: `1px solid ${done ? '#4ade8044' : 'rgba(255,255,255,0.05)'}`,
                                     borderRadius: '8px',
-                                    width: '88px',
-                                    height: '88px',
+                                    width: '40px',
+                                    height: '40px',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    gap: '6px',
+                                    gap: '3px',
                                     position: 'relative',
                                     transition: 'all 0.2s',
                                     cursor: 'pointer',
                                     textAlign: 'center',
-                                    padding: '8px',
+                                    padding: '4px',
                                 }}
                             >
                                 <div style={{
-                                    width: '8px', height: '8px', borderRadius: '50%',
+                                    width: '6px', height: '6px', borderRadius: '50%',
                                     background: done ? '#4ade80' : '#334155',
-                                    boxShadow: done ? '0 0 8px #4ade8055' : 'none',
+                                    boxShadow: done ? '0 0 6px #4ade8055' : 'none',
                                     flexShrink: 0,
                                 }} />
-                                <div style={{ fontSize: '0.65rem', fontWeight: 600, color: done ? '#f1f5f9' : '#64748b', lineHeight: 1.2 }}>
+                                <div style={{ fontSize: '0.48rem', fontWeight: 600, color: done ? '#f1f5f9' : '#64748b', lineHeight: 1.2, wordBreak: 'break-word', overflow: 'hidden' }}>
                                     {def.label}
-                                </div>
-                                <div style={{ fontSize: '0.55rem', color: done ? '#4ade80aa' : '#475569' }}>
-                                    {def.group}
                                 </div>
                                 {done && (
                                     <div style={{
-                                        position: 'absolute', bottom: '4px', right: '6px',
-                                        color: '#4ade80', fontSize: '0.7rem', fontWeight: 700,
+                                        position: 'absolute', bottom: '2px', right: '3px',
+                                        color: '#4ade80', fontSize: '0.6rem', fontWeight: 700,
                                     }}>✓</div>
                                 )}
                             </div>
