@@ -695,31 +695,35 @@ const Overview: React.FC = () => {
 
     const renderResourcesPanel = (accountId: string, account: Account) => {
         const balances = accountBalances[accountId] || {};
+        const mesos = account.mesos_b || 0;
         return (
             <div className="overview-resources-panel">
                 <div className="overview-resources-grid">
                     {EXPIRING_RESOURCE_TYPES.map(type => {
                         const amount = balances[type] || 0;
+                        if (amount === 0) return null;
                         const imgSrc = resourceImages[type];
                         const label = RESOURCE_LABELS[type];
                         return (
-                            <div key={type} className="overview-resource-chip">
+                            <div key={type} className="overview-resource-chip" title={label}>
                                 {imgSrc
-                                    ? <img src={imgSrc} alt={label} title={label} />
-                                    : <span style={{ fontSize: '14px' }} title={label}>💎</span>
+                                    ? <img src={imgSrc} alt={label} />
+                                    : <span className="overview-resource-chip-fallback" title={label}>💎</span>
                                 }
-                                <span className={`overview-resource-chip-value${amount === 0 ? ' overview-resource-chip-value--zero' : ''}`}>
+                                <span className="overview-resource-chip-value">
                                     {amount.toLocaleString()}
                                 </span>
                             </div>
                         );
                     })}
-                    <div className="overview-resource-chip overview-resource-mesos">
-                        <span style={{ fontSize: '14px' }} title="Mesos">💰</span>
-                        <span className="overview-resource-chip-value">
-                            {(account.mesos_b || 0).toFixed(2)}B
-                        </span>
-                    </div>
+                    {mesos > 0 && (
+                        <div className="overview-resource-chip overview-resource-mesos" title="Mesos">
+                            <span className="overview-resource-chip-fallback">💰</span>
+                            <span className="overview-resource-chip-value">
+                                {mesos.toFixed(2)}B
+                            </span>
+                        </div>
+                    )}
                 </div>
             </div>
         );

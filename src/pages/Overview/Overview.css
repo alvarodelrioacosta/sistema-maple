@@ -1004,43 +1004,50 @@
 
 /* ---- Resources Panel ---- */
 .overview-resources-panel {
-    padding: 0.6rem 0.75rem;
+    padding: 0.5rem 0.75rem;
 }
 
 .overview-resources-grid {
     display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
+    flex-wrap: wrap;
+    gap: 0.4rem;
 }
 
 .overview-resource-chip {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 5px;
+    gap: 2px;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 6px;
-    padding: 3px 7px;
+    padding: 4px 5px;
+    min-width: 48px;
 }
 
 .overview-resource-chip img {
-    width: 18px;
-    height: 18px;
+    width: 40px;
+    height: 40px;
     object-fit: contain;
     image-rendering: pixelated;
     flex-shrink: 0;
 }
 
+.overview-resource-chip-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+}
+
 .overview-resource-chip-value {
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     font-weight: 700;
     color: #e2e8f0;
     font-family: 'JetBrains Mono', monospace;
     white-space: nowrap;
-}
-
-.overview-resource-chip-value--zero {
-    color: #475569;
 }
 
 .overview-resource-mesos {
