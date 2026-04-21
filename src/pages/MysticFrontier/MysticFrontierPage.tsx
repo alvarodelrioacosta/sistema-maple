@@ -19,6 +19,7 @@ import type {
 import { Button } from '../../components/UI';
 import { ExpeditionCard } from './ExpeditionCard';
 import './MysticFrontierPage.css';
+import '../Characters/MysticFrontierModal.css';
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' });

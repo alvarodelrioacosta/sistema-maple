@@ -36,10 +36,11 @@
   background: var(--color-surface-2, rgba(255,255,255,0.04));
   border: 1px solid var(--color-border, rgba(255,255,255,0.08));
   border-radius: var(--radius-md, 8px);
-  padding: 0.65rem 0.75rem;
+  padding: 0.75rem 0.85rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  align-items: stretch;
+  gap: 0.65rem;
 }
 
 /* Title + status on same line */
@@ -78,16 +79,19 @@
 .mf-status-badge.available {
   background: rgba(72, 187, 120, 0.15);
   color: #48bb78;
+  border: 1px solid rgba(72, 187, 120, 0.35);
 }
 
 .mf-status-badge.exploring {
   background: rgba(66, 153, 225, 0.15);
   color: #4299e1;
+  border: 1px solid rgba(66, 153, 225, 0.35);
 }
 
 .mf-status-badge.resting {
   background: rgba(237, 137, 54, 0.15);
   color: #ed8936;
+  border: 1px solid rgba(237, 137, 54, 0.35);
 }
 
 .mf-timer {

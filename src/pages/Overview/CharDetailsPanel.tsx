@@ -53,13 +53,14 @@ export const CharDetailsPanel: React.FC<Props> = ({ character: characterProp, cl
                 {character.class && <span className="char-panel-compact__class">{character.class}</span>}
             </div>
 
-            <SymbolTracker character={character} characterLevel={character.level} onUpdate={handleUpdate} />
+            <SymbolTracker character={character} characterLevel={character.level} onUpdate={handleUpdate} compact />
             <SixthJobTracker
                 character={character}
                 classItem={classItem}
                 unlocked={isSixthJobUnlocked}
                 loadingUnlocks={false}
                 onUpdate={handleUpdate}
+                compact
             />
             <ExtraStatsTracker
                 character={character}

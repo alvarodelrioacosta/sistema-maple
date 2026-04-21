@@ -7,6 +7,7 @@ interface Props {
     character: Character;
     characterLevel: number;
     onUpdate: (col: string, value: number) => void;
+    compact?: boolean;
 }
 
 const SymbolCard: React.FC<{
@@ -67,7 +68,47 @@ const SymbolCard: React.FC<{
     );
 };
 
-export const SymbolTracker: React.FC<Props> = ({ character, characterLevel, onUpdate }) => {
+const SymbolThumb: React.FC<{
+    sym: typeof SYMBOLS[0];
+    level: number;
+    onChange: (raw: string) => void;
+}> = ({ sym, level, onChange }) => (
+    <div style={{ position: 'relative', flexShrink: 0 }}>
+        <img
+            src={sym.imageUrl}
+            alt={sym.shortName}
+            title={`${sym.name} — Lv.${level}/${sym.maxLevel}`}
+            style={{
+                width: 36, height: 36, display: 'block', objectFit: 'contain',
+                borderRadius: 6,
+                border: `1px solid ${level > 0 ? sym.color + '66' : 'rgba(255,255,255,0.08)'}`,
+                background: 'rgba(255,255,255,0.04)',
+                filter: level === 0 ? 'grayscale(0.8) opacity(0.4)' : 'none',
+            }}
+        />
+        <input
+            className="char-compact-badge-input"
+            type="number"
+            min={0}
+            max={sym.maxLevel}
+            value={level === 0 ? '' : level}
+            placeholder="–"
+            onChange={e => onChange(e.target.value)}
+            style={{
+                position: 'absolute', bottom: -5, right: -5,
+                width: 22, height: 15,
+                background: level === sym.maxLevel ? sym.color : 'rgba(0,0,0,0.88)',
+                border: `1px solid ${level > 0 ? sym.color + '88' : 'rgba(255,255,255,0.25)'}`,
+                borderRadius: 3,
+                color: level === sym.maxLevel ? '#000' : '#e2e8f0',
+                fontSize: '0.58rem', fontWeight: 700,
+                textAlign: 'center', padding: 0, outline: 'none', lineHeight: '14px',
+            }}
+        />
+    </div>
+);
+
+export const SymbolTracker: React.FC<Props> = ({ character, characterLevel, onUpdate, compact }) => {
     const [saving, setSaving] = useState<string | null>(null);
 
     const handleChange = useCallback(async (sym: typeof SYMBOLS[0], raw: string) => {
@@ -85,9 +126,41 @@ export const SymbolTracker: React.FC<Props> = ({ character, characterLevel, onUp
     const sacred  = SYMBOLS.filter(s => s.type === 'sacred'  && characterLevel >= s.unlockLevel);
 
     if (arcane.length === 0 && sacred.length === 0) {
+        if (compact) return null;
         return (
             <div style={{ padding: '0.75rem 1.25rem', borderTop: '1px solid rgba(255,255,255,0.06)', color: '#475569', fontSize: '0.8rem' }}>
                 Symbols unlock at level 200
+            </div>
+        );
+    }
+
+    if (compact) {
+        return (
+            <div style={{ padding: '6px 10px 10px', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'rgba(0,0,0,0.15)' }}>
+                {arcane.length > 0 && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', paddingBottom: arcane.length > 0 && sacred.length > 0 ? '4px' : '0' }}>
+                        {arcane.map(sym => (
+                            <SymbolThumb
+                                key={sym.column}
+                                sym={sym}
+                                level={(character as unknown as Record<string, number | null>)[sym.column] ?? 0}
+                                onChange={raw => handleChange(sym, raw)}
+                            />
+                        ))}
+                    </div>
+                )}
+                {sacred.length > 0 && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', paddingTop: arcane.length > 0 ? '6px' : '0' }}>
+                        {sacred.map(sym => (
+                            <SymbolThumb
+                                key={sym.column}
+                                sym={sym}
+                                level={(character as unknown as Record<string, number | null>)[sym.column] ?? 0}
+                                onChange={raw => handleChange(sym, raw)}
+                            />
+                        ))}
+                    </div>
+                )}
             </div>
         );
     }

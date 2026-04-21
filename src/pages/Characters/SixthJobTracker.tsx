@@ -36,9 +36,10 @@ interface Props {
     unlocked?: boolean;
     loadingUnlocks?: boolean;
     onUpdate: (col: string, value: number) => void;
+    compact?: boolean;
 }
 
-export const SixthJobTracker: React.FC<Props> = ({ character, classItem, unlocked, loadingUnlocks, onUpdate }) => {
+export const SixthJobTracker: React.FC<Props> = ({ character, classItem, unlocked, loadingUnlocks, onUpdate, compact }) => {
     const [saving, setSaving] = useState<string | null>(null);
 
     const handleChange = useCallback(async (col: SkillCol, maxLevel: number, raw: string) => {
@@ -52,9 +53,10 @@ export const SixthJobTracker: React.FC<Props> = ({ character, classItem, unlocke
         }
     }, [character.id, onUpdate]);
 
-    if (loadingUnlocks) return <div style={{ padding: '1rem', color: '#64748b', fontSize: '0.85rem' }}>Loading skills...</div>;
+    if (loadingUnlocks) return compact ? null : <div style={{ padding: '1rem', color: '#64748b', fontSize: '0.85rem' }}>Loading skills...</div>;
 
     if (unlocked === false) {
+        if (compact) return null;
         return (
             <div style={{ padding: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'rgba(239, 68, 68, 0.03)', borderRadius: '8px', margin: '10px 0' }}>
                 <div style={{ color: '#f87171', fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -63,6 +65,55 @@ export const SixthJobTracker: React.FC<Props> = ({ character, classItem, unlocke
             </div>
         );
     }
+
+    const renderCompactSkill = (col: SkillCol) => {
+        const level = (character as unknown as Record<string, number | null>)[col] ?? 0;
+        const maxLevel = MAX_LEVEL[col];
+        const label = LABEL[col];
+        const color = COLOR[label] ?? '#818cf8';
+        const imgUrl = classItem ? (classItem[col as keyof ClassItem] as string | null) : null;
+        const skillName = classItem ? (classItem[`${col}_name` as keyof ClassItem] as string | null) : null;
+
+        return (
+            <div key={col} style={{ position: 'relative', flexShrink: 0 }}>
+                {imgUrl ? (
+                    <img
+                        src={imgUrl}
+                        alt={skillName || label}
+                        title={`${skillName || label} — ${level}/${maxLevel}`}
+                        style={{
+                            width: 40, height: 40, display: 'block', objectFit: 'contain',
+                            borderRadius: 6,
+                            border: `1px solid ${level > 0 ? color + '55' : 'rgba(255,255,255,0.08)'}`,
+                            background: 'rgba(255,255,255,0.04)',
+                            filter: level === 0 ? 'grayscale(0.8) opacity(0.35)' : 'none',
+                        }}
+                    />
+                ) : (
+                    <div style={{ width: 40, height: 40, background: 'rgba(255,255,255,0.05)', borderRadius: 6, border: '1px solid rgba(255,255,255,0.08)' }} />
+                )}
+                <input
+                    className="char-compact-badge-input"
+                    type="number"
+                    min={0}
+                    max={maxLevel}
+                    value={level === 0 ? '' : level}
+                    placeholder="–"
+                    onChange={e => handleChange(col, maxLevel, e.target.value)}
+                    style={{
+                        position: 'absolute', bottom: -5, right: -5,
+                        width: 22, height: 15,
+                        background: level === maxLevel ? color : 'rgba(0,0,0,0.88)',
+                        border: `1px solid ${level > 0 ? color + '88' : 'rgba(255,255,255,0.25)'}`,
+                        borderRadius: 3,
+                        color: level === maxLevel ? '#000' : '#e2e8f0',
+                        fontSize: '0.58rem', fontWeight: 700,
+                        textAlign: 'center', padding: 0, outline: 'none', lineHeight: '14px',
+                    }}
+                />
+            </div>
+        );
+    };
 
     const renderSkill = (col: SkillCol) => {
         const level = (character as unknown as Record<string, number | null>)[col] ?? 0;
@@ -126,6 +177,19 @@ export const SixthJobTracker: React.FC<Props> = ({ character, classItem, unlocke
             </div>
         );
     };
+
+    if (compact) {
+        return (
+            <div style={{ padding: '6px 10px 10px', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'rgba(0,0,0,0.1)' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '6px' }}>
+                    {ROW1.map(renderCompactSkill)}
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                    {ROW2.map(renderCompactSkill)}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div style={{ padding: '1rem 1.25rem', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'rgba(0,0,0,0.1)' }}>

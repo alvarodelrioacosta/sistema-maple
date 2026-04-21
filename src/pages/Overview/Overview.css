@@ -1116,3 +1116,14 @@
     font-size: 0.7rem;
     color: #64748b;
 }
+
+/* Hide number spinners on compact thumbnail badge inputs */
+.char-compact-badge-input::-webkit-outer-spin-button,
+.char-compact-badge-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.char-compact-badge-input {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
