@@ -183,6 +183,23 @@ export async function completeRest(
   return data as MysticFrontierExpedition;
 }
 
+/** Shifts exploration_started_at or rest_started_at backwards by shiftMs to reduce remaining time. */
+export async function shiftStartTime(
+  characterId: string,
+  expeditionIndex: 1 | 2 | 3,
+  field: 'exploration_started_at' | 'rest_started_at',
+  currentIso: string,
+  shiftMs: number,
+): Promise<void> {
+  const newIso = new Date(new Date(currentIso).getTime() - shiftMs).toISOString();
+  const { error } = await supabase
+    .from('character_mystic_frontier_expeditions')
+    .update({ [field]: newIso, updated_at: new Date().toISOString() })
+    .eq('character_id', characterId)
+    .eq('expedition_index', expeditionIndex);
+  if (error) throw error;
+}
+
 export async function getRewardHistory(characterId: string): Promise<MysticFrontierRewardEntry[]> {
   const { data, error } = await supabase
     .from('mystic_frontier_reward_history')

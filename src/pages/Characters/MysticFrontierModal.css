@@ -108,6 +108,46 @@
   margin-top: auto;
 }
 
+/* -30m reduce-time button */
+.mf-reduce-btn {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 4px;
+  color: #94a3b8;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.25rem 0.45rem;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 120ms, color 120ms;
+}
+.mf-reduce-btn:hover:not(:disabled) {
+  background: rgba(255,255,255,0.12);
+  color: #e2e8f0;
+}
+.mf-reduce-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Pre-select rewards toggle (in available state) */
+.mf-prereward-toggle {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  transition: color 120ms;
+}
+.mf-prereward-toggle:hover {
+  color: var(--color-text-secondary);
+}
+
 /* Reward picker */
 .mf-reward-picker {
   border: 1px solid var(--color-border, rgba(255,255,255,0.08));
