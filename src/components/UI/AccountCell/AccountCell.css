@@ -43,12 +43,41 @@
     max-width: 100%;
 }
 
+.acell-char-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
 .acell-char {
     font-size: 0.82rem;
     font-weight: 600;
     color: #fbbf24;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
+}
+
+.acell-char-info {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.72rem;
+    color: #94a3b8;
+    white-space: nowrap;
+}
+
+.acell-char-exp {
+    color: #64748b;
+}
+
+.acell-job-icon {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.acell-char-class {
+    color: #cbd5e1;
+    font-weight: 500;
 }

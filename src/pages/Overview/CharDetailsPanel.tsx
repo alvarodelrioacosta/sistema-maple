@@ -25,23 +25,9 @@ export const CharDetailsPanel: React.FC<Props> = ({ character: characterProp, cl
     const isAccount0 = character.account?.number === 0;
 
     const classItem = classes.find(cls => cls.class_name === character.class) ?? null;
-    const jobClass = classes.find(cls => cls.job_1 === character.job || cls.job_2 === character.job);
-    const jobIcon = character.class === 'Xenon'
-        ? '/xenon.png'
-        : jobClass ? (jobClass.job_1 === character.job ? jobClass.image_1 : jobClass.image_2) : null;
 
     return (
         <div className="char-panel-compact">
-            <div className="char-panel-compact__header">
-                {character.avatar_url && (
-                    <img src={character.avatar_url} alt={character.name} className="char-panel-compact__avatar" />
-                )}
-                <span className="char-panel-compact__name">{character.name}</span>
-                <span className="char-panel-compact__level">Lv {character.level}</span>
-                {jobIcon && <img src={jobIcon} alt={character.job || ''} title={character.job || ''} className="char-panel-compact__job-icon" />}
-                {character.class && <span className="char-panel-compact__class">{character.class}</span>}
-            </div>
-
             <SymbolTracker character={character} characterLevel={character.level} onUpdate={handleUpdate} compact />
             <SixthJobTracker
                 character={character}

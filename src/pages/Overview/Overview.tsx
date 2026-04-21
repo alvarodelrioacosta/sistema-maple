@@ -858,6 +858,11 @@ const Overview: React.FC = () => {
                                     ? { ...row.mainChar, account: row.account }
                                     : null;
 
+                                const rowJobClass = classes.find(cls => cls.job_1 === row.mainChar?.job || cls.job_2 === row.mainChar?.job);
+                                const rowJobIcon = row.mainChar?.class === 'Xenon'
+                                    ? '/xenon.png'
+                                    : rowJobClass ? (rowJobClass.job_1 === row.mainChar?.job ? rowJobClass.image_1 : rowJobClass.image_2) : null;
+
                                 return (
                                     <React.Fragment key={rowKey}>
                                         {/* Main row */}
@@ -868,6 +873,10 @@ const Overview: React.FC = () => {
                                                     email={row.account.email}
                                                     tag={row.account.tag}
                                                     charName={row.mainChar?.name}
+                                                    charLevel={row.mainChar?.level}
+                                                    charExpPercent={row.mainChar?.exp_percent}
+                                                    jobIcon={rowJobIcon}
+                                                    charClass={row.mainChar?.class}
                                                 />
                                             </td>
 
