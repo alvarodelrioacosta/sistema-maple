@@ -37,9 +37,10 @@ interface Props {
     loadingUnlocks?: boolean;
     onUpdate: (col: string, value: number) => void;
     compact?: boolean;
+    originAndAscentOnly?: boolean;
 }
 
-export const SixthJobTracker: React.FC<Props> = ({ character, classItem, unlocked, loadingUnlocks, onUpdate, compact }) => {
+export const SixthJobTracker: React.FC<Props> = ({ character, classItem, unlocked, loadingUnlocks, onUpdate, compact, originAndAscentOnly }) => {
     const [saving, setSaving] = useState<string | null>(null);
 
     const handleChange = useCallback(async (col: SkillCol, maxLevel: number, raw: string) => {
@@ -179,14 +180,18 @@ export const SixthJobTracker: React.FC<Props> = ({ character, classItem, unlocke
     };
 
     if (compact) {
+        const compactRow1 = originAndAscentOnly ? (['origin', 'ascent'] as SkillCol[]) : ROW1;
+        const compactRow2 = originAndAscentOnly ? [] : ROW2;
         return (
             <div style={{ padding: '6px 10px 10px', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'rgba(0,0,0,0.1)' }}>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '6px' }}>
-                    {ROW1.map(renderCompactSkill)}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: compactRow2.length > 0 ? '6px' : '0' }}>
+                    {compactRow1.map(renderCompactSkill)}
                 </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                    {ROW2.map(renderCompactSkill)}
-                </div>
+                {compactRow2.length > 0 && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                        {compactRow2.map(renderCompactSkill)}
+                    </div>
+                )}
             </div>
         );
     }

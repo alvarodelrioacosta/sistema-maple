@@ -135,27 +135,33 @@ export const SymbolTracker: React.FC<Props> = ({ character, characterLevel, onUp
     }
 
     if (compact) {
+        const getLevel = (sym: typeof SYMBOLS[0]) => (character as unknown as Record<string, number | null>)[sym.column] ?? 0;
+        const arcaneVisible = arcane.filter(sym => getLevel(sym) < sym.maxLevel);
+        const sacredVisible = sacred.filter(sym => getLevel(sym) < sym.maxLevel);
+
+        if (arcaneVisible.length === 0 && sacredVisible.length === 0) return null;
+
         return (
             <div style={{ padding: '6px 10px 10px', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'rgba(0,0,0,0.15)' }}>
-                {arcane.length > 0 && (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', paddingBottom: arcane.length > 0 && sacred.length > 0 ? '4px' : '0' }}>
-                        {arcane.map(sym => (
+                {arcaneVisible.length > 0 && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', paddingBottom: arcaneVisible.length > 0 && sacredVisible.length > 0 ? '4px' : '0' }}>
+                        {arcaneVisible.map(sym => (
                             <SymbolThumb
                                 key={sym.column}
                                 sym={sym}
-                                level={(character as unknown as Record<string, number | null>)[sym.column] ?? 0}
+                                level={getLevel(sym)}
                                 onChange={raw => handleChange(sym, raw)}
                             />
                         ))}
                     </div>
                 )}
-                {sacred.length > 0 && (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', paddingTop: arcane.length > 0 ? '6px' : '0' }}>
-                        {sacred.map(sym => (
+                {sacredVisible.length > 0 && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', paddingTop: arcaneVisible.length > 0 ? '6px' : '0' }}>
+                        {sacredVisible.map(sym => (
                             <SymbolThumb
                                 key={sym.column}
                                 sym={sym}
-                                level={(character as unknown as Record<string, number | null>)[sym.column] ?? 0}
+                                level={getLevel(sym)}
                                 onChange={raw => handleChange(sym, raw)}
                             />
                         ))}

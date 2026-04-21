@@ -22,6 +22,7 @@ export const CharDetailsPanel: React.FC<Props> = ({ character: characterProp, cl
     };
 
     const isSixthJobUnlocked = character.unlock_6th_job;
+    const isAccount0 = character.account?.number === 0;
 
     const classItem = classes.find(cls => cls.class_name === character.class) ?? null;
     const jobClass = classes.find(cls => cls.job_1 === character.job || cls.job_2 === character.job);
@@ -49,6 +50,7 @@ export const CharDetailsPanel: React.FC<Props> = ({ character: characterProp, cl
                 loadingUnlocks={false}
                 onUpdate={handleUpdate}
                 compact
+                originAndAscentOnly={!isAccount0}
             />
         </div>
     );
