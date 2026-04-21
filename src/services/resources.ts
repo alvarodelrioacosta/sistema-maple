@@ -43,6 +43,14 @@ export const resourcesService = {
         return map;
     },
 
+    async updateResourceMesoCost(resourceType: string, mesoCost: number): Promise<void> {
+        const { error } = await supabase
+            .from('resource_images')
+            .update({ meso_cost: mesoCost })
+            .eq('resource_type', resourceType);
+        if (error) throw error;
+    },
+
     // ---- Batch reads ----
 
     // Returns all active (non-expired, quantity > 0) batches for an account,

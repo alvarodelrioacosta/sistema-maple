@@ -74,11 +74,6 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
     const [bonusCubesUsed, setBonusCubesUsed] = useState<number>(0);
     const [solidCubesUsed, setSolidCubesUsed] = useState<number>(0);
 
-    // ---- Resource configs ----
-    const [psokConfig, setPsokConfig] = useState({ covered: false, price: 0 });
-    const [pInnocConfig, setPInnocConfig] = useState({ covered: false, price: 0 });
-    const [gScrollConfig, setGScrollConfig] = useState({ covered: false, price: 0 });
-
     // ---- Fast Cubing ----
     const [isFastCubingActive, setIsFastCubingActive] = useState<boolean>(false);
     const [fastCubingSelection, setFastCubingSelection] = useState<Record<string, { bright_cubes?: boolean; bonus_bright_cubes?: boolean; solid_cubes?: boolean }>>({});
@@ -123,15 +118,6 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
             }
         }
     }, [activeSession, clients]);
-
-    // Sync default prices from metadata
-    useEffect(() => {
-        if (Object.keys(resourceMetadata).length > 0) {
-            setPsokConfig(prev => ({ ...prev, price: prev.price || resourceMetadata['psok']?.mesoCost || 0 }));
-            setPInnocConfig(prev => ({ ...prev, price: prev.price || resourceMetadata['perfect_innoc']?.mesoCost || 0 }));
-            setGScrollConfig(prev => ({ ...prev, price: prev.price || resourceMetadata['guardian_scroll']?.mesoCost || 0 }));
-        }
-    }, [resourceMetadata]);
 
     // Derive item's account id from its character
     useEffect(() => {
@@ -461,13 +447,13 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
             if (type === 'psok') {
                 if (!isInfiniteSlots && (editingItem.remaining_trade_slots || 0) <= 0)
                     throw new Error('Sin slots disponibles. Usa Perfect Innocence primero.');
-                mesoPrice = psokConfig.price;
+                mesoPrice = resourceMetadata['psok']?.mesoCost || 0;
             } else if (type === 'perfect_innoc') {
                 if (isInfiniteSlots) throw new Error('Este item no usa Perfect Innocence (slots infinitos).');
-                mesoPrice = pInnocConfig.price;
+                mesoPrice = resourceMetadata['perfect_innoc']?.mesoCost || 0;
             } else if (type === 'guardian_scroll') {
                 if (isInfiniteSlots) throw new Error('Este item no usa Guardian Scroll (slots infinitos).');
-                mesoPrice = gScrollConfig.price;
+                mesoPrice = resourceMetadata['guardian_scroll']?.mesoCost || 0;
             }
 
             const rpPrice = resourceMetadata[type]?.rpCost || 0;
@@ -509,11 +495,7 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                 });
             }
 
-            // Determine coverage
-            let isCovered = false;
-            if (type === 'psok') isCovered = psokConfig.covered;
-            else if (type === 'perfect_innoc') isCovered = pInnocConfig.covered;
-            else if (type === 'guardian_scroll') isCovered = gScrollConfig.covered;
+            const isCovered = false;
 
             // Log history
             await resourceHistoryService.add({
@@ -851,11 +833,17 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                             {/* Cube Usage (Manual Mode) */}
                             {!isFastCubingActive && (
                                 <div className="ws-section">
-                                    <h4>Cubos — Cuenta #{accounts.find(a => a.id === itemAccountId)?.number}</h4>
+                                    <h4>Cuenta #{accounts.find(a => a.id === itemAccountId)?.number}</h4>
 
                                     {/* Solid Cubes */}
                                     <div className="cube-stepper-row">
-                                        <span className="cube-stepper-label">Solid <span className="cube-stepper-max">{itemBal.solid_cubes || 0}</span></span>
+                                        <img
+                                            src={resourceMetadata['solid_cubes']?.image}
+                                            className="cube-img-btn"
+                                            title={`Solid (${itemBal.solid_cubes || 0} disponibles) — click para +1`}
+                                            onClick={() => setSolidCubesUsed(Math.min(itemBal.solid_cubes || 0, solidCubesUsed + 1))}
+                                        />
+                                        <span className="cube-stepper-max">{itemBal.solid_cubes || 0}</span>
                                         <div className="cube-stepper-controls">
                                             <button onClick={() => setSolidCubesUsed(Math.max(0, solidCubesUsed - 1))}>−</button>
                                             <input type="number" value={solidCubesUsed} onChange={e => setSolidCubesUsed(Math.min(itemBal.solid_cubes || 0, Math.max(0, parseInt(e.target.value) || 0)))} />
@@ -865,7 +853,13 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
 
                                     {/* Bright Cubes */}
                                     <div className="cube-stepper-row">
-                                        <span className="cube-stepper-label">Bright <span className="cube-stepper-max">{itemBal.bright_cubes || 0}</span></span>
+                                        <img
+                                            src={resourceMetadata['bright_cubes']?.image}
+                                            className="cube-img-btn"
+                                            title={`Bright (${itemBal.bright_cubes || 0} disponibles) — click para +1`}
+                                            onClick={() => setBrightCubesUsed(Math.min(itemBal.bright_cubes || 0, brightCubesUsed + 1))}
+                                        />
+                                        <span className="cube-stepper-max">{itemBal.bright_cubes || 0}</span>
                                         <div className="cube-stepper-controls">
                                             <button onClick={() => setBrightCubesUsed(Math.max(0, brightCubesUsed - 1))}>−</button>
                                             <input type="number" value={brightCubesUsed} onChange={e => setBrightCubesUsed(Math.min(itemBal.bright_cubes || 0, Math.max(0, parseInt(e.target.value) || 0)))} />
@@ -875,7 +869,13 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
 
                                     {/* Bonus Cubes */}
                                     <div className="cube-stepper-row">
-                                        <span className="cube-stepper-label">Bonus <span className="cube-stepper-max">{itemBal.bonus_bright_cubes || 0}</span></span>
+                                        <img
+                                            src={resourceMetadata['bonus_bright_cubes']?.image}
+                                            className="cube-img-btn"
+                                            title={`Bonus (${itemBal.bonus_bright_cubes || 0} disponibles) — click para +1`}
+                                            onClick={() => setBonusCubesUsed(Math.min(itemBal.bonus_bright_cubes || 0, bonusCubesUsed + 1))}
+                                        />
+                                        <span className="cube-stepper-max">{itemBal.bonus_bright_cubes || 0}</span>
                                         <div className="cube-stepper-controls">
                                             <button onClick={() => setBonusCubesUsed(Math.max(0, bonusCubesUsed - 1))}>−</button>
                                             <input type="number" value={bonusCubesUsed} onChange={e => setBonusCubesUsed(Math.min(itemBal.bonus_bright_cubes || 0, Math.max(0, parseInt(e.target.value) || 0)))} />
@@ -905,38 +905,33 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                                 <h4>Recursos Especiales</h4>
 
                                 <div className="resource-usage-row">
-                                    <input type="checkbox" className="resource-covered-check" checked={psokConfig.covered} onChange={e => setPsokConfig(p => ({ ...p, covered: e.target.checked }))} />
-                                    <span className="resource-usage-label">PSOK <span className="resource-count-badge">{activeSession.psok_used || 0}</span></span>
-                                    <Button size="sm" variant="secondary" onClick={() => setResourceModal({ type: 'psok', label: 'PSOK' })}>Use</Button>
+                                    <img
+                                        src={resourceMetadata['psok']?.image}
+                                        className="resource-img-btn"
+                                        title="PSOK — click para usar"
+                                        onClick={() => setResourceModal({ type: 'psok', label: 'PSOK' })}
+                                    />
+                                    <span className="resource-count-badge">{activeSession.psok_used || 0}</span>
                                 </div>
 
                                 <div className="resource-usage-row">
-                                    <input type="checkbox" className="resource-covered-check" checked={pInnocConfig.covered} onChange={e => setPInnocConfig(p => ({ ...p, covered: e.target.checked }))} />
-                                    <span className="resource-usage-label">P. Innoc. <span className="resource-count-badge">{activeSession.perfect_innoc_used || 0}</span></span>
-                                    <Button size="sm" variant="secondary" onClick={() => setResourceModal({ type: 'perfect_innoc', label: 'Perfect Innoc.' })}>Use</Button>
+                                    <img
+                                        src={resourceMetadata['perfect_innoc']?.image}
+                                        className="resource-img-btn"
+                                        title="Perfect Innoc. — click para usar"
+                                        onClick={() => setResourceModal({ type: 'perfect_innoc', label: 'Perfect Innoc.' })}
+                                    />
+                                    <span className="resource-count-badge">{activeSession.perfect_innoc_used || 0}</span>
                                 </div>
 
                                 <div className="resource-usage-row">
-                                    <input type="checkbox" className="resource-covered-check" checked={gScrollConfig.covered} onChange={e => setGScrollConfig(p => ({ ...p, covered: e.target.checked }))} />
-                                    <span className="resource-usage-label">Guardian <span className="resource-count-badge">{activeSession.gaurdian_scroll_used || 0}</span></span>
-                                    <Button size="sm" variant="secondary" onClick={() => setResourceModal({ type: 'guardian_scroll', label: 'Guardian Scroll' })}>Use</Button>
-                                </div>
-                            </div>
-
-                            {/* Price Config */}
-                            <div className="ws-section">
-                                <h4>Precios</h4>
-                                <div className="price-config-row">
-                                    <span className="price-config-label">PSOK</span>
-                                    <input type="number" className="price-config-input" value={psokConfig.price} onChange={e => setPsokConfig(p => ({ ...p, price: parseFloat(e.target.value) || 0 }))} />
-                                </div>
-                                <div className="price-config-row">
-                                    <span className="price-config-label">P. Innoc.</span>
-                                    <input type="number" className="price-config-input" value={pInnocConfig.price} onChange={e => setPInnocConfig(p => ({ ...p, price: parseFloat(e.target.value) || 0 }))} />
-                                </div>
-                                <div className="price-config-row">
-                                    <span className="price-config-label">Guardian</span>
-                                    <input type="number" className="price-config-input" value={gScrollConfig.price} onChange={e => setGScrollConfig(p => ({ ...p, price: parseFloat(e.target.value) || 0 }))} />
+                                    <img
+                                        src={resourceMetadata['guardian_scroll']?.image}
+                                        className="resource-img-btn"
+                                        title="Guardian Scroll — click para usar"
+                                        onClick={() => setResourceModal({ type: 'guardian_scroll', label: 'Guardian Scroll' })}
+                                    />
+                                    <span className="resource-count-badge">{activeSession.gaurdian_scroll_used || 0}</span>
                                 </div>
                             </div>
 
@@ -1267,10 +1262,7 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                                 ? (sharedChest?.perfect_innocence_stock || 0)
                                 : (accountBalances[itemAccountId]?.[resourceModal.type] || 0);
                             const rpCost = resourceMetadata[resourceModal.type]?.rpCost || 0;
-                            let mesoPrice = 0;
-                            if (resourceModal.type === 'psok') mesoPrice = psokConfig.price;
-                            else if (resourceModal.type === 'perfect_innoc') mesoPrice = pInnocConfig.price;
-                            else if (resourceModal.type === 'guardian_scroll') mesoPrice = gScrollConfig.price;
+                            const mesoPrice = resourceMetadata[resourceModal.type]?.mesoCost || 0;
 
                             const accMesos = account.mesos_b || 0;
                             const vaultMesos = sharedChest?.mesos_stock || 0;
