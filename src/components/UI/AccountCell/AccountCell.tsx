@@ -15,6 +15,7 @@ interface AccountCellProps {
     number: number;
     email: string | null;
     tag: string | null;
+    mesos?: number | null;
     charName?: string | null;
     charLevel?: number | null;
     charExpPercent?: number | null;
@@ -22,12 +23,15 @@ interface AccountCellProps {
     charClass?: string | null;
 }
 
-export const AccountCell: React.FC<AccountCellProps> = ({ number, email, tag, charName, charLevel, charExpPercent, jobIcon, charClass }) => {
+export const AccountCell: React.FC<AccountCellProps> = ({ number, email, tag, mesos, charName, charLevel, charExpPercent, jobIcon, charClass }) => {
     return (
         <div className="account-cell-unified">
             <div className="account-cell-row1">
                 <span className="acell-number">N° {number}</span>
                 {tag && <span className="acell-tag">{tag}</span>}
+                {mesos != null && mesos > 0 && (
+                    <span className="acell-mesos">{mesos.toFixed(2)}B</span>
+                )}
             </div>
             <span className="acell-email" title={email || undefined}>
                 {email || '-'}

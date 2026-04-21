@@ -693,13 +693,12 @@ const Overview: React.FC = () => {
 
     // ---- Render helpers ----
 
-    const renderResourcesPanel = (accountId: string, account: Account) => {
+    const renderResourcesPanel = (accountId: string) => {
         const balances = accountBalances[accountId] || {};
-        const mesos = account.mesos_b || 0;
         return (
             <div className="overview-resources-panel">
                 <div className="overview-resources-grid">
-                    {EXPIRING_RESOURCE_TYPES.map(type => {
+                    {EXPIRING_RESOURCE_TYPES.filter(t => t !== 'reward_points').map(type => {
                         const amount = balances[type] || 0;
                         if (amount === 0) return null;
                         const imgSrc = resourceImages[type];
@@ -716,14 +715,6 @@ const Overview: React.FC = () => {
                             </div>
                         );
                     })}
-                    {mesos > 0 && (
-                        <div className="overview-resource-chip overview-resource-mesos" title="Mesos">
-                            <span className="overview-resource-chip-fallback">💰</span>
-                            <span className="overview-resource-chip-value">
-                                {mesos.toFixed(2)}B
-                            </span>
-                        </div>
-                    )}
                 </div>
             </div>
         );
@@ -847,6 +838,7 @@ const Overview: React.FC = () => {
                                                     number={row.account.number}
                                                     email={row.account.email}
                                                     tag={row.account.tag}
+                                                    mesos={row.account.mesos_b}
                                                     charName={row.mainChar?.name}
                                                     charLevel={row.mainChar?.level}
                                                     charExpPercent={row.mainChar?.exp_percent}
@@ -1020,7 +1012,7 @@ const Overview: React.FC = () => {
                                             {/* Resources column */}
                                             {showResources && (
                                                 <td className="col-panel-cell">
-                                                    {renderResourcesPanel(row.account.id, row.account)}
+                                                    {renderResourcesPanel(row.account.id)}
                                                 </td>
                                             )}
 
