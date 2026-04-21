@@ -4,7 +4,7 @@ import { SymbolTracker } from '../Characters/SymbolTracker';
 import { SixthJobTracker } from '../Characters/SixthJobTracker';
 import type { CharacterWithAccount, ClassItem } from '../../types';
 
-const SIXTH_JOB_IMG = 'https://i.namu.wiki/i/iIBti_fMumlIhMZ46-nblejwOxKqKItmyM7NqV7C8NfuODUQpbvhKHJdzMLK_v4vda9ivQoLepMPw7pNZiSyow.webp';
+const SIXTH_JOB_IMG = '/HexaMatrix.webp';
 
 interface Props {
     character: CharacterWithAccount;

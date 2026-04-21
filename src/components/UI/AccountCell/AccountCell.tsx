@@ -1,6 +1,16 @@
 import React from 'react';
 import './AccountCell.css';
 
+const CLASS_ABBR: Record<string, string> = {
+    'Night Lord': 'NL',
+    'Dawn Warrior': 'DW',
+    'Luminous': 'Lumi',
+    'Marksman': 'Mrks',
+    'Night Walker': 'NW',
+};
+
+const abbreviateClass = (cls: string): string => CLASS_ABBR[cls] ?? cls;
+
 interface AccountCellProps {
     number: number;
     email: string | null;
@@ -30,7 +40,7 @@ export const AccountCell: React.FC<AccountCellProps> = ({ number, email, tag, ch
                             Lv {charLevel}
                             {charExpPercent != null && <span className="acell-char-exp"> ({Math.round(charExpPercent)}%)</span>}
                             {jobIcon && <img src={jobIcon} alt={charClass || ''} title={charClass || ''} className="acell-job-icon" />}
-                            {charClass && <span className="acell-char-class">{charClass}</span>}
+                            {charClass && <span className="acell-char-class">{abbreviateClass(charClass)}</span>}
                         </span>
                     )}
                 </div>
