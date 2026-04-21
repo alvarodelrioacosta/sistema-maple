@@ -157,10 +157,9 @@ export const ExpeditionCard: React.FC<ExpeditionCardProps> = ({
           return (
             <div key={type} className="mf-reward-row">
               {imgSrc
-                ? <img src={imgSrc} alt={meta.label} className="mf-reward-img" />
+                ? <img src={imgSrc} alt={meta.label} title={meta.label} className="mf-reward-img" />
                 : <div style={{ width: 28, height: 28, background: 'rgba(255,255,255,0.06)', borderRadius: 4, flexShrink: 0 }} />
               }
-              <span style={{ flex: 1 }}>{meta.label}</span>
               {isCube ? (
                 <input
                   type="number" min={0} max={10}

@@ -8,7 +8,6 @@ import {
   REWARD_METADATA,
   CUBE_REWARDS,
   CUBE_RESOURCE_KEYS,
-  RANK_COLORS,
 } from '../../services/mysticFrontierService';
 import type {
   CharacterWithAccount,
@@ -21,9 +20,6 @@ import { ExpeditionCard } from './ExpeditionCard';
 import './MysticFrontierPage.css';
 import '../Characters/MysticFrontierModal.css';
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' });
-}
 
 export interface CharacterRowProps {
   character: CharacterWithAccount;
@@ -101,42 +97,33 @@ export const CharacterRow: React.FC<CharacterRowProps> = ({
                   onClick={() => setHistoryOpen(p => !p)}
                 >
                   {historyOpen ? '▾' : '▸'} HISTORY
-                  {history.length > 0 && <span className="mfp-row__history-count">{history.length}</span>}
+                  {history.filter(e => e.rewards.length > 0).length > 0 && (
+                    <span className="mfp-row__history-count">{history.filter(e => e.rewards.length > 0).length}</span>
+                  )}
                 </button>
 
             {historyOpen && (
               <div className="mfp-row__history">
-                {history.length === 0 ? (
-                  <p className="mfp-row__history-empty">No rewards collected yet.</p>
-                ) : (
-                  history.map(entry => {
-                    const rankColor = RANK_COLORS[entry.site_rank];
-                    return (
-                      <div key={entry.id} className="mfp-history-entry">
-                        <span
-                          className="mfp-history-rank"
-                          style={{ background: rankColor + '22', color: rankColor, border: `1px solid ${rankColor}44` }}
-                        >
-                          {entry.site_rank}
-                        </span>
-                        <span className="mfp-history-exp">#{entry.expedition_index}</span>
-                        <div className="mfp-history-rewards">
-                          {entry.rewards.map((r, i) => {
-                            const meta = REWARD_METADATA[r.type];
-                            const imgSrc = CUBE_REWARDS.has(r.type) ? cubeImages[r.type] : meta?.image_url;
-                            return (
-                              <React.Fragment key={i}>
-                                {imgSrc && <img src={imgSrc} alt={meta?.label ?? r.type} className="mfp-history-icon" title={meta?.label} />}
-                                {r.quantity > 1 && <span className="mfp-history-qty">×{r.quantity}</span>}
-                              </React.Fragment>
-                            );
-                          })}
-                        </div>
-                        <span className="mfp-history-date">{formatDate(entry.collected_at)}</span>
+                {(() => {
+                  const withRewards = history.filter(e => e.rewards.length > 0);
+                  if (withRewards.length === 0) return <p className="mfp-row__history-empty">No rewards collected yet.</p>;
+                  return withRewards.map(entry => (
+                    <div key={entry.id} className="mfp-history-entry">
+                      <div className="mfp-history-rewards">
+                        {entry.rewards.map((r, i) => {
+                          const meta = REWARD_METADATA[r.type];
+                          const imgSrc = CUBE_REWARDS.has(r.type) ? cubeImages[r.type] : meta?.image_url;
+                          return (
+                            <React.Fragment key={i}>
+                              {imgSrc && <img src={imgSrc} alt={meta?.label ?? r.type} className="mfp-history-icon" title={meta?.label} />}
+                              {r.quantity > 1 && <span className="mfp-history-qty">×{r.quantity}</span>}
+                            </React.Fragment>
+                          );
+                        })}
                       </div>
-                    );
-                  })
-                )}
+                    </div>
+                  ));
+                })()}
               </div>
             )}
               </div>
