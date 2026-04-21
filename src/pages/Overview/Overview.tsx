@@ -714,7 +714,6 @@ const Overview: React.FC = () => {
         const balances = accountBalances[accountId] || {};
         return (
             <div className="overview-resources-panel">
-                <div className="overview-resources-title">Resources</div>
                 <div className="overview-resources-grid">
                     {EXPIRING_RESOURCE_TYPES.map(type => {
                         const amount = balances[type] || 0;
@@ -723,26 +722,20 @@ const Overview: React.FC = () => {
                         return (
                             <div key={type} className="overview-resource-chip">
                                 {imgSrc
-                                    ? <img src={imgSrc} alt={label} />
-                                    : <span style={{ fontSize: '16px' }}>💎</span>
+                                    ? <img src={imgSrc} alt={label} title={label} />
+                                    : <span style={{ fontSize: '14px' }} title={label}>💎</span>
                                 }
-                                <div>
-                                    <span className="overview-resource-chip-label">{label}</span>
-                                    <span className={`overview-resource-chip-value${amount === 0 ? ' overview-resource-chip-value--zero' : ''}`}>
-                                        {amount.toLocaleString()}
-                                    </span>
-                                </div>
+                                <span className={`overview-resource-chip-value${amount === 0 ? ' overview-resource-chip-value--zero' : ''}`}>
+                                    {amount.toLocaleString()}
+                                </span>
                             </div>
                         );
                     })}
                     <div className="overview-resource-chip overview-resource-mesos">
-                        <span style={{ fontSize: '16px' }}>💰</span>
-                        <div>
-                            <span className="overview-resource-chip-label">Mesos</span>
-                            <span className="overview-resource-chip-value">
-                                {(account.mesos_b || 0).toFixed(2)}B
-                            </span>
-                        </div>
+                        <span style={{ fontSize: '14px' }} title="Mesos">💰</span>
+                        <span className="overview-resource-chip-value">
+                            {(account.mesos_b || 0).toFixed(2)}B
+                        </span>
                     </div>
                 </div>
             </div>
@@ -815,6 +808,9 @@ const Overview: React.FC = () => {
                                 ))}
                                 {showBossing && <th rowSpan={2} className="col-bossing">BOSSING</th>}
                                 {showItems && <th rowSpan={2} colSpan={4} className="col-items">Items</th>}
+                                {showResources && <th rowSpan={2} className="col-panel">💎 Resources</th>}
+                                {showCharDetails && <th rowSpan={2} className="col-panel">Details</th>}
+                                {showMF && <th rowSpan={2} className="col-panel">◈ MF</th>}
                             </tr>
                             <tr className="header-bottom-row">
                                 {groupedDailyUnlocks.map(group =>
@@ -1025,44 +1021,30 @@ const Overview: React.FC = () => {
                                                     </td>
                                                 );
                                             })()}
-                                        </tr>
-
-                                        {/* Resources panel */}
-                                        {showResources && (
-                                            <tr className="overview-panel-row">
-                                                <td colSpan={100} className="overview-panel-cell">
-                                                    <div className="overview-panel-label">💎 Resources</div>
+                                            {/* Resources column */}
+                                            {showResources && (
+                                                <td className="col-panel-cell">
                                                     {renderResourcesPanel(row.account.id, row.account)}
                                                 </td>
-                                            </tr>
-                                        )}
+                                            )}
 
-                                        {/* Char Details panel */}
-                                        {showCharDetails && charWithAccount && (
-                                            <tr className="overview-panel-row">
-                                                <td colSpan={100} className="overview-panel-cell">
-                                                    <div className="overview-panel-label">⚔️ Char Details</div>
-                                                    <div className="overview-char-panel">
-                                                        <CharDetailsPanel
-                                                            character={charWithAccount}
-                                                            classes={classes}
-                                                            onCharacterUpdate={handleCharacterUpdate}
-                                                        />
-                                                    </div>
+                                            {/* Char Details column */}
+                                            {showCharDetails && (
+                                                <td className="col-panel-cell">
+                                                    {charWithAccount
+                                                        ? <CharDetailsPanel character={charWithAccount} classes={classes} onCharacterUpdate={handleCharacterUpdate} />
+                                                        : <span className="overview-panel-empty">—</span>
+                                                    }
                                                 </td>
-                                            </tr>
-                                        )}
+                                            )}
 
-                                        {/* Mystic Frontier panel */}
-                                        {showMF && charWithAccount && (
-                                            <tr className="overview-panel-row">
-                                                <td colSpan={100} className="overview-panel-cell">
-                                                    <div className="overview-panel-label">◈ Mystic Frontier</div>
-                                                    <div className="overview-mf-panel">
-                                                        {!mfDataLoaded ? (
-                                                            <div className="overview-mf-loading">Loading expeditions…</div>
-                                                        ) : (
-                                                            <CharacterRow
+                                            {/* Mystic Frontier column */}
+                                            {showMF && (
+                                                <td className="col-panel-cell overview-mf-col">
+                                                    {charWithAccount
+                                                        ? !mfDataLoaded
+                                                            ? <div className="overview-mf-loading">Loading…</div>
+                                                            : <CharacterRow
                                                                 character={charWithAccount}
                                                                 expeditions={mfExpeditions[charWithAccount.id] ?? []}
                                                                 history={mfHistory[charWithAccount.id] ?? []}
@@ -1071,11 +1053,11 @@ const Overview: React.FC = () => {
                                                                 onUnlockToggle={handleMFUnlockToggle}
                                                                 unlockLoading={!!mfUnlockLoading[charWithAccount.id]}
                                                             />
-                                                        )}
-                                                    </div>
+                                                        : <span className="overview-panel-empty">—</span>
+                                                    }
                                                 </td>
-                                            </tr>
-                                        )}
+                                            )}
+                                        </tr>
                                     </React.Fragment>
                                 );
                             })}

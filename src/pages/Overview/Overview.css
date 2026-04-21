@@ -978,76 +978,65 @@
 }
 
 /* =============================================
-   OVERVIEW PANELS — Expanded rows
+   OVERVIEW PANELS — Inline columns
    ============================================= */
 
-.overview-panel-row td {
-    padding: 0 !important;
-    border-bottom: 2px solid rgba(124, 58, 237, 0.2) !important;
+.col-panel {
+    min-width: 160px;
+    text-align: left !important;
+    white-space: nowrap;
+    vertical-align: middle !important;
 }
 
-.overview-panel-cell {
+.col-panel-cell {
     padding: 0 !important;
+    vertical-align: top !important;
+    border-left: 1px solid rgba(124, 58, 237, 0.12) !important;
+}
+
+.overview-panel-empty {
+    display: block;
+    padding: 1rem;
+    text-align: center;
+    color: #475569;
+    font-size: 0.75rem;
 }
 
 /* ---- Resources Panel ---- */
 .overview-resources-panel {
-    padding: 1rem 1.5rem;
-    background: rgba(15, 23, 42, 0.5);
-    border-top: 1px solid rgba(255, 255, 255, 0.04);
-}
-
-.overview-resources-title {
-    font-size: 0.65rem;
-    font-weight: 800;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #475569;
-    margin-bottom: 0.75rem;
+    padding: 0.6rem 0.75rem;
 }
 
 .overview-resources-grid {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    align-items: center;
+    flex-direction: column;
+    gap: 0.3rem;
 }
 
 .overview-resource-chip {
     display: flex;
     align-items: center;
-    gap: 6px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 8px;
-    padding: 6px 12px;
-    min-width: 80px;
+    gap: 5px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    padding: 3px 7px;
 }
 
 .overview-resource-chip img {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     object-fit: contain;
     image-rendering: pixelated;
-}
-
-.overview-resource-chip-label {
-    font-size: 0.65rem;
-    color: #64748b;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    display: block;
-    line-height: 1;
+    flex-shrink: 0;
 }
 
 .overview-resource-chip-value {
-    font-size: 0.85rem;
+    font-size: 0.78rem;
     font-weight: 700;
     color: #e2e8f0;
     font-family: 'JetBrains Mono', monospace;
-    display: block;
-    line-height: 1.3;
+    white-space: nowrap;
 }
 
 .overview-resource-chip-value--zero {
@@ -1055,45 +1044,75 @@
 }
 
 .overview-resource-mesos {
-    border-color: rgba(74, 222, 128, 0.2);
-    background: rgba(74, 222, 128, 0.04);
+    border-color: rgba(74, 222, 128, 0.15);
+    background: rgba(74, 222, 128, 0.03);
 }
 
 .overview-resource-mesos .overview-resource-chip-value {
     color: #4ade80;
 }
 
-/* ---- Char Details Panel ---- */
-.overview-char-panel {
-    padding: 1.5rem;
-    background: rgba(15, 23, 42, 0.5);
-    border-top: 1px solid rgba(255, 255, 255, 0.04);
-}
-
-/* ---- MF Panel ---- */
-.overview-mf-panel {
-    background: rgba(15, 23, 42, 0.5);
-    border-top: 1px solid rgba(124, 58, 237, 0.15);
-}
-
+/* ---- MF column ---- */
 .overview-mf-loading {
-    padding: 1.5rem;
+    padding: 1rem;
     color: #64748b;
     font-size: 0.85rem;
     text-align: center;
 }
 
-/* Panel label strip */
-.overview-panel-label {
+/* Hide redundant account column when CharacterRow is embedded in a table cell */
+.overview-mf-col .mfp-row {
+    grid-template-columns: 1fr;
+    border: none;
+    background: transparent;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0;
+}
+
+.overview-mf-col .mfp-row__account {
+    display: none;
+}
+
+/* ---- Compact Char Details panel ---- */
+.char-panel-compact {
+    padding: 0.5rem 0.75rem;
+    min-width: 340px;
+}
+
+.char-panel-compact__header {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.35rem 1.5rem;
-    background: rgba(255, 255, 255, 0.02);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-    font-size: 0.6rem;
-    font-weight: 800;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: #475569;
+    gap: 6px;
+    padding-bottom: 0.4rem;
+    margin-bottom: 0.25rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.char-panel-compact__avatar {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.char-panel-compact__name {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #f1f5f9;
+}
+
+.char-panel-compact__level {
+    font-size: 0.72rem;
+    color: #94a3b8;
+}
+
+.char-panel-compact__job-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.char-panel-compact__class {
+    font-size: 0.7rem;
+    color: #64748b;
 }

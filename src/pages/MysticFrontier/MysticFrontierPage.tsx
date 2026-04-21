@@ -80,26 +80,28 @@ export const CharacterRow: React.FC<CharacterRowProps> = ({
           </div>
         ) : (
           <>
-            <div className="mfp-row__expeditions">
-              {([1, 2, 3] as const).map(n => (
-                <ExpeditionCard
-                  key={n}
-                  expeditionNumber={n}
-                  expedition={expByNumber(n)}
-                  characterId={character.id}
-                  cubeImages={cubeImages}
-                  onRefresh={() => onRefresh(character.id)}
-                />
-              ))}
-            </div>
+            <div className="mfp-row__main">
+              <div className="mfp-row__expeditions">
+                {([1, 2, 3] as const).map(n => (
+                  <ExpeditionCard
+                    key={n}
+                    expeditionNumber={n}
+                    expedition={expByNumber(n)}
+                    characterId={character.id}
+                    cubeImages={cubeImages}
+                    onRefresh={() => onRefresh(character.id)}
+                  />
+                ))}
+              </div>
 
-            <button
-              className={`mfp-row__history-toggle ${historyOpen ? 'open' : ''}`}
-              onClick={() => setHistoryOpen(p => !p)}
-            >
-              {historyOpen ? '▾' : '▸'} REWARD HISTORY
-              {history.length > 0 && <span className="mfp-row__history-count">{history.length}</span>}
-            </button>
+              <div className="mfp-row__history-side">
+                <button
+                  className={`mfp-row__history-toggle ${historyOpen ? 'open' : ''}`}
+                  onClick={() => setHistoryOpen(p => !p)}
+                >
+                  {historyOpen ? '▾' : '▸'} HISTORY
+                  {history.length > 0 && <span className="mfp-row__history-count">{history.length}</span>}
+                </button>
 
             {historyOpen && (
               <div className="mfp-row__history">
@@ -136,6 +138,8 @@ export const CharacterRow: React.FC<CharacterRowProps> = ({
                 )}
               </div>
             )}
+              </div>
+            </div>
           </>
         )}
       </div>

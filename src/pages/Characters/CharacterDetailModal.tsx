@@ -4,7 +4,6 @@ import { SymbolTracker } from './SymbolTracker';
 import { SixthJobTracker } from './SixthJobTracker';
 import { ExtraStatsTracker } from './ExtraStatsTracker';
 import { ContentUnlocksPanel } from './ContentUnlocksPanel';
-import { MysticFrontierModal } from './MysticFrontierModal';
 import type { CharacterWithAccount, ClassItem } from '../../types';
 
 interface Props {
@@ -16,8 +15,6 @@ interface Props {
 
 export const CharacterDetailModal: React.FC<Props> = ({ character: characterProp, classes, onClose, onCharacterUpdate }) => {
     const [localCharacter, setLocalCharacter] = React.useState(characterProp);
-    const [mfOpen, setMfOpen] = React.useState(false);
-
     React.useEffect(() => { setLocalCharacter(characterProp); }, [characterProp]);
 
     if (!localCharacter) return null;
@@ -117,41 +114,6 @@ export const CharacterDetailModal: React.FC<Props> = ({ character: characterProp
                 account={character.account}
             />
 
-            {/* Mystic Frontier */}
-            <div style={{ padding: '0.75rem 1.25rem', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-                <button
-                    onClick={() => setMfOpen(true)}
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        background: 'rgba(124,58,237,0.1)',
-                        border: '1px solid rgba(124,58,237,0.25)',
-                        borderRadius: '6px',
-                        padding: '0.4rem 0.9rem',
-                        color: '#a78bfa',
-                        fontSize: '0.78rem',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        transition: 'background 150ms ease, border-color 150ms ease',
-                    }}
-                    onMouseEnter={e => {
-                        (e.currentTarget as HTMLButtonElement).style.background = 'rgba(124,58,237,0.2)';
-                        (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(124,58,237,0.45)';
-                    }}
-                    onMouseLeave={e => {
-                        (e.currentTarget as HTMLButtonElement).style.background = 'rgba(124,58,237,0.1)';
-                        (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(124,58,237,0.25)';
-                    }}
-                >
-                    ◈ Mystic Frontier
-                </button>
-            </div>
-
-            <MysticFrontierModal
-                character={mfOpen ? character : null}
-                onClose={() => setMfOpen(false)}
-            />
         </Modal>
     );
 };

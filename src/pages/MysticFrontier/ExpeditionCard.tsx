@@ -96,9 +96,8 @@ export const ExpeditionCard: React.FC<ExpeditionCardProps> = ({
 
   return (
     <div className="mf-expedition-card">
-      <div className="mf-expedition-title">Expedition {['I', 'II', 'III'][expeditionNumber - 1]}</div>
-
-      <div>
+      <div className="mf-expedition-header">
+        <span className="mf-expedition-title">Exp. {expeditionNumber}</span>
         <span className={`mf-status-badge ${liveStatus}`}>
           {liveStatus === 'available' && '● Available'}
           {liveStatus === 'exploring' && '◎ Exploring'}
@@ -151,7 +150,7 @@ export const ExpeditionCard: React.FC<ExpeditionCardProps> = ({
 
       {liveStatus === 'available' && (
         <Button className="mf-action-btn" size="sm" variant="primary" loading={actionLoading} onClick={handleStart}>
-          Start Expedition
+          Start
         </Button>
       )}
       {liveStatus === 'exploring' && timerDone && !showRewardPicker && (

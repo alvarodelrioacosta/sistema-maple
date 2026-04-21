@@ -124,11 +124,35 @@
   min-width: 200px;
 }
 
-/* Expedition cards grid */
-.mfp-row__expeditions {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+/* Main content: expeditions + history side by side */
+.mfp-row__main {
+  display: flex;
   gap: 0.75rem;
+  align-items: flex-start;
+}
+
+/* Expedition cards in a row */
+.mfp-row__expeditions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* Narrow the cards when inside the row layout */
+.mfp-row__expeditions .mf-expedition-card {
+  width: 160px;
+  min-width: 0;
+}
+
+/* History side panel (to the right of cards) */
+.mfp-row__history-side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 190px;
+  max-width: 260px;
+  border-left: 1px solid rgba(255,255,255,0.06);
+  padding-left: 0.75rem;
 }
 
 /* History toggle button */
