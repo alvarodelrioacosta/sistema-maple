@@ -37,7 +37,6 @@ import {
 import { CharacterRow } from '../MysticFrontier/MysticFrontierPage';
 import { CharDetailsPanel } from './CharDetailsPanel';
 import { ExtraStatsCellPanel } from './ExtraStatsCellPanel';
-import { ContentUnlocksCellPanel } from './ContentUnlocksCellPanel';
 import './Overview.css';
 
 const BOSS_IMAGE_ALIAS: Record<string, string> = {
@@ -110,7 +109,6 @@ const Overview: React.FC = () => {
     const [showCharDetails, setShowCharDetails] = useState(false);
     const [showResources, setShowResources] = useState(false);
     const [showExtraStats, setShowExtraStats] = useState(false);
-    const [showContentUnlocks, setShowContentUnlocks] = useState(false);
     const [showAllAccount0Mains, setShowAllAccount0Mains] = useState(false);
 
     const [activeItemFilters, setActiveItemFilters] = useState<Set<string>>(new Set(['for_sale']));
@@ -759,10 +757,6 @@ const Overview: React.FC = () => {
                         <Button variant={showExtraStats ? 'primary' : 'secondary'} size="sm" onClick={() => setShowExtraStats(v => !v)}>
                             Extra Stats
                         </Button>
-                        <Button variant={showContentUnlocks ? 'primary' : 'secondary'} size="sm" onClick={() => setShowContentUnlocks(v => !v)}>
-                            Content Unlocks
-                        </Button>
-
                         <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.1)' }} />
 
                         {/* Existing toggles */}
@@ -778,9 +772,6 @@ const Overview: React.FC = () => {
                         )}
                         <Button variant={showBossing ? 'primary' : 'secondary'} size="sm" onClick={() => setShowBossing(!showBossing)}>
                             {showBossing ? 'Hide Bossing' : 'Bossing'}
-                        </Button>
-                        <Button variant="secondary" size="sm" onClick={() => setConfigModalOpen(true)}>
-                            ⚙️ Configure Tasks
                         </Button>
                     </div>
                 }
@@ -801,7 +792,6 @@ const Overview: React.FC = () => {
                                 {showItems && <th rowSpan={2} colSpan={4} className="col-items">Items</th>}
                                 {showResources && <th rowSpan={2} className="col-panel">💎 Resources</th>}
                                 {showExtraStats && <th rowSpan={2} className="col-panel">Extra Stats</th>}
-                                {showContentUnlocks && <th rowSpan={2} className="col-panel">Content Unlocks</th>}
                                 {showCharDetails && <th rowSpan={2} className="col-panel">Details</th>}
                                 {showMF && <th rowSpan={2} className="col-panel">◈ MF</th>}
                             </tr>
@@ -1035,16 +1025,6 @@ const Overview: React.FC = () => {
                                                 <td className="col-panel-cell">
                                                     {charWithAccount
                                                         ? <ExtraStatsCellPanel character={charWithAccount} onCharacterUpdate={handleCharacterUpdate} />
-                                                        : <span className="overview-panel-empty">—</span>
-                                                    }
-                                                </td>
-                                            )}
-
-                                            {/* Content Unlocks column */}
-                                            {showContentUnlocks && (
-                                                <td className="col-panel-cell">
-                                                    {charWithAccount
-                                                        ? <ContentUnlocksCellPanel character={charWithAccount} onCharacterUpdate={handleCharacterUpdate} />
                                                         : <span className="overview-panel-empty">—</span>
                                                     }
                                                 </td>
