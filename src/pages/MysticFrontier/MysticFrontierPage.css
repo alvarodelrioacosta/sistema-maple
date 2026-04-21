@@ -1,0 +1,261 @@
+.mfp-page {
+  padding: 1.5rem 2rem;
+  max-width: 1400px;
+}
+
+.mfp-header {
+  margin-bottom: 1.5rem;
+}
+
+.mfp-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 0.25rem;
+}
+
+.mfp-subtitle {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.mfp-loading,
+.mfp-empty {
+  padding: 3rem;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+/* ─── Rows ──────────────────────────────────────────────────────────────────── */
+
+.mfp-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mfp-row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1rem;
+  background: var(--color-surface-2, rgba(255,255,255,0.03));
+  border: 1px solid var(--color-border, rgba(255,255,255,0.08));
+  border-radius: var(--radius-md, 8px);
+  padding: 1rem 1.25rem;
+  align-items: start;
+}
+
+/* ─── Account column ─────────────────────────────────────────────────────────── */
+
+.mfp-row__account {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-right: 1rem;
+  border-right: 1px solid rgba(255,255,255,0.07);
+  min-height: 60px;
+  justify-content: center;
+}
+
+.mfp-row__account-line {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.mfp-row__account-num {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.mfp-row__account-tag {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.1rem 0.45rem;
+  border-radius: 9999px;
+  background: rgba(124, 58, 237, 0.15);
+  color: #a78bfa;
+  border: 1px solid rgba(124, 58, 237, 0.3);
+}
+
+.mfp-row__account-email {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  word-break: break-all;
+}
+
+.mfp-row__char-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+/* ─── Content column ─────────────────────────────────────────────────────────── */
+
+.mfp-row__content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Locked state */
+.mfp-row__locked {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.5rem 0;
+}
+
+.mfp-row__lock-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.mfp-row__locked p {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  margin: 0;
+  flex: 1;
+  min-width: 200px;
+}
+
+/* Expedition cards grid */
+.mfp-row__expeditions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+/* History toggle button */
+.mfp-row__history-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 0.25rem 0;
+  transition: color 150ms ease;
+  align-self: flex-start;
+}
+
+.mfp-row__history-toggle:hover,
+.mfp-row__history-toggle.open {
+  color: var(--color-text-secondary);
+}
+
+.mfp-row__history-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: rgba(255,255,255,0.08);
+  font-size: 0.65rem;
+}
+
+/* History panel */
+.mfp-row__history {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.mfp-row__history-empty {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin: 0;
+  padding: 0.25rem 0;
+}
+
+.mfp-history-entry {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.35rem 0.6rem;
+  background: rgba(255,255,255,0.025);
+  border-radius: 4px;
+  font-size: 0.78rem;
+}
+
+.mfp-history-rank {
+  padding: 0.1rem 0.45rem;
+  border-radius: 9999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.mfp-history-exp {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.mfp-history-rewards {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.mfp-history-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.mfp-history-qty {
+  font-size: 0.68rem;
+  color: var(--color-text-muted);
+  margin-right: 0.15rem;
+}
+
+.mfp-history-date {
+  font-size: 0.68rem;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .mfp-row {
+    grid-template-columns: 1fr;
+  }
+
+  .mfp-row__account {
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    padding-right: 0;
+    padding-bottom: 0.75rem;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .mfp-row__expeditions {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .mfp-row__expeditions {
+    grid-template-columns: 1fr;
+  }
+}

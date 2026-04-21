@@ -22,7 +22,8 @@ import {
     DailyCheckUp,
     Events,
     Login,
-    Bosses
+    Bosses,
+    MysticFrontierPage,
 } from './pages';
 
 const ProtectedRoute: React.FC<{ children: React.ReactElement; adminOnly?: boolean }> = ({ children, adminOnly }) => {
@@ -75,6 +76,7 @@ function AppRoutes() {
                 <Route path="events" element={<ProtectedRoute adminOnly><Events /></ProtectedRoute>} />
                 <Route path="tasks" element={<ProtectedRoute adminOnly><Tasks /></ProtectedRoute>} />
                 <Route path="bosses" element={<ProtectedRoute adminOnly><Bosses /></ProtectedRoute>} />
+                <Route path="mystic-frontier" element={<ProtectedRoute adminOnly><MysticFrontierPage /></ProtectedRoute>} />
                 <Route path="settings" element={<ProtectedRoute adminOnly><Settings /></ProtectedRoute>} />
             </Route>
         </Routes>

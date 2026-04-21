@@ -8,6 +8,23 @@ import type {
   MysticFrontierRewardEntry,
 } from '../types';
 
+export const SITE_RANKS: MysticFrontierSiteRank[] = ['Common', 'Rare', 'Epic', 'Unique', 'Legendary'];
+
+export const RANK_COLORS: Record<MysticFrontierSiteRank, string> = {
+  Common:    '#718096',
+  Rare:      '#4299e1',
+  Epic:      '#9f7aea',
+  Unique:    '#ed8936',
+  Legendary: '#d69e2e',
+};
+
+// Maps resourcesService metadata keys → MysticFrontierRewardType for cube images
+export const CUBE_RESOURCE_KEYS: Record<string, MysticFrontierRewardType> = {
+  solid_cubes:        'karma_solid_cubes',
+  bright_cubes:       'karma_bright_cubes',
+  bonus_bright_cubes: 'karma_bonus_bright_cubes',
+};
+
 export const EXPLORATION_HOURS: Record<MysticFrontierSiteRank, number> = {
   Common: 6, Rare: 8, Epic: 12, Unique: 18, Legendary: 24,
 };
