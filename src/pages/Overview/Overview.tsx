@@ -34,7 +34,6 @@ import { UNLOCK_DEFINITIONS, SEQUENTIAL_UNLOCK_GROUPS, type UnlockDef } from '..
 import {
     getExpeditions,
     getRewardHistory,
-    setUnlocked,
     CUBE_RESOURCE_KEYS,
 } from '../../services/mysticFrontierService';
 import { CharacterRow } from '../MysticFrontier/MysticFrontierPage';
@@ -130,7 +129,6 @@ const Overview: React.FC = () => {
     const [mfExpeditions, setMfExpeditions] = useState<Record<string, MysticFrontierExpedition[]>>({});
     const [mfHistory, setMfHistory] = useState<Record<string, MysticFrontierRewardEntry[]>>({});
     const [mfDataLoaded, setMfDataLoaded] = useState(false);
-    const [mfUnlockLoading, setMfUnlockLoading] = useState<Record<string, boolean>>({});
 
     const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
     const weekStart = useMemo(() => bossingService.getWeekStart(), []);
@@ -701,15 +699,10 @@ const Overview: React.FC = () => {
         setMfHistory(prev => ({ ...prev, [characterId]: hist }));
     };
 
-    const handleMFUnlockToggle = async (characterId: string, currentlyUnlocked: boolean) => {
-        setMfUnlockLoading(prev => ({ ...prev, [characterId]: true }));
-        try {
-            await setUnlocked(characterId, !currentlyUnlocked);
-            setAllChars(prev => prev.map(c => c.id === characterId ? { ...c, unlock_mf_8_fams: !currentlyUnlocked } : c));
-            setMainChars(prev => prev.map(c => c.id === characterId ? { ...c, unlock_mf_8_fams: !currentlyUnlocked } : c));
-        } finally {
-            setMfUnlockLoading(prev => ({ ...prev, [characterId]: false }));
-        }
+    const handleMFUnlockToggle = async (characterId: string, col: 'unlock_mf_8_fams' | 'unlock_mf_9_fams', currentValue: boolean) => {
+        await supabase.from('characters').update({ [col]: !currentValue }).eq('id', characterId);
+        setAllChars(prev => prev.map(c => c.id === characterId ? { ...c, [col]: !currentValue } : c));
+        setMainChars(prev => prev.map(c => c.id === characterId ? { ...c, [col]: !currentValue } : c));
     };
 
     // ---- Render helpers ----
@@ -1092,7 +1085,6 @@ const Overview: React.FC = () => {
                                                                 cubeImages={mfCubeImages}
                                                                 onRefresh={handleMFRefresh}
                                                                 onUnlockToggle={handleMFUnlockToggle}
-                                                                unlockLoading={!!mfUnlockLoading[charWithAccount.id]}
                                                             />
                                                         : <span className="overview-panel-empty">—</span>
                                                     }

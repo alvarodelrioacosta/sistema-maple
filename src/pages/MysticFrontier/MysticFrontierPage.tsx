@@ -1,21 +1,23 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { supabase } from '../../lib/supabase';
 import { charactersService } from '../../services/characters';
 import { resourcesService } from '../../services/resources';
 import {
   getExpeditions,
   getRewardHistory,
-  setUnlocked,
   REWARD_METADATA,
   CUBE_REWARDS,
   CUBE_RESOURCE_KEYS,
 } from '../../services/mysticFrontierService';
+
+const FAM_BADGE_IMG = 'https://static.wikia.nocookie.net/maplestory/images/3/3d/FamiliarBadge_Void_Badge.png/revision/latest?cb=20200825222246';
+const USEFUL_FAMS_IMG = 'https://static.wikia.nocookie.net/maplestory/images/d/de/Use_Ascendion_Familiar.png/revision/latest?cb=20200822011947';
 import type {
   CharacterWithAccount,
   MysticFrontierExpedition,
   MysticFrontierRewardEntry,
   MysticFrontierRewardType,
 } from '../../types';
-import { Button } from '../../components/UI';
 import { ExpeditionCard } from './ExpeditionCard';
 import './MysticFrontierPage.css';
 import '../Characters/MysticFrontierModal.css';
@@ -27,8 +29,7 @@ export interface CharacterRowProps {
   history: MysticFrontierRewardEntry[];
   cubeImages: Record<MysticFrontierRewardType, string>;
   onRefresh: (characterId: string) => void;
-  onUnlockToggle: (characterId: string, current: boolean) => void;
-  unlockLoading: boolean;
+  onUnlockToggle: (characterId: string, col: 'unlock_mf_8_fams' | 'unlock_mf_9_fams', currentValue: boolean) => void;
 }
 
 export const CharacterRow: React.FC<CharacterRowProps> = ({
@@ -38,10 +39,9 @@ export const CharacterRow: React.FC<CharacterRowProps> = ({
   cubeImages,
   onRefresh,
   onUnlockToggle,
-  unlockLoading,
 }) => {
   const [historyOpen, setHistoryOpen] = useState(false);
-  const isUnlocked = !!character.unlock_mf_8_fams;
+  const isUnlocked = !!character.unlock_mf_8_fams && !!character.unlock_mf_9_fams;
 
   const expByNumber = (n: 1 | 2 | 3): MysticFrontierExpedition | null =>
     expeditions.find(e => e.expedition_index === n) ?? null;
@@ -65,15 +65,41 @@ export const CharacterRow: React.FC<CharacterRowProps> = ({
         {!isUnlocked ? (
           <div className="mfp-row__locked">
             <span className="mfp-row__lock-icon">🔒</span>
-            <p>Complete <strong>Mystic Frontier pt.2 — 9 Useful Fams</strong> to unlock this feature.</p>
-            <Button
-              size="sm"
-              variant="secondary"
-              loading={unlockLoading}
-              onClick={() => onUnlockToggle(character.id, false)}
-            >
-              Mark as Unlocked
-            </Button>
+            <p>Activate <strong>8 Badge Fams</strong> and <strong>9 Useful Fams</strong> to unlock Mystic Frontier.</p>
+            <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
+              {([
+                { col: 'unlock_mf_8_fams', img: FAM_BADGE_IMG, label: '8 Badge Fams', active: !!character.unlock_mf_8_fams },
+                { col: 'unlock_mf_9_fams', img: USEFUL_FAMS_IMG, label: '9 Useful Fams', active: !!character.unlock_mf_9_fams },
+              ] as const).map(({ col, img, label, active }) => (
+                <div
+                  key={col}
+                  style={{ position: 'relative', cursor: 'pointer' }}
+                  onClick={() => onUnlockToggle(character.id, col, active)}
+                  title={`${label} — ${active ? 'click to disable' : 'click to enable'}`}
+                >
+                  <img
+                    src={img}
+                    alt={label}
+                    style={{
+                      width: 40, height: 40, objectFit: 'contain', display: 'block',
+                      borderRadius: 8,
+                      border: `2px solid ${active ? '#4ade8055' : 'rgba(255,255,255,0.05)'}`,
+                      background: 'rgba(0,0,0,0.2)',
+                      filter: active ? 'none' : 'grayscale(1) opacity(0.4)',
+                      transition: 'all 0.2s',
+                    }}
+                  />
+                  {active && (
+                    <div style={{
+                      position: 'absolute', bottom: 2, right: 2,
+                      background: '#4ade80', color: '#000', borderRadius: '50%',
+                      width: 14, height: 14, fontSize: 10,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900,
+                    }}>✓</div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         ) : (
           <>
@@ -145,7 +171,6 @@ export const MysticFrontierPage: React.FC = () => {
     {} as Record<MysticFrontierRewardType, string>,
   );
   const [loading, setLoading] = useState(true);
-  const [unlockLoading, setUnlockLoading] = useState<Record<string, boolean>>({});
 
   const fetchCharacterData = useCallback(async (characterId: string) => {
     const [exps, hist] = await Promise.all([
@@ -181,17 +206,11 @@ export const MysticFrontierPage: React.FC = () => {
     init();
   }, [fetchCharacterData]);
 
-  const handleUnlockToggle = async (characterId: string, currentlyUnlocked: boolean) => {
-    setUnlockLoading(prev => ({ ...prev, [characterId]: true }));
-    try {
-      await setUnlocked(characterId, !currentlyUnlocked);
-      // Update local character state
-      setCharacters(prev => prev.map(c =>
-        c.id === characterId ? { ...c, is_mystic_frontier_unlocked: !currentlyUnlocked } : c,
-      ));
-    } finally {
-      setUnlockLoading(prev => ({ ...prev, [characterId]: false }));
-    }
+  const handleUnlockToggle = async (characterId: string, col: 'unlock_mf_8_fams' | 'unlock_mf_9_fams', currentValue: boolean) => {
+    await supabase.from('characters').update({ [col]: !currentValue }).eq('id', characterId);
+    setCharacters(prev => prev.map(c =>
+      c.id === characterId ? { ...c, [col]: !currentValue } : c,
+    ));
   };
 
   return (
@@ -216,7 +235,6 @@ export const MysticFrontierPage: React.FC = () => {
               cubeImages={cubeImages}
               onRefresh={fetchCharacterData}
               onUnlockToggle={handleUnlockToggle}
-              unlockLoading={!!unlockLoading[char.id]}
             />
           ))}
         </div>
