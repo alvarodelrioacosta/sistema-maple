@@ -1,43 +1,12 @@
 import { supabase } from '../lib/supabase';
-
-// ─── Stub types (reconciled from feat/mystic-frontier-schema at merge) ────────
-export type MysticFrontierSiteRank = 'Common' | 'Rare' | 'Epic' | 'Unique' | 'Legendary';
-export type MysticFrontierStatus = 'available' | 'exploring' | 'resting';
-export type MysticFrontierRewardType =
-  | 'familiar_ring_box'
-  | 'pitched_boss_accessory_box'
-  | 'black_heart'
-  | 'dawn_accessory_box'
-  | 'karma_solid_cubes'
-  | 'karma_bright_cubes'
-  | 'karma_bonus_bright_cubes';
-
-export interface MysticFrontierExpedition {
-  id: string;
-  character_id: string;
-  expedition_index: 1 | 2 | 3;
-  site_rank: MysticFrontierSiteRank;
-  status: MysticFrontierStatus;
-  exploration_started_at: string | null;
-  rest_started_at: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface MysticFrontierRewardItem {
-  type: MysticFrontierRewardType;
-  quantity: number;
-}
-
-export interface MysticFrontierRewardEntry {
-  id: string;
-  character_id: string;
-  expedition_index: 1 | 2 | 3;
-  site_rank: MysticFrontierSiteRank;
-  rewards: MysticFrontierRewardItem[];
-  collected_at: string;
-}
-// ─────────────────────────────────────────────────────────────────────────────
+import type {
+  MysticFrontierSiteRank,
+  MysticFrontierStatus,
+  MysticFrontierRewardType,
+  MysticFrontierExpedition,
+  MysticFrontierRewardItem,
+  MysticFrontierRewardEntry,
+} from '../types';
 
 export const EXPLORATION_HOURS: Record<MysticFrontierSiteRank, number> = {
   Common: 6, Rare: 8, Epic: 12, Unique: 18, Legendary: 24,
