@@ -4,6 +4,7 @@ import { SymbolTracker } from './SymbolTracker';
 import { SixthJobTracker } from './SixthJobTracker';
 import { ExtraStatsTracker } from './ExtraStatsTracker';
 import { ContentUnlocksPanel } from './ContentUnlocksPanel';
+import { MysticFrontierModal } from './MysticFrontierModal';
 import { contentUnlocksService } from '../../services';
 import type { CharacterWithAccount, ClassItem } from '../../types';
 import type { ContentUnlock, AccountUnlockProgress } from '../../services';
@@ -20,6 +21,7 @@ export const CharacterDetailModal: React.FC<Props> = ({ character: characterProp
     const [unlocks, setUnlocks] = React.useState<ContentUnlock[]>([]);
     const [progress, setProgress] = React.useState<AccountUnlockProgress[]>([]);
     const [loading, setLoading] = React.useState(true);
+    const [mfOpen, setMfOpen] = React.useState(false);
 
     React.useEffect(() => { setLocalCharacter(characterProp); }, [characterProp]);
 
@@ -133,11 +135,47 @@ export const CharacterDetailModal: React.FC<Props> = ({ character: characterProp
                 loadingUnlocks={loading}
                 onUpdate={handleSymbolUpdate}
             />
-            <ContentUnlocksPanel 
-                accountId={character.account_id} 
+            <ContentUnlocksPanel
+                accountId={character.account_id}
                 unlocks={unlocks}
                 progress={progress}
                 loading={loading}
+            />
+
+            {/* Mystic Frontier */}
+            <div style={{ padding: '0.75rem 1.25rem', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                <button
+                    onClick={() => setMfOpen(true)}
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        background: 'rgba(124,58,237,0.1)',
+                        border: '1px solid rgba(124,58,237,0.25)',
+                        borderRadius: '6px',
+                        padding: '0.4rem 0.9rem',
+                        color: '#a78bfa',
+                        fontSize: '0.78rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        transition: 'background 150ms ease, border-color 150ms ease',
+                    }}
+                    onMouseEnter={e => {
+                        (e.currentTarget as HTMLButtonElement).style.background = 'rgba(124,58,237,0.2)';
+                        (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(124,58,237,0.45)';
+                    }}
+                    onMouseLeave={e => {
+                        (e.currentTarget as HTMLButtonElement).style.background = 'rgba(124,58,237,0.1)';
+                        (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(124,58,237,0.25)';
+                    }}
+                >
+                    ◈ Mystic Frontier
+                </button>
+            </div>
+
+            <MysticFrontierModal
+                character={mfOpen ? character : null}
+                onClose={() => setMfOpen(false)}
             />
         </Modal>
     );
