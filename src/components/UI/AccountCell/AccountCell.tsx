@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import './AccountCell.css';
 
 const CLASS_ABBR: Record<string, string> = {
@@ -21,16 +21,61 @@ interface AccountCellProps {
     charExpPercent?: number | null;
     jobIcon?: string | null;
     charClass?: string | null;
+    onMesosChange?: (value: number) => void;
 }
 
-export const AccountCell: React.FC<AccountCellProps> = ({ number, email, tag, mesos, charName, charLevel, charExpPercent, jobIcon, charClass }) => {
+export const AccountCell: React.FC<AccountCellProps> = ({ number, email, tag, mesos, charName, charLevel, charExpPercent, jobIcon, charClass, onMesosChange }) => {
+    const [editing, setEditing] = useState(false);
+    const [draft, setDraft] = useState('');
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    const startEdit = (e: React.MouseEvent) => {
+        if (!onMesosChange) return;
+        e.stopPropagation();
+        setDraft(mesos != null ? String(mesos) : '0');
+        setEditing(true);
+        setTimeout(() => inputRef.current?.select(), 0);
+    };
+
+    const commit = () => {
+        const val = parseFloat(draft);
+        if (!isNaN(val) && onMesosChange) onMesosChange(val);
+        setEditing(false);
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') commit();
+        if (e.key === 'Escape') setEditing(false);
+    };
+
+    const showMesos = mesos != null && (mesos > 0 || !!onMesosChange);
+
     return (
         <div className="account-cell-unified">
             <div className="account-cell-row1">
                 <span className="acell-number">N° {number}</span>
                 {tag && <span className="acell-tag">{tag}</span>}
-                {mesos != null && mesos > 0 && (
-                    <span className="acell-mesos">{mesos.toFixed(2)}B</span>
+                {showMesos && (
+                    editing ? (
+                        <input
+                            ref={inputRef}
+                            className="acell-mesos-input"
+                            value={draft}
+                            onChange={e => setDraft(e.target.value)}
+                            onBlur={commit}
+                            onKeyDown={handleKeyDown}
+                            onClick={e => e.stopPropagation()}
+                            autoFocus
+                        />
+                    ) : (
+                        <span
+                            className={`acell-mesos${onMesosChange ? ' acell-mesos--editable' : ''}`}
+                            onClick={startEdit}
+                            title={onMesosChange ? 'Click to edit' : undefined}
+                        >
+                            {(mesos ?? 0).toFixed(2)}B
+                        </span>
+                    )
                 )}
             </div>
             <span className="acell-email" title={email || undefined}>

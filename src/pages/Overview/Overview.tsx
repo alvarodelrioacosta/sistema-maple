@@ -844,6 +844,10 @@ const Overview: React.FC = () => {
                                                     charExpPercent={row.mainChar?.exp_percent}
                                                     jobIcon={rowJobIcon}
                                                     charClass={row.mainChar?.class}
+                                                    onMesosChange={async (val) => {
+                                                        setAccounts(prev => prev.map(a => a.id === row.account.id ? { ...a, mesos_b: val } : a));
+                                                        await accountsService.update(row.account.id, { mesos_b: val });
+                                                    }}
                                                 />
                                             </td>
 
@@ -1000,6 +1004,10 @@ const Overview: React.FC = () => {
                                                                         onEdit={() => {}}
                                                                         onSell={() => handleOpenSellModal(item as ItemWithCharacter)}
                                                                         onListAH={async () => { await handleListAH(item); }}
+                                                                        onPriceUpdate={async (id, val) => {
+                                                                            setAllItems(prev => prev.map(i => i.id === id ? { ...i, estimated_value: val } : i));
+                                                                            await itemsService.update(id, { estimated_value: val });
+                                                                        }}
                                                                     />
                                                                 ))}
                                                             </div>

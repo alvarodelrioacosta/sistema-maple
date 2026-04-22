@@ -619,6 +619,10 @@ export const Items: React.FC = () => {
                                 onToggleFavorite={filterStatus === 'for_sale' ? () => handleToggleFavorite(item) : undefined}
                                 onCopy={item.status === 'bulk' && filterStatus === 'bulk' ? () => handleCopy(item) : undefined}
                                 onReturnToService={item.delivered ? () => handleReturnToService(item) : undefined}
+                                onPriceUpdate={item.status === 'for_sale' ? async (id, val) => {
+                                    setItems(prev => prev.map(i => i.id === id ? { ...i, estimated_value: val } : i));
+                                    await itemsService.update(id, { estimated_value: val });
+                                } : undefined}
                             />
                         ))}
                     </div>

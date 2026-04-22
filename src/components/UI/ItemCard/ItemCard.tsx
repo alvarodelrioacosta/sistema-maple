@@ -52,9 +52,12 @@ export const ItemCard: React.FC<ItemCardProps> = ({
     onToggleFavorite,
     onCopy,
     onReturnToService,
+    onPriceUpdate,
     formatValue,
 }) => {
     const [hovered, setHovered] = useState(false);
+    const [editingPrice, setEditingPrice] = useState(false);
+    const [priceDraft, setPriceDraft] = useState('');
     const [previewStyle, setPreviewStyle] = useState<React.CSSProperties>({});
     const [isListingAH, setIsListingAH] = useState(false);
     const cardRef = useRef<HTMLDivElement>(null);
@@ -159,7 +162,42 @@ export const ItemCard: React.FC<ItemCardProps> = ({
             {/* Right: price + timer + fav */}
             <div className="item-card__right">
                 {(item.status === 'for_sale' || item.status === 'sold' || item.status === 'in_use') && (
-                    <span className="item-card__price">{formatValue(item.estimated_value || 0)}</span>
+                    editingPrice ? (
+                        <input
+                            className="item-card__price-input"
+                            value={priceDraft}
+                            autoFocus
+                            onChange={e => setPriceDraft(e.target.value)}
+                            onBlur={() => {
+                                const val = parseFloat(priceDraft);
+                                if (!isNaN(val) && onPriceUpdate) onPriceUpdate(item.id, val);
+                                setEditingPrice(false);
+                            }}
+                            onKeyDown={e => {
+                                if (e.key === 'Enter') {
+                                    const val = parseFloat(priceDraft);
+                                    if (!isNaN(val) && onPriceUpdate) onPriceUpdate(item.id, val);
+                                    setEditingPrice(false);
+                                }
+                                if (e.key === 'Escape') setEditingPrice(false);
+                            }}
+                            onClick={e => e.stopPropagation()}
+                        />
+                    ) : (
+                        <span
+                            className="item-card__price"
+                            style={onPriceUpdate && item.status === 'for_sale' ? { cursor: 'pointer', borderBottom: '1px dashed rgba(255,255,255,0.2)' } : undefined}
+                            onClick={e => {
+                                if (onPriceUpdate && item.status === 'for_sale') {
+                                    e.stopPropagation();
+                                    setPriceDraft(String(item.estimated_value || 0));
+                                    setEditingPrice(true);
+                                }
+                            }}
+                        >
+                            {formatValue(item.estimated_value || 0)}
+                        </span>
+                    )
                 )}
                 {item.status === 'for_sale' && ahTimer && (
                     <span className={`item-card__timer${ahTimer.expired ? ' expired' : ahTimer.hours < 6 ? ' low' : ''}`}>
