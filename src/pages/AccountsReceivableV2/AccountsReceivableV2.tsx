@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Header } from '../../components/Layout';
 import { Button } from '../../components/UI';
-import { clientLedgerService, clientsService } from '../../services';
+import { clientLedgerService, clientsService, appSettingsService } from '../../services';
 import type { Client, ClientLedgerEntry, CurrencyBalance, LedgerEntryType } from '../../types';
 import { AddEntryModal } from './AddEntryModal';
 import { EditEntryModal } from './EditEntryModal';
@@ -47,6 +47,7 @@ export const AccountsReceivableV2: React.FC = () => {
     const [allEntries, setAllEntries] = useState<ClientLedgerEntry[]>([]);
     const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const [mesoUsdRate, setMesoUsdRate] = useState(1);
 
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [addModalDefaultType, setAddModalDefaultType] = useState<LedgerEntryType>('charge');
@@ -58,12 +59,14 @@ export const AccountsReceivableV2: React.FC = () => {
     const loadData = useCallback(async () => {
         setLoading(true);
         try {
-            const [clientsData, entriesData] = await Promise.all([
+            const [clientsData, entriesData, rate] = await Promise.all([
                 clientsService.getAll(),
                 clientLedgerService.getAll(),
+                appSettingsService.getMesoUsdRate(),
             ]);
             setClients(clientsData);
             setAllEntries(entriesData);
+            setMesoUsdRate(rate ?? 1);
             setSelectedClientId(prev => prev ?? (clientsData[0]?.id ?? null));
         } catch (err) {
             console.error('Error loading ledger data:', err);
@@ -94,6 +97,27 @@ export const AccountsReceivableV2: React.FC = () => {
         }
         return result;
     }, [allEntries]);
+
+    const sortedClients = useMemo(() => {
+        const toUSD = (bals: CurrencyBalance[]) => {
+            let total = 0;
+            for (const bal of bals) {
+                if (bal.balance <= 0) continue;
+                if (bal.currency === 'USD') total += bal.balance;
+                else if (bal.currency === 'Mesos (b)') total += bal.balance * mesoUsdRate;
+                else total += 0.0001; // unknown currency: positive sentinel to keep in debt tier
+            }
+            return total;
+        };
+        return [...clients].sort((a, b) => {
+            const equivA = toUSD(clientBalanceSummary.get(a.id) ?? []);
+            const equivB = toUSD(clientBalanceSummary.get(b.id) ?? []);
+            if (equivA > 0 && equivB > 0) return equivB - equivA;
+            if (equivA > 0) return -1;
+            if (equivB > 0) return 1;
+            return a.name.localeCompare(b.name);
+        });
+    }, [clients, clientBalanceSummary, mesoUsdRate]);
 
     const selectedClientEntries = useMemo(() => {
         if (!selectedClientId) return [];
@@ -164,7 +188,7 @@ export const AccountsReceivableV2: React.FC = () => {
                 {/* Left: client list */}
                 <aside className="arv2-sidebar">
                     <div className="arv2-sidebar__title">Clients</div>
-                    {clients.map(client => {
+                    {sortedClients.map(client => {
                         const balances = clientBalanceSummary.get(client.id) ?? [];
                         const hasBalance = balances.some(b => b.balance !== 0);
                         return (
