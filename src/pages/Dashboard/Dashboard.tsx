@@ -228,12 +228,12 @@ export const Dashboard: React.FC = () => {
                         <span className="dash-kpi__value">{formatUSD(data.netWorthUSD)}</span>
                     </div>
                     <div className="dash-kpi" onClick={toggle} style={{ cursor: 'pointer' }}>
-                        <span className="dash-kpi__label">STOCK (B MESOS)</span>
-                        <span className="dash-kpi__value">{stockDisplay}</span>
-                    </div>
-                    <div className="dash-kpi" onClick={toggle} style={{ cursor: 'pointer' }}>
                         <span className="dash-kpi__label">RECEIVABLES</span>
                         <span className="dash-kpi__value">{receivablesDisplay}</span>
+                    </div>
+                    <div className="dash-kpi" onClick={toggle} style={{ cursor: 'pointer' }}>
+                        <span className="dash-kpi__label">STOCK (B MESOS)</span>
+                        <span className="dash-kpi__value">{stockDisplay}</span>
                     </div>
                     <div className="dash-kpi" onClick={toggle} style={{ cursor: 'pointer' }}>
                         <span className="dash-kpi__label">CASH MESOS</span>
@@ -274,23 +274,6 @@ export const Dashboard: React.FC = () => {
                         )}
                     </div>
 
-                    {/* Mesos Distribution */}
-                    <div className="dash-section">
-                        <div className="dash-section__header">
-                            <span className="dash-section__title">MESOS DISTRIBUTION</span>
-                            <span className="dash-section__total">{formatB(parseFloat(data.totalMesosSum.toFixed(1)))}</span>
-                        </div>
-                        {visibleAccountRows.map((acc, i) => (
-                            <div className="dash-account-row" key={acc.name + i}>
-                                <div className="dash-account-row__meta">
-                                    <span className="dash-account-row__name">{acc.name}</span>
-                                    <span className="dash-account-row__sub">{acc.subtitle}</span>
-                                </div>
-                                <span className="dash-account-row__amount">{formatB(parseFloat(acc.mesos.toFixed(2)))}</span>
-                            </div>
-                        ))}
-                    </div>
-
                     {/* Top Items for Sale */}
                     <div className="dash-section">
                         <div className="dash-section__header">
@@ -307,6 +290,23 @@ export const Dashboard: React.FC = () => {
                                 </div>
                             ))
                         )}
+                    </div>
+
+                    {/* Mesos Distribution */}
+                    <div className="dash-section">
+                        <div className="dash-section__header">
+                            <span className="dash-section__title">MESOS DISTRIBUTION</span>
+                            <span className="dash-section__total">{formatB(parseFloat(data.totalMesosSum.toFixed(1)))}</span>
+                        </div>
+                        {visibleAccountRows.map((acc, i) => (
+                            <div className="dash-account-row" key={acc.name + i}>
+                                <div className="dash-account-row__meta">
+                                    <span className="dash-account-row__name">{acc.name}</span>
+                                    <span className="dash-account-row__sub">{acc.subtitle}</span>
+                                </div>
+                                <span className="dash-account-row__amount">{formatB(parseFloat(acc.mesos.toFixed(2)))}</span>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
