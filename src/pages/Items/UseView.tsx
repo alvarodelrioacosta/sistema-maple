@@ -50,8 +50,7 @@ export const UseView: React.FC<UseViewProps> = ({
     formatValue,
     onEdit,
 }) => {
-    const columns = useMemo(() => {
-        // Deduplicate characters present in items, sorted by name
+    const { columns, allOverflow } = useMemo(() => {
         const charMap = new Map<string, ItemWithCharacter['character']>();
         for (const item of items) {
             if (item.character_id && item.character && !charMap.has(item.character_id)) {
@@ -62,10 +61,11 @@ export const UseView: React.FC<UseViewProps> = ({
             (a[1]?.name ?? '').localeCompare(b[1]?.name ?? '')
         );
 
-        return sortedChars.map(([charId, char]) => {
+        const overflow: { item: ItemWithCharacter; charName: string; type: ItemType; capacity: number }[] = [];
+
+        const cols = sortedChars.map(([charId, char]) => {
             const charItems = items.filter(i => i.character_id === charId);
 
-            // Group by ItemDB type
             const byType: Partial<Record<ItemType, ItemWithCharacter[]>> = {};
             for (const item of charItems) {
                 const type = itemsDB.find(db => db.name === item.name)?.type;
@@ -74,68 +74,79 @@ export const UseView: React.FC<UseViewProps> = ({
                 byType[type]!.push(item);
             }
 
-            // Sort each group by name, then split into assigned vs overflow
             const assignedByType: Partial<Record<ItemType, ItemWithCharacter[]>> = {};
-            const overflowItems: { item: ItemWithCharacter; type: ItemType; capacity: number }[] = [];
-
             for (const slot of EQUIPMENT_SLOTS) {
                 const group = [...(byType[slot.type] ?? [])].sort((a, b) => a.name.localeCompare(b.name));
                 assignedByType[slot.type] = group.slice(0, slot.capacity);
                 for (const item of group.slice(slot.capacity)) {
-                    overflowItems.push({ item, type: slot.type, capacity: slot.capacity });
+                    overflow.push({ item, charName: char?.name ?? 'Unknown', type: slot.type, capacity: slot.capacity });
                 }
             }
 
-            return { charId, char, assignedByType, overflowItems };
+            return { charId, char, assignedByType };
         });
+
+        return { columns: cols, allOverflow: overflow };
     }, [items, itemsDB]);
 
     if (columns.length === 0) {
         return <div className="items-empty">No items with status "In Use" found.</div>;
     }
 
+    const gridTemplateColumns = `80px repeat(${columns.length}, minmax(0, 1fr))`;
+
     return (
         <div className="use-view">
-            {columns.map(({ charId, char, assignedByType, overflowItems }) => (
-                <div key={charId} className="use-column">
-                    <div className="use-column-header">{char?.name ?? 'Unknown'}</div>
-
-                    {overflowItems.length > 0 && (
-                        <div className="overflow-section">
-                            <div className="overflow-section-title">⚠ Slot conflicts</div>
-                            {overflowItems.map(({ item, type, capacity }) => (
-                                <div key={item.id} className="overflow-item">
-                                    <div className="overflow-warning">
-                                        Only {capacity} {type} slot{capacity > 1 ? 's' : ''} allowed
-                                    </div>
-                                    <ItemCard
-                                        item={item}
-                                        imageUrl={getImageUrl(item.name)}
-                                        accountNumber={getAccountNumber(item.character_id)}
-                                        accountTag={getAccountTag(item.character_id)}
-                                        charName={item.character?.name}
-                                        itemsDB={itemsDB}
-                                        filterStatus="in_use"
-                                        formatValue={formatValue}
-                                        onEdit={() => onEdit(item)}
-                                    />
+            {allOverflow.length > 0 && (
+                <div className="use-conflicts">
+                    <div className="use-conflicts-title">⚠ Slot conflicts</div>
+                    <div className="use-conflicts-list">
+                        {allOverflow.map(({ item, charName, type, capacity }) => (
+                            <div key={item.id} className="use-conflict-item">
+                                <div className="use-conflict-meta">
+                                    <span className="use-conflict-char">{charName}</span>
+                                    <span className="use-conflict-warning">
+                                        Only {capacity} {type} slot{capacity > 1 ? 's' : ''}
+                                    </span>
                                 </div>
-                            ))}
-                        </div>
-                    )}
+                                <ItemCard
+                                    item={item}
+                                    imageUrl={getImageUrl(item.name)}
+                                    accountNumber={getAccountNumber(item.character_id)}
+                                    accountTag={getAccountTag(item.character_id)}
+                                    charName={item.character?.name}
+                                    itemsDB={itemsDB}
+                                    filterStatus="in_use"
+                                    formatValue={formatValue}
+                                    onEdit={() => onEdit(item)}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
-                    <div className="slot-list">
-                        {EQUIPMENT_SLOTS.flatMap(slot =>
-                            Array.from({ length: slot.capacity }, (_, i) => {
-                                const assignedItem = assignedByType[slot.type]?.[i];
-                                const slotLabel = slot.capacity > 1
-                                    ? `${slot.label} ${i + 1}`
-                                    : slot.label;
-                                return (
-                                    <div className="slot-row" key={`${slot.type}-${i}`}>
-                                        <div className="slot-label">{slotLabel}</div>
-                                        {assignedItem ? (
-                                            <div className="slot-card">
+            <div className="use-grid" style={{ gridTemplateColumns }}>
+                {/* Header row */}
+                <div className="use-grid-corner" />
+                {columns.map(({ charId, char }) => (
+                    <div key={charId} className="use-grid-char-header">
+                        {char?.name ?? 'Unknown'}
+                    </div>
+                ))}
+
+                {/* Slot rows */}
+                {EQUIPMENT_SLOTS.flatMap(slot =>
+                    Array.from({ length: slot.capacity }, (_, i) => {
+                        const slotLabel = slot.capacity > 1 ? `${slot.label} ${i + 1}` : slot.label;
+                        return (
+                            <React.Fragment key={`${slot.type}-${i}`}>
+                                <div className="use-grid-slot-label">{slotLabel}</div>
+                                {columns.map(({ charId, assignedByType }) => {
+                                    const assignedItem = assignedByType[slot.type]?.[i];
+                                    return (
+                                        <div key={charId} className="use-grid-cell">
+                                            {assignedItem ? (
                                                 <ItemCard
                                                     item={assignedItem}
                                                     imageUrl={getImageUrl(assignedItem.name)}
@@ -147,19 +158,19 @@ export const UseView: React.FC<UseViewProps> = ({
                                                     formatValue={formatValue}
                                                     onEdit={() => onEdit(assignedItem)}
                                                 />
-                                            </div>
-                                        ) : (
-                                            <div className="slot-placeholder">
-                                                <span>{slotLabel}</span>
-                                            </div>
-                                        )}
-                                    </div>
-                                );
-                            })
-                        )}
-                    </div>
-                </div>
-            ))}
+                                            ) : (
+                                                <div className="slot-placeholder">
+                                                    <span>{slotLabel}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </React.Fragment>
+                        );
+                    })
+                )}
+            </div>
         </div>
     );
 };
