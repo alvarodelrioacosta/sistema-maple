@@ -3,6 +3,7 @@
 // =============================================
 
 import React, { useEffect, useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Header } from '../../components/Layout';
 import { Button, Modal, Input, Select, ItemCard } from '../../components/UI';
 import { itemsService, charactersService, itemsDBService, accountsService, clientsService, clientLedgerService, transactionsService, sharedInventoryService } from '../../services';
@@ -40,6 +41,7 @@ const TRADEABILITY_OPTIONS = [
 
 
 export const Items: React.FC = () => {
+    const navigate = useNavigate();
     const [items, setItems] = useState<ItemWithCharacter[]>([]);
     const [characters, setCharacters] = useState<Character[]>([]);
     const [itemsDB, setItemsDB] = useState<ItemDB[]>([]);
@@ -241,6 +243,9 @@ export const Items: React.FC = () => {
             setIsSubmitting(true);
             const { _character, ...cleanData } = formData as any;
             cleanData.costo_total = calculateTotal(cleanData);
+            if (!catalogCanStarforce) cleanData.star_force = 0;
+            if (catalogInfiniteTrades) cleanData.remaining_trade_slots = null;
+            if (catalogAlwaysTradeable) cleanData.tradeability = 'Tradeable';
 
             if (editingItem) {
                 await itemsService.update(editingItem.id, cleanData);
@@ -387,11 +392,13 @@ export const Items: React.FC = () => {
     const handleItemChange = (itemId: string) => {
         const selectedItemDB = itemsDB.find(i => i.id === itemId);
         if (selectedItemDB) {
-            setFormData({
-                ...formData,
+            setFormData(prev => ({
+                ...prev,
                 name: selectedItemDB.name,
-                remaining_trade_slots: selectedItemDB.slots
-            });
+                remaining_trade_slots: selectedItemDB.infinite_trades ? null : selectedItemDB.slots,
+                tradeability: selectedItemDB.always_tradeable ? 'Tradeable' : prev.tradeability,
+                star_force: selectedItemDB.can_starforce ? prev.star_force : 0,
+            }));
         }
     };
 
@@ -475,6 +482,10 @@ export const Items: React.FC = () => {
 
 
     const currentItemDBId = itemsDB.find(i => i.name === formData.name)?.id || '';
+    const selectedCatalogItem = itemsDB.find(i => i.id === currentItemDBId);
+    const catalogCanStarforce    = selectedCatalogItem?.can_starforce    ?? true;
+    const catalogInfiniteTrades  = selectedCatalogItem?.infinite_trades  ?? false;
+    const catalogAlwaysTradeable = selectedCatalogItem?.always_tradeable ?? false;
 
     // Filter and Sort Logic
     const filteredItems = useMemo(() => {
@@ -528,7 +539,10 @@ export const Items: React.FC = () => {
                 title="Items"
                 subtitle="Manage your inventory items"
                 actions={
-                    <Button onClick={() => handleOpenModal()}>+ New Item</Button>
+                    <>
+                        <Button variant="secondary" onClick={() => navigate('/items-db')}>Items DB</Button>
+                        <Button onClick={() => handleOpenModal()}>+ New Item</Button>
+                    </>
                 }
             />
 
@@ -804,28 +818,43 @@ export const Items: React.FC = () => {
 
                     {/* --- ROW 3: STATS --- */}
                     <div style={{ display: 'grid', gridTemplateColumns: '70px 1fr 70px 1fr 80px', gap: 'var(--spacing-md)', alignItems: 'end' }}>
-                        <Input
-                            label="Star Force"
-                            type="number"
-                            min={0}
-                            max={25}
-                            value={formData.star_force}
-                            onChange={(e) => setFormData({ ...formData, star_force: parseInt(e.target.value) || 0 })}
-                        />
-                        <Select
-                            label="Tradeability"
-                            value={formData.tradeability}
-                            onChange={(value) => setFormData({ ...formData, tradeability: value as TradeabilityType })}
-                            options={TRADEABILITY_OPTIONS}
-                        />
-                        <Input
-                            label="Slots"
-                            type="number"
-                            min={0}
-                            max={10}
-                            value={formData.remaining_trade_slots}
-                            onChange={(e) => setFormData({ ...formData, remaining_trade_slots: parseInt(e.target.value) || 0 })}
-                        />
+                        {catalogCanStarforce ? (
+                            <Input
+                                label="Star Force"
+                                type="number"
+                                min={0}
+                                max={25}
+                                value={formData.star_force}
+                                onChange={(e) => setFormData({ ...formData, star_force: parseInt(e.target.value) || 0 })}
+                            />
+                        ) : (
+                            <div />
+                        )}
+                        {catalogAlwaysTradeable ? (
+                            <div>
+                                <div style={{ fontSize: '0.75rem', color: 'var(--color-text-tertiary)', marginBottom: '4px' }}>Tradeability</div>
+                                <div style={{ padding: '6px 0', fontSize: '0.875rem' }}>Tradeable <small style={{ opacity: 0.5 }}>(locked)</small></div>
+                            </div>
+                        ) : (
+                            <Select
+                                label="Tradeability"
+                                value={formData.tradeability}
+                                onChange={(value) => setFormData({ ...formData, tradeability: value as TradeabilityType })}
+                                options={TRADEABILITY_OPTIONS}
+                            />
+                        )}
+                        {!catalogInfiniteTrades && !catalogAlwaysTradeable ? (
+                            <Input
+                                label="Slots"
+                                type="number"
+                                min={0}
+                                max={10}
+                                value={formData.remaining_trade_slots ?? 0}
+                                onChange={(e) => setFormData({ ...formData, remaining_trade_slots: parseInt(e.target.value) || 0 })}
+                            />
+                        ) : (
+                            <div />
+                        )}
                         <Select
                             label="Status"
                             value={formData.status}

@@ -42,6 +42,9 @@ export const ItemsDB: React.FC = () => {
         type: null,
         item_lv: 0,
         slots: 5,
+        can_starforce: true,
+        infinite_trades: false,
+        always_tradeable: false,
         image_url: null,
         set: null
     });
@@ -69,12 +72,15 @@ export const ItemsDB: React.FC = () => {
                 type: item.type,
                 item_lv: item.item_lv,
                 slots: item.slots,
+                can_starforce: item.can_starforce,
+                infinite_trades: item.infinite_trades,
+                always_tradeable: item.always_tradeable,
                 image_url: item.image_url,
                 set: item.set
             });
         } else {
             setEditingItem(null);
-            setFormData({ name: '', type: null, item_lv: 0, slots: 5, image_url: null, set: null });
+            setFormData({ name: '', type: null, item_lv: 0, slots: 5, can_starforce: true, infinite_trades: false, always_tradeable: false, image_url: null, set: null });
         }
         setModalOpen(true);
     };
@@ -125,6 +131,17 @@ export const ItemsDB: React.FC = () => {
         { key: 'type', header: 'Type', render: (i) => i.type || '-' },
         { key: 'item_lv', header: 'Item Lv' },
         { key: 'slots', header: 'Slots' },
+        {
+            key: 'flags',
+            header: 'Flags',
+            render: (i) => (
+                <span style={{ display: 'flex', gap: '4px', fontSize: '0.75rem' }}>
+                    {i.can_starforce && <span title="Can StarForce" style={{ background: '#facc15', color: '#000', borderRadius: '3px', padding: '1px 4px' }}>SF</span>}
+                    {i.infinite_trades && <span title="Infinite Trades" style={{ background: '#34d399', color: '#000', borderRadius: '3px', padding: '1px 4px' }}>∞</span>}
+                    {i.always_tradeable && <span title="Always Tradeable" style={{ background: '#60a5fa', color: '#000', borderRadius: '3px', padding: '1px 4px' }}>T</span>}
+                </span>
+            )
+        },
         {
             key: 'actions',
             header: 'Actions',
@@ -194,6 +211,32 @@ export const ItemsDB: React.FC = () => {
                             setFormData({ ...formData, slots: isNaN(val) ? 0 : val });
                         }}
                     />
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                            <input
+                                type="checkbox"
+                                checked={formData.can_starforce}
+                                onChange={e => setFormData({ ...formData, can_starforce: e.target.checked })}
+                            />
+                            Can StarForce
+                        </label>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                            <input
+                                type="checkbox"
+                                checked={formData.infinite_trades}
+                                onChange={e => setFormData({ ...formData, infinite_trades: e.target.checked })}
+                            />
+                            Infinite Trades (no PSOK slot limit)
+                        </label>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                            <input
+                                type="checkbox"
+                                checked={formData.always_tradeable}
+                                onChange={e => setFormData({ ...formData, always_tradeable: e.target.checked })}
+                            />
+                            Always Tradeable (locked)
+                        </label>
+                    </div>
                     <Input
                         label="Image URL (optional)"
                         value={formData.image_url || ''}

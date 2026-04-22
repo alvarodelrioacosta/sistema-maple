@@ -171,9 +171,15 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
     // ========================= HELPERS =========================
 
     const getItemDBInfo = (name?: string) => {
-        if (!name) return { image: null, slots: undefined };
+        if (!name) return { image: null, slots: undefined, canStarforce: true, infiniteTrades: false, alwaysTradeable: false };
         const match = itemDBs.find(db => db.name === name);
-        return { image: match?.image_url || null, slots: match?.slots };
+        return {
+            image: match?.image_url || null,
+            slots: match?.slots,
+            canStarforce:    match?.can_starforce    ?? true,
+            infiniteTrades:  match?.infinite_trades  ?? false,
+            alwaysTradeable: match?.always_tradeable ?? false,
+        };
     };
 
     const getMainName = (accountId: string) => {
@@ -441,7 +447,7 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
         setSaving(true);
         try {
             const dbInfo = getItemDBInfo(editingItem.name as string);
-            const isInfiniteSlots = dbInfo.slots === 0;
+            const isInfiniteSlots = dbInfo.infiniteTrades;
             let mesoPrice = 0;
 
             if (type === 'psok') {
@@ -519,7 +525,7 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
             // Apply item effects
             const itemUpdates: any = {};
             const dbInfoCheck = getItemDBInfo(editingItem.name as string);
-            const infiniteSlots2 = dbInfoCheck.slots === 0;
+            const infiniteSlots2 = dbInfoCheck.infiniteTrades;
 
             if (type === 'psok') {
                 itemUpdates.tradeability = 'Tradeable Once';
@@ -718,14 +724,14 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
 
                 <div className="workspace-item-info">
                     <span className="workspace-item-name">{editingItem.name}</span>
-                    {(editingItem.star_force || 0) > 0 && (
+                    {dbInfo.canStarforce && (editingItem.star_force || 0) > 0 && (
                         <span className="workspace-item-sf">★{editingItem.star_force}</span>
                     )}
                     <span className={`workspace-status-badge ${editingItem.status}`}>
                         {editingItem.status}
                     </span>
                     <span style={{ fontSize: '0.8rem', color: 'var(--color-text-tertiary)', marginLeft: 'auto' }}>
-                        {editingItem.tradeability} {editingItem.remaining_trade_slots != null ? `· ${editingItem.remaining_trade_slots} slots` : ''}
+                        {editingItem.tradeability}{!dbInfo.infiniteTrades && !dbInfo.alwaysTradeable && editingItem.remaining_trade_slots != null ? ` · ${editingItem.remaining_trade_slots} slots` : ''}
                     </span>
                 </div>
 
@@ -953,10 +959,12 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                     <div className="maple-tooltip-container">
 
                         {/* Star Force Section */}
-                        <StarForceSystem
-                            value={editingItem.star_force || 0}
-                            onChange={v => setEditingItem(prev => ({ ...prev, star_force: v }))}
-                        />
+                        {dbInfo.canStarforce && (
+                            <StarForceSystem
+                                value={editingItem.star_force || 0}
+                                onChange={v => setEditingItem(prev => ({ ...prev, star_force: v }))}
+                            />
+                        )}
 
                         {/* Item Header */}
                         <div className="maple-item-header">
@@ -970,19 +978,21 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                                         onChange={e => setEditingItem(prev => ({ ...prev, name: e.target.value }))}
                                         onBlur={() => setEditingField(null)}
                                     />
-                                    <input
-                                        type="number"
-                                        className="premium-input maple-item-name"
-                                        style={{ width: '50px', color: '#facc15' }}
-                                        value={editingItem.star_force || 0}
-                                        onChange={e => setEditingItem(prev => ({ ...prev, star_force: parseInt(e.target.value) || 0 }))}
-                                        onBlur={() => setEditingField(null)}
-                                    />
+                                    {dbInfo.canStarforce && (
+                                        <input
+                                            type="number"
+                                            className="premium-input maple-item-name"
+                                            style={{ width: '50px', color: '#facc15' }}
+                                            value={editingItem.star_force || 0}
+                                            onChange={e => setEditingItem(prev => ({ ...prev, star_force: parseInt(e.target.value) || 0 }))}
+                                            onBlur={() => setEditingField(null)}
+                                        />
+                                    )}
                                 </div>
                             ) : (
                                 <h2 className="maple-item-name premium-editable" onClick={() => setEditingField('name')}>
                                     {editingItem.name}
-                                    <span className="maple-item-sf-suffix">★ {editingItem.star_force || 0}</span>
+                                    {dbInfo.canStarforce && <span className="maple-item-sf-suffix">★ {editingItem.star_force || 0}</span>}
                                 </h2>
                             )}
 
@@ -997,7 +1007,9 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                             </div>
 
                             <div className="maple-stats-bar">
-                                {editingField === 'tradeability' ? (
+                                {dbInfo.alwaysTradeable ? (
+                                    <span>Tradeable <small style={{ opacity: 0.5 }}>(locked)</small></span>
+                                ) : editingField === 'tradeability' ? (
                                     <Select
                                         autoFocus
                                         value={editingItem.tradeability || 'Tradeable'}
@@ -1013,20 +1025,22 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                                     </span>
                                 )}
 
-                                {editingField === 'remaining_trade_slots' ? (
-                                    <input
-                                        autoFocus
-                                        type="number"
-                                        className="premium-input"
-                                        style={{ width: '40px' }}
-                                        value={editingItem.remaining_trade_slots ?? 0}
-                                        onChange={e => setEditingItem(prev => ({ ...prev, remaining_trade_slots: parseInt(e.target.value) || 0 }))}
-                                        onBlur={() => setEditingField(null)}
-                                    />
-                                ) : (
-                                    <span className="premium-editable" onClick={() => setEditingField('remaining_trade_slots')}>
-                                        Slots: {editingItem.remaining_trade_slots ?? 0}
-                                    </span>
+                                {!dbInfo.infiniteTrades && !dbInfo.alwaysTradeable && (
+                                    editingField === 'remaining_trade_slots' ? (
+                                        <input
+                                            autoFocus
+                                            type="number"
+                                            className="premium-input"
+                                            style={{ width: '40px' }}
+                                            value={editingItem.remaining_trade_slots ?? 0}
+                                            onChange={e => setEditingItem(prev => ({ ...prev, remaining_trade_slots: parseInt(e.target.value) || 0 }))}
+                                            onBlur={() => setEditingField(null)}
+                                        />
+                                    ) : (
+                                        <span className="premium-editable" onClick={() => setEditingField('remaining_trade_slots')}>
+                                            Slots: {editingItem.remaining_trade_slots ?? 0}
+                                        </span>
+                                    )
                                 )}
                             </div>
                         </div>

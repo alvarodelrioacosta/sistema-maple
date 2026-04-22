@@ -144,6 +144,9 @@ export interface ItemDB {
     type: ItemType | null;
     item_lv: number;
     slots: number;
+    can_starforce: boolean;
+    infinite_trades: boolean;
+    always_tradeable: boolean;
     image_url: string | null;
     set: string | null;
     created_at: string;
@@ -164,7 +167,7 @@ export interface Item {
     name: string;
     star_force: number;
     tradeability: TradeabilityType;
-    remaining_trade_slots: number;
+    remaining_trade_slots: number | null;
     estimated_value: number;
     main_potential_tier: PotentialTier | null;
     main_potential_1: string | null;

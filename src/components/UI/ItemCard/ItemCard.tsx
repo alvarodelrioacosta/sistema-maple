@@ -88,7 +88,9 @@ export const ItemCard: React.FC<ItemCardProps> = ({
     const bonusTier = item.bonus_potential_tier as string | null;
     const isTradeable = item.tradeability === 'Tradeable' || item.tradeability === 'Tradeable Once';
     const itemDBEntry = itemsDB.find(db => db.name === item.name);
-    const baseSlots = itemDBEntry?.slots;
+    const baseSlots      = itemDBEntry?.slots;
+    const canStarforce   = itemDBEntry?.can_starforce   ?? true;
+    const infiniteTrades = itemDBEntry?.infinite_trades ?? false;
 
     const [renderTime] = useState(Date.now);
 
@@ -261,7 +263,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
             {/* Hover preview — rendered via portal to escape parent transform/stacking context */}
             {hovered && ReactDOM.createPortal(
                 <div className="item-card__preview" style={previewStyle}>
-                    <ItemTooltip item={item} image={imageUrl} baseSlots={baseSlots} />
+                    <ItemTooltip item={item} image={imageUrl} baseSlots={baseSlots} canStarforce={canStarforce} infiniteTrades={infiniteTrades} />
                 </div>,
                 document.body
             )}

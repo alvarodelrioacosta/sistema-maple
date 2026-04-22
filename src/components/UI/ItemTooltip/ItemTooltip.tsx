@@ -6,6 +6,8 @@ interface ItemTooltipProps {
     item: Item;
     image?: string | null;
     baseSlots?: number;
+    canStarforce?: boolean;
+    infiniteTrades?: boolean;
 }
 
 const TIER_LETTER: Record<string, string> = {
@@ -15,7 +17,7 @@ const TIER_LETTER: Record<string, string> = {
     Rare: 'R',
 };
 
-export const ItemTooltip: React.FC<ItemTooltipProps> = ({ item, image, baseSlots }) => {
+export const ItemTooltip: React.FC<ItemTooltipProps> = ({ item, image, baseSlots, canStarforce, infiniteTrades }) => {
     const getTierClass = (tier?: PotentialTier | null) => tier ? `tier-${tier.toLowerCase()}` : '';
 
     return (
@@ -23,7 +25,7 @@ export const ItemTooltip: React.FC<ItemTooltipProps> = ({ item, image, baseSlots
             <div className="tooltip-header">
                 <div className="tooltip-item-name">
                     {item.name}
-                    {item.star_force > 0 && (
+                    {(canStarforce !== false) && item.star_force > 0 && (
                         <span className="tooltip-sf-inline">
                             <span className="tooltip-sf-star">★</span>
                             {item.star_force}
@@ -41,7 +43,7 @@ export const ItemTooltip: React.FC<ItemTooltipProps> = ({ item, image, baseSlots
 
             <div className="tooltip-meta">
                 {item.tradeability && <span>{item.tradeability}</span>}
-                {baseSlots !== undefined && baseSlots !== 0 && (
+                {!infiniteTrades && baseSlots !== undefined && (
                     <span>Slots: {baseSlots}</span>
                 )}
             </div>

@@ -19,7 +19,6 @@ const managementItems: NavItem[] = [
     { path: '/mystic-frontier', label: 'Mystic Frontier', icon: '◈' },
     { path: '/expedition-history', label: 'Exp. History', icon: '📜' },
     { path: '/items', label: 'Items', icon: '🎒' },
-    { path: '/items-db', label: 'Items DB', icon: '📚' },
     { path: '/clients', label: 'Clients', icon: '🤝' },
     { path: '/accounts-receivable', label: 'Accounts Receivable', icon: '📋' },
     { path: '/events', label: 'Events', icon: '📅' },
