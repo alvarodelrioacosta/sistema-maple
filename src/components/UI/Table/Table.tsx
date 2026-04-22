@@ -17,6 +17,7 @@ interface TableProps<T> {
     columns: Column<T>[];
     keyExtractor: (item: T) => string;
     onRowClick?: (item: T) => void;
+    rowClassName?: (item: T) => string;
     emptyMessage?: string;
     loading?: boolean;
 }
@@ -26,6 +27,7 @@ export function Table<T>({
     columns,
     keyExtractor,
     onRowClick,
+    rowClassName,
     emptyMessage = 'No hay datos disponibles',
     loading = false
 }: TableProps<T>) {
@@ -64,7 +66,10 @@ export function Table<T>({
                         <tr
                             key={keyExtractor(item)}
                             onClick={() => onRowClick?.(item)}
-                            className={onRowClick ? 'table__row--clickable' : ''}
+                            className={[
+                                onRowClick ? 'table__row--clickable' : '',
+                                rowClassName ? rowClassName(item) : ''
+                            ].filter(Boolean).join(' ')}
                         >
                             {columns.map((col) => (
                                 <td key={String(col.key)}>

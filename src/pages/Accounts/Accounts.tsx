@@ -19,7 +19,8 @@ export const Accounts: React.FC = () => {
         number: 0,
         email: '',
         tag: '',
-        mesos_b: 0
+        mesos_b: 0,
+        owned: true
     });
 
     useEffect(() => {
@@ -44,16 +45,19 @@ export const Accounts: React.FC = () => {
                 number: account.number,
                 email: account.email || '',
                 tag: account.tag || '',
-                mesos_b: account.mesos_b || 0
+                mesos_b: account.mesos_b || 0,
+                owned: account.owned
             });
         } else {
             setEditingAccount(null);
-            const maxNumber = accounts.length > 0 ? Math.max(...accounts.map(a => a.number)) : 0;
+            const ownedAccounts = accounts.filter(a => a.owned);
+            const maxNumber = ownedAccounts.length > 0 ? Math.max(...ownedAccounts.map(a => a.number)) : 0;
             setFormData({
                 number: maxNumber + 1,
                 email: '',
                 tag: '',
-                mesos_b: 0
+                mesos_b: 0,
+                owned: true
             });
         }
         setModalOpen(true);
@@ -62,7 +66,22 @@ export const Accounts: React.FC = () => {
     const handleCloseModal = () => {
         setModalOpen(false);
         setEditingAccount(null);
-        setFormData({ number: 0, email: '', tag: '', mesos_b: 0 });
+        setFormData({ number: 0, email: '', tag: '', mesos_b: 0, owned: true });
+    };
+
+    const handleOwnershipToggle = (value: boolean) => {
+        if (!value) {
+            // Moving to sold: assign a 999+ number
+            const soldAccounts = accounts.filter(a => !a.owned);
+            const soldNumbers = soldAccounts.map(a => a.number);
+            const nextSoldNumber = soldNumbers.length > 0 ? Math.max(...soldNumbers) + 1 : 999;
+            setFormData(prev => ({ ...prev, owned: false, number: nextSoldNumber }));
+        } else {
+            // Reclaiming: assign next owned number
+            const ownedAccounts = accounts.filter(a => a.owned && a.id !== editingAccount?.id);
+            const maxNumber = ownedAccounts.length > 0 ? Math.max(...ownedAccounts.map(a => a.number)) : 0;
+            setFormData(prev => ({ ...prev, owned: true, number: maxNumber + 1 }));
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -92,10 +111,32 @@ export const Accounts: React.FC = () => {
         }
     };
 
+    const handleReorder = async () => {
+        if (!window.confirm('¿Renumerar las cuentas propias consecutivamente (1, 2, 3...)?')) return;
+        try {
+            const owned = accounts
+                .filter(a => a.owned)
+                .sort((a, b) => a.number - b.number);
+            for (let i = 0; i < owned.length; i++) {
+                await accountsService.update(owned[i].id, { number: i + 1 });
+            }
+            await loadAccounts();
+        } catch (error) {
+            console.error('Error reordering accounts:', error);
+        }
+    };
+
     const columns: Column<Account>[] = [
         { key: 'number', header: 'N°' },
         { key: 'email', header: 'Email', render: (a) => a.email || '-' },
         { key: 'tag', header: 'Tag', render: (a) => a.tag ? <span className="tag">{a.tag}</span> : '-' },
+        {
+            key: 'owned',
+            header: 'Estado',
+            render: (a) => a.owned
+                ? <span className="tag tag--owned">Propia</span>
+                : <span className="tag tag--sold">Vendida</span>
+        },
         {
             key: 'created_at',
             header: 'Created',
@@ -118,7 +159,10 @@ export const Accounts: React.FC = () => {
                 title="Accounts"
                 subtitle="Manage your game accounts"
                 actions={
-                    <Button onClick={() => handleOpenModal()}>+ New Account</Button>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <Button variant="secondary" onClick={handleReorder}>Reordenar propias</Button>
+                        <Button onClick={() => handleOpenModal()}>+ New Account</Button>
+                    </div>
                 }
             />
 
@@ -130,6 +174,7 @@ export const Accounts: React.FC = () => {
                         keyExtractor={(a) => a.id}
                         loading={loading}
                         emptyMessage="No accounts yet. Create your first one!"
+                        rowClassName={(a) => a.owned ? '' : 'row--sold'}
                     />
                 </Card>
             </div>
@@ -159,6 +204,21 @@ export const Accounts: React.FC = () => {
                         onChange={(e) => setFormData({ ...formData, tag: e.target.value })}
                         placeholder="e.g. Main, Alt, Mule"
                     />
+                    <div className="ownership-toggle">
+                        <label className="ownership-toggle__label">
+                            <input
+                                type="checkbox"
+                                checked={formData.owned ?? true}
+                                onChange={(e) => handleOwnershipToggle(e.target.checked)}
+                            />
+                            <span>Cuenta propia</span>
+                        </label>
+                        {!(formData.owned ?? true) && (
+                            <p className="ownership-toggle__hint">
+                                Esta cuenta está marcada como vendida. Se le asignó el número {formData.number}.
+                            </p>
+                        )}
+                    </div>
                     <div className="modal-actions" style={{ justifyContent: 'space-between' }}>
                         {editingAccount ? (
                             <Button type="button" variant="danger" onClick={() => handleDelete(editingAccount.id)}>
