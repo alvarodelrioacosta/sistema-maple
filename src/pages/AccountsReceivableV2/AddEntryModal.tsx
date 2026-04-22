@@ -39,7 +39,7 @@ export const AddEntryModal: React.FC<AddEntryModalProps> = ({
     const [clientId, setClientId] = useState<string>(defaultClientId || '');
     const [description, setDescription] = useState('');
     const [amount, setAmount] = useState<string>('');
-    const [currency, setCurrency] = useState('USD');
+    const [currency, setCurrency] = useState('Mesos (b)');
     const [entryDate, setEntryDate] = useState(todayISO());
     const [notes, setNotes] = useState('');
     const [loading, setLoading] = useState(false);
@@ -50,7 +50,7 @@ export const AddEntryModal: React.FC<AddEntryModalProps> = ({
             setClientId(defaultClientId || '');
             setDescription('');
             setAmount('');
-            setCurrency('USD');
+            setCurrency('Mesos (b)');
             setEntryDate(todayISO());
             setNotes('');
         }
