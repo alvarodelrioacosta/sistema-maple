@@ -13,6 +13,7 @@ import './Items.css';
 import { createWorker } from 'tesseract.js';
 import { ocrUtil } from '../../utils/ocr';
 import { ItemWorkspace } from './ItemWorkspace';
+import { UseView } from './UseView';
 
 
 
@@ -598,7 +599,17 @@ export const Items: React.FC = () => {
             </div>
 
             <div className="page-content">
-                {loading ? (
+                {filterStatus === 'in_use' ? (
+                    <UseView
+                        items={filteredItems}
+                        itemsDB={itemsDB}
+                        getImageUrl={getImageUrl}
+                        getAccountNumber={getAccountNumber}
+                        getAccountTag={getAccountTag}
+                        formatValue={formatValue}
+                        onEdit={(item) => setWorkspaceItem(item)}
+                    />
+                ) : loading ? (
                     <div className="items-loading">Loading items…</div>
                 ) : filteredItems.length === 0 ? (
                     <div className="items-empty">No items found with this status.</div>
