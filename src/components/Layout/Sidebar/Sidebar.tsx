@@ -32,7 +32,6 @@ const resourceItems: NavItem[] = [
 ];
 
 const workspaceItems: NavItem[] = [
-    { path: '/cubing-sessions', label: 'Cubing Sessions', icon: '🎲' },
     { path: '/cubing-history', label: 'Cubing History', icon: '📜' },
     { path: '/settings', label: 'Settings', icon: '⚙️' },
 ];
@@ -100,7 +99,7 @@ export const Sidebar: React.FC = () => {
                     to="/overview"
                     className={`sidebar__link sidebar__link--daily ${location.pathname === '/overview' ? 'sidebar__link--active' : ''}`}
                 >
-                    <span className="sidebar__icon">📊</span>
+                    <span className="sidebar__icon">🗂️</span>
                     <span className="sidebar__label">Overview</span>
                 </NavLink>
 
