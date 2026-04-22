@@ -14,7 +14,7 @@ import {
 } from '../../services';
 import type {
     Item, Client, Account, ResourceType, Character, ItemDB,
-    CubeSession, SharedInventory, PotentialTier, TradeabilityType
+    CubeSession, SharedInventory, PotentialTier, TradeabilityType, ItemStatus
 } from '../../types';
 import './ItemWorkspace.css';
 
@@ -87,6 +87,7 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
     // ---- UI state ----
     const [loading, setLoading] = useState<boolean>(true);
     const [saving, setSaving] = useState<boolean>(false);
+    const [statusDropdownOpen, setStatusDropdownOpen] = useState<boolean>(false);
     const [ocrLoading, setOcrLoading] = useState<boolean>(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
     const [historyPanelOpen, setHistoryPanelOpen] = useState<boolean>(false);
@@ -283,6 +284,19 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
             showMessage('error', err.message || 'Error al cancelar sesión');
         } finally {
             setSaving(false);
+        }
+    };
+
+    // ========================= STATUS CHANGE =========================
+
+    const handleStatusChange = async (newStatus: ItemStatus) => {
+        setStatusDropdownOpen(false);
+        if (newStatus === editingItem.status) return;
+        try {
+            await itemsService.updateStatus(initialItem.id, newStatus);
+            setEditingItem(prev => ({ ...prev, status: newStatus }));
+        } catch {
+            setMessage({ type: 'error', text: 'Failed to update status.' });
         }
     };
 
@@ -727,9 +741,31 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                     {dbInfo.canStarforce && (editingItem.star_force || 0) > 0 && (
                         <span className="workspace-item-sf">★{editingItem.star_force}</span>
                     )}
-                    <span className={`workspace-status-badge ${editingItem.status}`}>
-                        {editingItem.status}
-                    </span>
+                    <div className="workspace-status-badge-wrapper">
+                        <button
+                            className={`workspace-status-badge workspace-status-badge--btn ${editingItem.status}`}
+                            onClick={() => setStatusDropdownOpen(o => !o)}
+                            title="Click to change status"
+                        >
+                            {editingItem.status} ▾
+                        </button>
+                        {statusDropdownOpen && (
+                            <>
+                                <div className="workspace-status-overlay" onClick={() => setStatusDropdownOpen(false)} />
+                                <div className="workspace-status-dropdown">
+                                    {(['bulk', 'in_progress', 'in_stock', 'for_sale', 'Service', 'in_use', 'sold'] as ItemStatus[]).map(s => (
+                                        <button
+                                            key={s}
+                                            className={`workspace-status-option ${s}${s === editingItem.status ? ' active' : ''}`}
+                                            onClick={() => handleStatusChange(s)}
+                                        >
+                                            {s}
+                                        </button>
+                                    ))}
+                                </div>
+                            </>
+                        )}
+                    </div>
                     <span style={{ fontSize: '0.8rem', color: 'var(--color-text-tertiary)', marginLeft: 'auto' }}>
                         {editingItem.tradeability}{!dbInfo.infiniteTrades && !dbInfo.alwaysTradeable && editingItem.remaining_trade_slots != null ? ` · ${editingItem.remaining_trade_slots} slots` : ''}
                     </span>

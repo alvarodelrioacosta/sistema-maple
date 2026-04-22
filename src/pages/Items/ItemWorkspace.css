@@ -101,7 +101,84 @@
 .workspace-status-badge.in_use     { background: rgba(96,165,250,.15);  color: #60a5fa; border: 1px solid rgba(96,165,250,.3); }
 .workspace-status-badge.Service    { background: rgba(192,132,252,.15); color: #c084fc; border: 1px solid rgba(192,132,252,.3); }
 .workspace-status-badge.sold       { background: rgba(248,113,113,.15); color: #f87171; border: 1px solid rgba(248,113,113,.3); }
-.workspace-status-badge.bulk       { background: rgba(156,163,175,.15); color: #9ca3af; border: 1px solid rgba(156,163,175,.3); }
+.workspace-status-badge.bulk        { background: rgba(156,163,175,.15); color: #9ca3af; border: 1px solid rgba(156,163,175,.3); }
+.workspace-status-badge.in_progress { background: rgba(56,189,248,.15);  color: #38bdf8; border: 1px solid rgba(56,189,248,.3); }
+
+.workspace-status-badge--btn {
+    cursor: pointer;
+    background: inherit;
+    font: inherit;
+    border: inherit;
+    transition: opacity 0.15s;
+}
+.workspace-status-badge--btn:hover { opacity: 0.75; }
+
+.workspace-status-badge-wrapper {
+    position: relative;
+    display: inline-flex;
+}
+
+.workspace-status-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99;
+}
+
+.workspace-status-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 100;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 130px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.workspace-status-option {
+    padding: 0.3rem 0.7rem;
+    border-radius: 14px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: left;
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--color-text-secondary);
+    transition: background 0.12s, color 0.12s;
+}
+.workspace-status-option:hover,
+.workspace-status-option.active {
+    border-color: currentColor;
+}
+.workspace-status-option.in_stock    { color: #4ade80; }
+.workspace-status-option.in_stock:hover,
+.workspace-status-option.in_stock.active   { background: rgba(74,222,128,.15); }
+.workspace-status-option.for_sale    { color: #fbbf24; }
+.workspace-status-option.for_sale:hover,
+.workspace-status-option.for_sale.active   { background: rgba(251,191,36,.15); }
+.workspace-status-option.in_use      { color: #60a5fa; }
+.workspace-status-option.in_use:hover,
+.workspace-status-option.in_use.active     { background: rgba(96,165,250,.15); }
+.workspace-status-option.Service     { color: #c084fc; }
+.workspace-status-option.Service:hover,
+.workspace-status-option.Service.active    { background: rgba(192,132,252,.15); }
+.workspace-status-option.sold        { color: #f87171; }
+.workspace-status-option.sold:hover,
+.workspace-status-option.sold.active       { background: rgba(248,113,113,.15); }
+.workspace-status-option.bulk        { color: #9ca3af; }
+.workspace-status-option.bulk:hover,
+.workspace-status-option.bulk.active       { background: rgba(156,163,175,.15); }
+.workspace-status-option.in_progress { color: #38bdf8; }
+.workspace-status-option.in_progress:hover,
+.workspace-status-option.in_progress.active { background: rgba(56,189,248,.15); }
 
 /* Fast Cubing Toggle in topbar */
 .fast-cubing-toggle {
