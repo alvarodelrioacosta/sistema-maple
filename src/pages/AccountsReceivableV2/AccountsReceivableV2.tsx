@@ -12,8 +12,6 @@ import './AccountsReceivableV2.css';
 
 const CURRENCY_PREFIX: Record<string, string> = {
     USD: '$',
-    'Pesos Arg': '$',
-    Soles: 'S/',
     'Mesos (b)': '',
 };
 

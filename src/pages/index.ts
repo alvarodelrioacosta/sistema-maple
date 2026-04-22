@@ -4,7 +4,6 @@ export * from './Characters';
 export * from './Items';
 export * from './Resources';
 export * from './Clients';
-export * from './AccountsReceivable';
 export * from './ItemsDB';
 export * from './Settings';
 export * from './CubingHistory';

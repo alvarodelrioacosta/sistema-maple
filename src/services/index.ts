@@ -3,7 +3,6 @@
 // =============================================
 
 export { accountsService } from './accounts';
-export { accountsReceivableService } from './accountsReceivable';
 export { charactersService } from './characters';
 export { itemsService } from './items';
 export { itemsDBService } from './itemsDB';

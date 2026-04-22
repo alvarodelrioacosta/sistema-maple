@@ -4,8 +4,6 @@ import type { ClientLedgerEntry, CubeSessionMetadata } from '../../types';
 
 const CURRENCY_PREFIX: Record<string, string> = {
     USD: '$',
-    'Pesos Arg': '$',
-    Soles: 'S/',
     'Mesos (b)': '',
 };
 

@@ -4,87 +4,62 @@
 
 import React, { useEffect, useState } from 'react';
 import { Header } from '../../components/Layout';
-import { KPICard, Card, LoadingScreen } from '../../components/UI';
-import { itemsService, accountsService, resourcesService, sharedInventoryService, accountsReceivableService, appSettingsService } from '../../services';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
-import type { DashboardKPIs, ItemStatus } from '../../types';
+import { LoadingScreen } from '../../components/UI';
+import { itemsService, accountsService, resourcesService, sharedInventoryService, clientLedgerService, appSettingsService, clientsService } from '../../services';
+import type { ItemStatus } from '../../types';
 import './Dashboard.css';
 
-const COLORS = ['#7c3aed', '#06b6d4', '#f59e0b', '#22c55e', '#ec4899'];
+interface ClientSummary {
+    name: string;
+    chargesUSD: number;
+    paymentsUSD: number;
+    outstandingUSD: number;
+    paidPct: number;
+    lastDescription: string;
+}
 
-const formatCurrency = (value: number): string => {
-    if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)}B`;
-    if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
-    if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
-    return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-};
+interface AccountRow {
+    name: string;
+    subtitle: string;
+    mesos: number;
+    isVault?: boolean;
+}
 
-const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-        return (
-            <div style={{
-                background: 'rgba(15, 23, 42, 0.9)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                padding: '8px 12px',
-                borderRadius: '8px',
-                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-                backdropFilter: 'blur(4px)'
-            }}>
-                <p style={{ margin: 0, color: '#f8fafc', fontWeight: 600 }}>
-                    {payload[0].name}: ${formatCurrency(payload[0].value)}
-                </p>
-            </div>
-        );
-    }
-    return null;
-};
+interface DashboardData {
+    netWorthUSD: number;
+    totalStockMesos: number;
+    totalMesosSum: number;
+    outstandingReceivablesUSD: number;
+    pendingCount: number;
+    clientSummaries: ClientSummary[];
+    accountRows: AccountRow[];
+}
+
+const formatUSD = (v: number) => `$${Math.round(v).toLocaleString()}`;
+const formatB = (v: number) => v % 1 === 0 ? `${v} B` : `${v.toFixed(1)} B`;
 
 export const Dashboard: React.FC = () => {
-    const [kpis, setKpis] = useState<DashboardKPIs>({
-        totalStockValue: 0,
-        accountsReceivable: 0,
-        totalResourceValue: 0,
-        totalMesos: 0,
-        netBalance: 0,
-        itemsByStatus: { bulk: 0, in_stock: 0, for_sale: 0, sold: 0 }
-    });
-
-    const [selectedKPI, setSelectedKPI] = useState<string | null>(null);
-    const [details, setDetails] = useState<{
-        itemsByCategory: { status: string, count: number, mesos: number }[];
-        resourceStock: { type: string, count: number, valueMesos: number }[];
-        mesosAccounts: { name: string, mesos: number, isVault?: boolean, isConsolidated?: boolean }[];
-        receivableByClient: { name: string, balanceUSD: number, count: number, isConsolidated?: boolean }[];
-        totalStockMesos: number;
-        totalResourceMesos: number;
-        totalMesosSum: number;
-    }>({
-        itemsByCategory: [],
-        resourceStock: [],
-        mesosAccounts: [],
-        receivableByClient: [],
-        totalStockMesos: 0,
-        totalResourceMesos: 0,
-        totalMesosSum: 0,
-    });
+    const [data, setData] = useState<DashboardData | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const loadKPIs = async () => {
+        const load = async () => {
             try {
                 const [
                     itemsForBreakdown,
                     accounts,
                     resourceMetadata,
                     sharedInventory,
-                    receivables,
+                    ledgerEntries,
+                    clients,
                     mesoUsdRate,
                 ] = await Promise.all([
                     itemsService.getItemBreakdown(),
                     accountsService.getAll(),
                     resourcesService.getResourceMetadata(),
                     sharedInventoryService.get(),
-                    accountsReceivableService.getAll(),
+                    clientLedgerService.getAll(),
+                    clientsService.getAll(),
                     appSettingsService.getMesoUsdRate(),
                 ]);
 
@@ -92,7 +67,7 @@ export const Dashboard: React.FC = () => {
                 const accountBalances: Record<string, Record<string, number>> = {};
                 accounts.forEach((acc, i) => { accountBalances[acc.id] = balancesArr[i]; });
 
-                // Resource Value (Cubes) in USD
+                // Resource value (Cubes) in USD
                 const brightCount = accounts.reduce((sum, acc) => sum + (accountBalances[acc.id]?.bright_cubes || 0), 0);
                 const bonusCount = accounts.reduce((sum, acc) => sum + (accountBalances[acc.id]?.bonus_bright_cubes || 0), 0);
                 const solidCount = accounts.reduce((sum, acc) => sum + (accountBalances[acc.id]?.solid_cubes || 0), 0);
@@ -106,120 +81,97 @@ export const Dashboard: React.FC = () => {
                 const totalResourceMesosValue = (brightCount * brightMesoCost) + (bonusCount * bonusMesoCost) + (solidCount * solidMesoCost) + totalPerfectInnocValueMesos;
                 const totalResourceValueUSD = totalResourceMesosValue * mesoUsdRate;
 
-                // Total Mesos in USD
+                // Mesos
                 const totalMesosInAccounts = accounts.reduce((sum, acc) => sum + (acc.mesos_b || 0), 0);
                 const totalMesosSum = totalMesosInAccounts + (sharedInventory?.mesos_stock || 0);
                 const totalMesosValueUSD = totalMesosSum * mesoUsdRate;
 
-                // Accounts Receivable in USD (confirmed ARs only)
-                const activeReceivables = receivables.filter(ar => ar.status !== 'paid' && (ar.amount - (ar.paid || 0)) > 0);
-
-                const receivableTotalUSD = activeReceivables.reduce((sum, ar) => {
-                    return sum + (ar.amount - (ar.paid || 0));
-                }, 0);
-
-                // Item Breakdown
-                const itemsByCategory = [
-                    { status: 'bulk', count: 0, mesos: 0 },
-                    { status: 'in_stock', count: 0, mesos: 0 },
-                    { status: 'for_sale', count: 0, mesos: 0 }
-                ];
-                const statusCounts = { bulk: 0, in_stock: 0, for_sale: 0, sold: 0 };
-
-                itemsForBreakdown.forEach(item => {
+                // Stock
+                const totalStockMesos = itemsForBreakdown.reduce((sum, item) => {
                     const status = item.status as ItemStatus;
-                    if (status === 'bulk') statusCounts.bulk++;
-                    else if (status === 'in_stock' || status === 'in_progress') statusCounts.in_stock++;
-                    else if (status === 'for_sale') statusCounts.for_sale++;
-                    else if (status === 'sold') statusCounts.sold++;
-
-                    const isStockPart = status === 'in_stock' || status === 'in_progress';
-                    const targetStatus = isStockPart ? 'in_stock' : status;
-                    const cat = itemsByCategory.find(c => c.status === targetStatus);
-                    if (cat) {
-                        cat.count++;
-                        if (isStockPart) cat.mesos += (item.costo_item || 0);
-                        if (status === 'for_sale') cat.mesos += (item.estimated_value || 0);
-                    }
-                });
-
-                const totalStockMesos = itemsByCategory.reduce((sum, cat) => sum + cat.mesos, 0);
+                    if (status === 'in_stock' || status === 'in_progress') return sum + (item.costo_item || 0);
+                    if (status === 'for_sale') return sum + (item.estimated_value || 0);
+                    return sum;
+                }, 0);
                 const stockValueUSD = totalStockMesos * mesoUsdRate;
 
-                // Mesos Accounts
-                const individualAccts = accounts
-                    .map(acc => ({ name: `${acc.number} - ${acc.email}`, mesos: acc.mesos_b || 0 }))
-                    .filter(a => a.mesos > 0);
+                // AR v2: per-client summaries (convert all to USD)
+                const clientMap = new Map(clients.map(c => [c.id, c.name]));
+                const clientData = new Map<string, { charges: number; payments: number; lastDesc: string; lastDate: string }>();
 
-                const threshold = 0.5;
-                const highValueAccts = individualAccts.filter(a => a.mesos >= threshold);
-                const lowValueAccts = individualAccts.filter(a => a.mesos < threshold);
+                for (const entry of ledgerEntries) {
+                    const amountUSD = entry.currency === 'Mesos (b)'
+                        ? entry.amount * mesoUsdRate
+                        : entry.amount; // USD
 
-                const mesosAccts: { name: string, mesos: number, isVault?: boolean, isConsolidated?: boolean }[] = [
-                    { name: 'Vault (Shared)', mesos: sharedInventory?.mesos_stock || 0, isVault: true }
+                    if (!clientData.has(entry.client_id)) {
+                        clientData.set(entry.client_id, { charges: 0, payments: 0, lastDesc: '', lastDate: '' });
+                    }
+                    const cd = clientData.get(entry.client_id)!;
+                    if (entry.entry_type === 'charge') {
+                        cd.charges += amountUSD;
+                        if (entry.entry_date > cd.lastDate) {
+                            cd.lastDate = entry.entry_date;
+                            cd.lastDesc = entry.description;
+                        }
+                    } else {
+                        cd.payments += amountUSD;
+                    }
+                }
+
+                const clientSummaries: ClientSummary[] = [];
+                let outstandingReceivablesUSD = 0;
+
+                for (const [clientId, cd] of clientData.entries()) {
+                    const outstanding = Math.max(0, cd.charges - cd.payments);
+                    const paidPct = cd.charges > 0 ? Math.min(100, (cd.payments / cd.charges) * 100) : 100;
+                    outstandingReceivablesUSD += outstanding;
+                    if (outstanding > 0.01) {
+                        clientSummaries.push({
+                            name: clientMap.get(clientId) || 'Unknown',
+                            chargesUSD: cd.charges,
+                            paymentsUSD: cd.payments,
+                            outstandingUSD: outstanding,
+                            paidPct,
+                            lastDescription: cd.lastDesc,
+                        });
+                    }
+                }
+
+                clientSummaries.sort((a, b) => b.outstandingUSD - a.outstandingUSD);
+
+                // Mesos distribution
+                const accountRows: AccountRow[] = [
+                    { name: 'Vault', subtitle: 'Shared', mesos: sharedInventory?.mesos_stock || 0, isVault: true },
                 ];
-                mesosAccts.push(...highValueAccts.sort((a, b) => {
-                    const isAlvaroA = a.name.includes('alvarodelrioacosta@gmail.com');
-                    const isAlvaroB = b.name.includes('alvarodelrioacosta@gmail.com');
-                    if (isAlvaroA && !isAlvaroB) return -1;
-                    if (!isAlvaroA && isAlvaroB) return 1;
-                    return b.mesos - a.mesos;
-                }));
-                if (lowValueAccts.length > 0) {
-                    mesosAccts.push({
-                        name: `${lowValueAccts.length} Accounts < 0.5 B`,
-                        mesos: lowValueAccts.reduce((sum, a) => sum + a.mesos, 0),
-                        isConsolidated: true
+                accounts
+                    .filter(acc => (acc.mesos_b || 0) > 0)
+                    .sort((a, b) => {
+                        const aIsMain = a.email?.includes('alvarodelrioacosta@gmail.com');
+                        const bIsMain = b.email?.includes('alvarodelrioacosta@gmail.com');
+                        if (aIsMain && !bIsMain) return -1;
+                        if (!aIsMain && bIsMain) return 1;
+                        return (b.mesos_b || 0) - (a.mesos_b || 0);
+                    })
+                    .forEach(acc => {
+                        const displayName = acc.tag || (acc.email?.split('@')[0] || `Account ${acc.number}`);
+                        accountRows.push({
+                            name: displayName,
+                            subtitle: `acct ${String(acc.number).padStart(2, '0')}`,
+                            mesos: acc.mesos_b || 0,
+                        });
                     });
-                }
 
-                // Receivable by Client
-                const arByClient: Record<string, { count: number, balanceUSD: number }> = {};
-                activeReceivables.forEach(ar => {
-                    const clientName = ar.client?.name || 'Unknown Client';
-                    const pending = ar.amount - (ar.paid || 0);
-                    if (!arByClient[clientName]) arByClient[clientName] = { count: 0, balanceUSD: 0 };
-                    arByClient[clientName].count++;
-                    arByClient[clientName].balanceUSD += pending;
-                });
+                const netWorthUSD = stockValueUSD + totalResourceValueUSD + totalMesosValueUSD + outstandingReceivablesUSD;
 
-                const sortedClients = Object.entries(arByClient)
-                    .map(([name, data]) => ({ name, ...data }))
-                    .sort((a, b) => b.balanceUSD - a.balanceUSD);
-                const top5Clients = sortedClients.slice(0, 5);
-                const remainingClients = sortedClients.slice(5);
-                const receivableByClient = [...top5Clients] as { name: string, balanceUSD: number, count: number, isConsolidated?: boolean }[];
-                if (remainingClients.length > 0) {
-                    receivableByClient.push({
-                        name: `${remainingClients.length} Clients`,
-                        balanceUSD: remainingClients.reduce((sum, c) => sum + c.balanceUSD, 0),
-                        count: remainingClients.reduce((sum, c) => sum + c.count, 0),
-                        isConsolidated: true
-                    });
-                }
-
-                setKpis({
-                    totalStockValue: stockValueUSD,
-                    totalResourceValue: totalResourceValueUSD,
-                    totalMesos: totalMesosValueUSD,
-                    accountsReceivable: receivableTotalUSD,
-                    netBalance: stockValueUSD + totalResourceValueUSD + totalMesosValueUSD + receivableTotalUSD,
-                    itemsByStatus: statusCounts
-                });
-
-                setDetails({
-                    itemsByCategory,
-                    resourceStock: [
-                        { type: 'Solid Cubes', count: solidCount, valueMesos: solidCount * solidMesoCost },
-                        { type: 'Bright Cubes', count: brightCount, valueMesos: brightCount * brightMesoCost },
-                        { type: 'Bonus Bright Cubes', count: bonusCount, valueMesos: bonusCount * bonusMesoCost },
-                        { type: 'Perfect Innocence', count: sharedInventory?.perfect_innocence_stock || 0, valueMesos: totalPerfectInnocValueMesos }
-                    ].filter(c => c.count > 0),
-                    mesosAccounts: mesosAccts,
-                    receivableByClient,
+                setData({
+                    netWorthUSD,
                     totalStockMesos,
-                    totalResourceMesos: totalResourceMesosValue,
                     totalMesosSum,
+                    outstandingReceivablesUSD,
+                    pendingCount: clientSummaries.length,
+                    clientSummaries,
+                    accountRows,
                 });
             } catch (error) {
                 console.error('Error loading KPIs:', error);
@@ -228,229 +180,96 @@ export const Dashboard: React.FC = () => {
             }
         };
 
-        loadKPIs();
+        load();
     }, []);
 
-    const netWorthData = [
-        { name: 'Stock', value: kpis.totalStockValue },
-        { name: 'Cubes', value: kpis.totalResourceValue },
-        { name: 'Mesos', value: kpis.totalMesos },
-        { name: 'AR', value: kpis.accountsReceivable },
-    ].filter(item => item.value > 0);
-
-    const handleKPIClick = (id: string) => {
-        setSelectedKPI(selectedKPI === id ? null : id);
-    };
-
     if (loading) return <LoadingScreen message="Preparando tu Dashboard..." />;
+    if (!data) return null;
+
+    const maxMesos = Math.max(...data.accountRows.map(r => r.mesos), 0.01);
 
     return (
         <div className="dashboard">
-            <Header title="Welcome back! 👋" subtitle="Overview of your game inventory" />
+            <Header title="Dashboard" subtitle="Overview of your game inventory" />
 
             <div className="dashboard__content">
-                <div className="dashboard__kpis">
-                    <div onClick={() => handleKPIClick('stock')} style={{ cursor: 'pointer' }}>
-                        <KPICard
-                            title="Total Stock Value"
-                            value={`$${formatCurrency(kpis.totalStockValue)}`}
-                            icon="💎"
-                            color="primary"
-                            className={selectedKPI === 'stock' ? 'kpi-card--active' : ''}
-                        />
+                {/* KPI Cards */}
+                <div className="dash-kpis">
+                    <div className="dash-kpi">
+                        <span className="dash-kpi__label">NET WORTH</span>
+                        <span className="dash-kpi__value">{formatUSD(data.netWorthUSD)}</span>
                     </div>
-                    <div onClick={() => handleKPIClick('resource')} style={{ cursor: 'pointer' }}>
-                        <KPICard
-                            title="Resource Value"
-                            value={`$${formatCurrency(kpis.totalResourceValue)}`}
-                            icon="📦"
-                            color="warning"
-                            className={selectedKPI === 'resource' ? 'kpi-card--active' : ''}
-                        />
+                    <div className="dash-kpi">
+                        <span className="dash-kpi__label">STOCK (B MESOS)</span>
+                        <span className="dash-kpi__value">{data.totalStockMesos.toFixed(1)}</span>
                     </div>
-                    <div onClick={() => handleKPIClick('mesos')} style={{ cursor: 'pointer' }}>
-                        <KPICard
-                            title="Total Mesos"
-                            value={`$${formatCurrency(kpis.totalMesos)}`}
-                            icon="💰"
-                            color="info"
-                            className={selectedKPI === 'mesos' ? 'kpi-card--active' : ''}
-                        />
+                    <div className="dash-kpi">
+                        <span className="dash-kpi__label">RECEIVABLES</span>
+                        <span className="dash-kpi__value">{formatUSD(data.outstandingReceivablesUSD)}</span>
+                        <span className="dash-kpi__sub">{data.pendingCount} pending</span>
                     </div>
-                    <div onClick={() => handleKPIClick('receivable')} style={{ cursor: 'pointer' }}>
-                        <KPICard
-                            title="Accounts Receivable"
-                            value={`$${formatCurrency(kpis.accountsReceivable)}`}
-                            icon="📋"
-                            color="danger"
-                            className={selectedKPI === 'receivable' ? 'kpi-card--active' : ''}
-                        />
+                    <div className="dash-kpi">
+                        <span className="dash-kpi__label">CASH MESOS</span>
+                        <span className="dash-kpi__value">{formatB(parseFloat(data.totalMesosSum.toFixed(1)))}</span>
                     </div>
                 </div>
 
-                <div className="dashboard__charts">
-                    <Card className="dashboard__chart-card">
-                        <h3 className="dashboard__chart-title">Net Worth Distribution</h3>
-                        {netWorthData.length > 0 ? (
-                            <div className="dashboard__pie-container">
-                                <ResponsiveContainer width="100%" height={280}>
-                                    <PieChart>
-                                        <Pie
-                                            data={netWorthData}
-                                            cx="50%"
-                                            cy="50%"
-                                            innerRadius={70}
-                                            outerRadius={110}
-                                            paddingAngle={2}
-                                            dataKey="value"
-                                        >
-                                            {netWorthData.map((_, index) => (
-                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                            ))}
-                                        </Pie>
-                                        <Tooltip content={<CustomTooltip />} />
-                                        <Legend />
-                                    </PieChart>
-                                </ResponsiveContainer>
-                                <div className="dashboard__pie-center">
-                                    <span className="dashboard__pie-total">${formatCurrency(kpis.netBalance)}</span>
-                                    <span className="dashboard__pie-label">Total USD</span>
-                                </div>
-                            </div>
+                {/* Bottom sections */}
+                <div className="dash-bottom">
+                    {/* Receivables Pending */}
+                    <div className="dash-section">
+                        <div className="dash-section__header">
+                            <span className="dash-section__title">RECEIVABLES (PENDING)</span>
+                            <span className="dash-section__badge">{data.pendingCount} open</span>
+                        </div>
+                        {data.clientSummaries.length === 0 ? (
+                            <p className="dash-empty">No pending receivables</p>
                         ) : (
-                            <div className="dashboard__empty">No data yet</div>
-                        )}
-                    </Card>
-
-                    <Card className="dashboard__stats-card">
-                        <h3 className="dashboard__chart-title">{selectedKPI ? 'Breakdown' : 'Net Balance & Breakdown'}</h3>
-
-                        {!selectedKPI ? (
-                            <>
-                                <div className="dashboard__balance">
-                                    <span className={`dashboard__balance-value ${kpis.netBalance >= 0 ? 'positive' : 'negative'}`}>
-                                        ${Math.round(Math.abs(kpis.netBalance)).toLocaleString()}
+                            data.clientSummaries.map(client => (
+                                <div className="dash-client-row" key={client.name}>
+                                    <div className="dash-client-row__meta">
+                                        <span className="dash-client-row__name">{client.name}</span>
+                                        <span className="dash-client-row__desc">{client.lastDescription}</span>
+                                    </div>
+                                    <div className="dash-progress-wrap">
+                                        <div className="dash-progress">
+                                            <div
+                                                className="dash-progress__fill"
+                                                style={{ width: `${client.paidPct}%` }}
+                                            />
+                                        </div>
+                                        <span className="dash-progress__label">{Math.round(client.paidPct)}% paid</span>
+                                    </div>
+                                    <span className="dash-client-row__amount">
+                                        {formatUSD(client.outstandingUSD)}
                                     </span>
-                                    <span className="dashboard__balance-label">Total Net Worth (USD)</span>
                                 </div>
-                                <div className="dashboard__stats-list">
-                                    <h4 className="dashboard__stats-subtitle">Main Categories (USD)</h4>
-                                    <div className="dashboard__stat-item">
-                                        <span className="dashboard__stat-label">Stock Value</span>
-                                        <span className="dashboard__stat-value">${formatCurrency(kpis.totalStockValue)}</span>
-                                    </div>
-                                    <div className="dashboard__stat-item">
-                                        <span className="dashboard__stat-label">Resource Value</span>
-                                        <span className="dashboard__stat-value">${formatCurrency(kpis.totalResourceValue)}</span>
-                                    </div>
-                                    <div className="dashboard__stat-item">
-                                        <span className="dashboard__stat-label">Total Mesos</span>
-                                        <span className="dashboard__stat-value">${formatCurrency(kpis.totalMesos)}</span>
-                                    </div>
-                                    <div className="dashboard__stat-item">
-                                        <span className="dashboard__stat-label">Accounts Receivable</span>
-                                        <span className="dashboard__stat-value">${formatCurrency(kpis.accountsReceivable)}</span>
-                                    </div>
-                                </div>
-                            </>
-                        ) : (
-                            <div className="dashboard__stats-list">
-                                {selectedKPI === 'stock' && (
-                                    <>
-                                        <div className="dashboard__balance">
-                                            <span className="dashboard__balance-value positive">{details.totalStockMesos.toLocaleString()} B</span>
-                                            <span className="dashboard__balance-label">Total in Mesos</span>
-                                        </div>
-                                        <h4 className="dashboard__stats-subtitle">Items by Status</h4>
-                                        {details.itemsByCategory.map(cat => (
-                                            <div className="dashboard__stat-item" key={cat.status}>
-                                                <span className="dashboard__stat-label" style={{ textTransform: 'capitalize' }}>
-                                                    {cat.count} {cat.status.replace('_', ' ')}
-                                                </span>
-                                                {cat.status !== 'bulk' && (
-                                                    <span className="dashboard__stat-value">{cat.mesos.toLocaleString()} B</span>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </>
-                                )}
-
-                                {selectedKPI === 'resource' && (
-                                    <>
-                                        <div className="dashboard__balance">
-                                            <span className="dashboard__balance-value positive">{details.totalResourceMesos.toLocaleString()} B</span>
-                                            <span className="dashboard__balance-label">Total in Mesos</span>
-                                        </div>
-                                        <h4 className="dashboard__stats-subtitle">Stock</h4>
-                                        {details.resourceStock.map(res => (
-                                            <div className="dashboard__stat-item" key={res.type}>
-                                                <span className="dashboard__stat-label">{res.count} {res.type}</span>
-                                                <span className="dashboard__stat-value">{res.valueMesos.toLocaleString()} B</span>
-                                            </div>
-                                        ))}
-                                    </>
-                                )}
-
-                                {selectedKPI === 'mesos' && (
-                                    <>
-                                        <div className="dashboard__balance">
-                                            <span className="dashboard__balance-value positive">{details.totalMesosSum.toFixed(2)} B</span>
-                                            <span className="dashboard__balance-label">Total in Mesos</span>
-                                        </div>
-                                        <h4 className="dashboard__stats-subtitle">Meso Distribution</h4>
-                                        {details.mesosAccounts.map((acc, i) => (
-                                            <div className="dashboard__stat-item" key={acc.name + i}>
-                                                <span className="dashboard__stat-label" style={{ fontWeight: (acc.isVault || acc.isConsolidated) ? 'bold' : 'normal' }}>
-                                                    {acc.name}
-                                                </span>
-                                                <span className="dashboard__stat-value" style={{ color: '#fbbf24' }}>
-                                                    {acc.mesos.toFixed(2)} B
-                                                </span>
-                                            </div>
-                                        ))}
-                                    </>
-                                )}
-
-                                {selectedKPI === 'receivable' && (
-                                    <>
-                                        <div className="dashboard__balance">
-                                            <span className="dashboard__balance-value positive">{Math.round(kpis.accountsReceivable).toLocaleString()}$</span>
-                                            <span className="dashboard__balance-label">Total in USD</span>
-                                        </div>
-                                        <h4 className="dashboard__stats-subtitle">AR by Client (USD)</h4>
-                                        {details.receivableByClient.map((client, i) => (
-                                            <div className="dashboard__stat-item" key={client.name + i}>
-                                                <span className="dashboard__stat-label" style={{ fontWeight: client.isConsolidated ? 'bold' : 'normal' }}>
-                                                    {client.count} Entries ({client.name})
-                                                </span>
-                                                <span className="dashboard__stat-value" style={{ color: client.isConsolidated ? '#a78bfa' : 'inherit' }}>
-                                                    ${client.balanceUSD.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                                                </span>
-                                            </div>
-                                        ))}
-                                    </>
-                                )}
-
-                                <button
-                                    className="dashboard__back-btn"
-                                    onClick={() => setSelectedKPI(null)}
-                                    style={{
-                                        marginTop: 'var(--spacing-md)',
-                                        background: 'var(--color-bg-tertiary)',
-                                        border: 'none',
-                                        padding: 'var(--spacing-sm) var(--spacing-md)',
-                                        borderRadius: 'var(--radius-md)',
-                                        color: 'var(--color-text-secondary)',
-                                        cursor: 'pointer',
-                                        width: '100%',
-                                        fontSize: 'var(--font-size-sm)'
-                                    }}
-                                >
-                                    ← Back to Net Worth
-                                </button>
-                            </div>
+                            ))
                         )}
-                    </Card>
+                    </div>
+
+                    {/* Mesos Distribution */}
+                    <div className="dash-section">
+                        <div className="dash-section__header">
+                            <span className="dash-section__title">MESOS DISTRIBUTION</span>
+                            <span className="dash-section__total">{formatB(parseFloat(data.totalMesosSum.toFixed(1)))}</span>
+                        </div>
+                        {data.accountRows.map((acc, i) => (
+                            <div className="dash-account-row" key={acc.name + i}>
+                                <div className="dash-account-row__meta">
+                                    <span className="dash-account-row__name">{acc.name}</span>
+                                    <span className="dash-account-row__sub">{acc.subtitle}</span>
+                                </div>
+                                <div className="dash-progress">
+                                    <div
+                                        className="dash-progress__fill"
+                                        style={{ width: `${(acc.mesos / maxMesos) * 100}%` }}
+                                    />
+                                </div>
+                                <span className="dash-account-row__amount">{formatB(parseFloat(acc.mesos.toFixed(2)))}</span>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>

@@ -5,8 +5,6 @@ import type { ClientLedgerEntry, LedgerEntryType } from '../../types';
 
 const CURRENCIES = [
     { value: 'USD', label: 'USD' },
-    { value: 'Pesos Arg', label: 'Pesos Arg' },
-    { value: 'Soles', label: 'Soles' },
     { value: 'Mesos (b)', label: 'Mesos (b)' },
 ];
 

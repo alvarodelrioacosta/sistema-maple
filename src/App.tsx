@@ -14,7 +14,6 @@ import {
     Items,
     Resources,
     Clients,
-    AccountsReceivable,
     AccountsReceivableV2,
     ItemsDB,
     Settings,
@@ -72,8 +71,7 @@ function AppRoutes() {
                 <Route path="items" element={<ProtectedRoute adminOnly><Items /></ProtectedRoute>} />
                 <Route path="resources" element={<ProtectedRoute adminOnly><Resources /></ProtectedRoute>} />
                 <Route path="clients" element={<ProtectedRoute adminOnly><Clients /></ProtectedRoute>} />
-                <Route path="accounts-receivable" element={<ProtectedRoute adminOnly><AccountsReceivable /></ProtectedRoute>} />
-                <Route path="accounts-receivable-v2" element={<ProtectedRoute adminOnly><AccountsReceivableV2 /></ProtectedRoute>} />
+                <Route path="accounts-receivable" element={<ProtectedRoute adminOnly><AccountsReceivableV2 /></ProtectedRoute>} />
                 <Route path="items-db" element={<ProtectedRoute adminOnly><ItemsDB /></ProtectedRoute>} />
                 <Route path="cubing-history" element={<ProtectedRoute adminOnly><CubingHistory /></ProtectedRoute>} />
                 <Route path="events" element={<ProtectedRoute adminOnly><Events /></ProtectedRoute>} />

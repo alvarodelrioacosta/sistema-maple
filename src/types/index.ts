@@ -369,35 +369,6 @@ export interface ClassItem {
     hecate_name: string | null;
 }
 
-// ===== ACCOUNTS RECEIVABLE =====
-export interface AccountReceivable {
-    id: string;
-    client_id: string;
-    session_id: string | null;
-    item_id: string | null;
-    description: string;
-    amount: number;
-    paid: number;
-    currency: string;
-    status: 'pending' | 'partial' | 'paid';
-    is_delivered: boolean;
-    delivered_at: string | null;
-    category?: string | null;
-    subcategory?: string | null;
-    created_at: string;
-    updated_at: string;
-    // Relationships
-    client?: { id: string; name: string, currency?: string };
-}
-
-export type AccountReceivableInsert = Omit<AccountReceivable, 'id' | 'created_at' | 'updated_at' | 'paid' | 'status' | 'session_id' | 'item_id' | 'is_delivered' | 'delivered_at'> & {
-    session_id?: string | null;
-    item_id?: string | null;
-    is_delivered?: boolean;
-    delivered_at?: string | null;
-    category?: string | null;
-    subcategory?: string | null;
-};
 
 // ===== RESOURCE USAGE HISTORY =====
 export type ResourceActionType = 'use' | 'deduct' | 'transfer';

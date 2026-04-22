@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { clientLedgerService } from '../../services';
 import { Header } from '../../components/Layout';
 import { Button, Card, Table, ResourceHistoryPanel, Modal, Input, Select } from '../../components/UI';
-import { cubeSessionsService, clientsService, itemsService, accountsService, accountsReceivableService, resourcesService } from '../../services';
+import { cubeSessionsService, clientsService, itemsService, accountsService, resourcesService } from '../../services';
 import type { Column } from '../../components/UI/Table';
 import type { Client } from '../../types';
 import './CubingHistory.css';
@@ -20,7 +20,7 @@ interface SessionRow {
     gScrollUsed: number;
     status: string;
     createdAt: string;
-    accountReceivableId: string | null;
+    hasAR: boolean;
     clientId: string;
     itemId: string;
 }
@@ -80,14 +80,21 @@ export const CubingHistory: React.FC = () => {
     const loadSessions = async () => {
         setLoading(true);
         try {
-            const [sessionsData, clientsData, itemsData, accountsData] = await Promise.all([
+            const [sessionsData, clientsData, itemsData, accountsData, ledgerEntries] = await Promise.all([
                 cubeSessionsService.getAll(),
                 clientsService.getAll(),
                 itemsService.getAll(),
                 accountsService.getAll(),
+                clientLedgerService.getAll(),
             ]);
 
             setClients(clientsData);
+
+            const ledgerSessionIds = new Set(
+                ledgerEntries
+                    .filter(e => e.cube_session_id != null)
+                    .map(e => e.cube_session_id as string)
+            );
 
             const rows: SessionRow[] = sessionsData.map(session => {
                 const client = clientsData.find(c => c.id === session.client_id);
@@ -107,7 +114,7 @@ export const CubingHistory: React.FC = () => {
                     gScrollUsed: session.gaurdian_scroll_used || 0,
                     status: session.cubing_session_status || 'unknown',
                     createdAt: session.created_at,
-                    accountReceivableId: session.account_receivable_id || null,
+                    hasAR: !!session.account_receivable_id || ledgerSessionIds.has(session.id),
                     clientId: session.client_id || '',
                     itemId: session.item_id || '',
                 };
@@ -194,12 +201,12 @@ export const CubingHistory: React.FC = () => {
                         <span
                             className="status-badge"
                             style={{
-                                background: row.accountReceivableId ? 'rgba(34, 197, 94, 0.1)' : 'rgba(250, 204, 21, 0.1)',
-                                color: row.accountReceivableId ? '#4ade80' : '#facc15',
+                                background: row.hasAR ? 'rgba(34, 197, 94, 0.1)' : 'rgba(250, 204, 21, 0.1)',
+                                color: row.hasAR ? '#4ade80' : '#facc15',
                                 fontSize: '0.75rem'
                             }}
                         >
-                            {row.accountReceivableId ? 'Invoiced' : 'Pending AR'}
+                            {row.hasAR ? 'Invoiced' : 'Pending AR'}
                         </span>
                     )}
                 </div>
@@ -220,7 +227,7 @@ export const CubingHistory: React.FC = () => {
                     >
                         {selectedSessionId === row.id ? 'Hide Details' : 'View Details'}
                     </Button>
-                    {row.status === 'Finished' && !row.accountReceivableId && row.clientName !== 'Alvaro' && (
+                    {row.status === 'Finished' && !row.hasAR && row.clientName !== 'Alvaro' && (
                         <Button
                             size="sm"
                             variant="secondary"
@@ -280,18 +287,6 @@ export const CubingHistory: React.FC = () => {
 
         try {
             setIsCreatingAR(true);
-
-            const ar = await accountsReceivableService.create({
-                client_id: arFormData.clientId,
-                item_id: arSession.itemId,
-                amount: total,
-                currency: arFormData.currency,
-                description: arFormData.description,
-            });
-
-            await cubeSessionsService.update(arSession.id, {
-                account_receivable_id: ar.id,
-            });
 
             await clientLedgerService.addEntry({
                 client_id: arFormData.clientId,

@@ -5,7 +5,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Header } from '../../components/Layout';
 import { Button, Modal, Input, Select, ItemCard } from '../../components/UI';
-import { itemsService, charactersService, itemsDBService, accountsService, clientsService, accountsReceivableService, transactionsService, sharedInventoryService, appSettingsService } from '../../services';
+import { itemsService, charactersService, itemsDBService, accountsService, clientsService, clientLedgerService, transactionsService, sharedInventoryService } from '../../services';
 import type { ItemWithCharacter, ItemInsert, Character, ItemStatus, PotentialTier, ItemDB, TradeabilityType, Account, Client, SharedInventory } from '../../types';
 import { formatCurrencyValue } from '../../utils/format';
 import './Items.css';
@@ -54,7 +54,6 @@ export const Items: React.FC = () => {
     const [sharedChest, setSharedChest] = useState<SharedInventory | null>(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<ItemWithCharacter | null>(null);
-    const [mesoUsdRate, setMesoUsdRate] = useState<number>(0);
 
 
 
@@ -100,7 +99,6 @@ export const Items: React.FC = () => {
     const [sellingItem, setSellingItem] = useState<ItemWithCharacter | null>(null);
     const [saleType, setSaleType] = useState<'AH' | 'Client'>('AH');
     const [salePrice, setSalePrice] = useState(0);
-    const [saleRate, setSaleRate] = useState(0);
     const [selectedClientId, setSelectedClientId] = useState<string>('');
     const [isSelling, setIsSelling] = useState(false);
 
@@ -110,14 +108,13 @@ export const Items: React.FC = () => {
 
     const loadData = async () => {
         try {
-            const [itemsData, charsData, itemsDBData, accountsData, clientsData, sharedData, rate] = await Promise.all([
+            const [itemsData, charsData, itemsDBData, accountsData, clientsData, sharedData] = await Promise.all([
                 itemsService.getAll(),
                 charactersService.getAll(),
                 itemsDBService.getAll(),
                 accountsService.getAll(),
                 clientsService.getAll(),
                 sharedInventoryService.get().catch(() => null),
-                appSettingsService.getMesoUsdRate()
             ]);
             setItems(itemsData);
             setCharacters(charsData);
@@ -125,7 +122,6 @@ export const Items: React.FC = () => {
             setAccounts(accountsData);
             setClients(clientsData);
             setSharedChest(sharedData);
-            setMesoUsdRate(rate);
         } catch (error) {
             console.error('Error loading data:', error);
         } finally {
@@ -133,12 +129,6 @@ export const Items: React.FC = () => {
         }
     };
 
-    // Auto-set Sale Rate when Sale Type is Client
-    useEffect(() => {
-        if (saleType === 'Client' && mesoUsdRate > 0) {
-            setSaleRate(mesoUsdRate);
-        }
-    }, [saleType, mesoUsdRate]);
 
     const handleOpenModal = (item?: ItemWithCharacter) => {
         if (item) {
@@ -946,7 +936,7 @@ export const Items: React.FC = () => {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', padding: '1rem' }}>
                     {/* Price Input */}
                     <div style={{ marginBottom: '1rem' }}>
-                        <div style={{ display: 'grid', gridTemplateColumns: saleType === 'Client' ? '2fr 1fr' : '1fr', gap: '10px' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '10px' }}>
                             <div>
                                 <label style={{ display: 'block', marginBottom: '0.5rem', color: '#9ca3af' }}>
                                     Sale Price (b Mesos)
@@ -967,34 +957,9 @@ export const Items: React.FC = () => {
                                     }}
                                 />
                             </div>
-                            {saleType === 'Client' && (
-                                <div>
-                                    <label style={{ display: 'block', marginBottom: '0.5rem', color: '#9ca3af' }}>
-                                        Rate (USD)
-                                    </label>
-                                    <input
-                                        type="number"
-                                        step="0.1"
-                                        value={saleRate}
-                                        onChange={(e) => setSaleRate(parseFloat(e.target.value) || 0)}
-                                        style={{
-                                            width: '100%',
-                                            padding: '10px 12px',
-                                            background: 'rgba(255,255,255,0.1)',
-                                            border: '1px solid #444',
-                                            borderRadius: '6px',
-                                            color: '#fff',
-                                            fontSize: '1.25rem',
-                                            textAlign: 'right'
-                                        }}
-                                    />
-                                </div>
-                            )}
                         </div>
                         <span style={{ fontSize: '0.85rem', color: '#6b7280', marginTop: '4px', display: 'block' }}>
-                            {saleType === 'Client'
-                                ? `Total AR: ${(salePrice * saleRate).toFixed(2)} USD`
-                                : 'Price is in billions of Mesos'}
+                            Price in billions of Mesos
                         </span>
                     </div>
 
@@ -1088,14 +1053,26 @@ export const Items: React.FC = () => {
                                             }
                                         }
                                     } else {
-                                        // Client Sale: Create AR in USD
-                                        const arAmountUSD = salePrice * saleRate;
-                                        await accountsReceivableService.create({
+                                        // Client Sale: Create AR v2 ledger entry in Mesos (b)
+                                        const potentialParts: string[] = [];
+                                        if (sellingItem.main_potential_tier) {
+                                            const lines = [sellingItem.main_potential_1, sellingItem.main_potential_2, sellingItem.main_potential_3].filter(Boolean).join(' / ');
+                                            potentialParts.push(`${sellingItem.main_potential_tier}: ${lines}`);
+                                        }
+                                        if (sellingItem.bonus_potential_tier) {
+                                            const lines = [sellingItem.bonus_potential_1, sellingItem.bonus_potential_2, sellingItem.bonus_potential_3].filter(Boolean).join(' / ');
+                                            potentialParts.push(`Bonus ${sellingItem.bonus_potential_tier}: ${lines}`);
+                                        }
+                                        const today = new Date();
+                                        const entryDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                                        await clientLedgerService.addEntry({
                                             client_id: selectedClientId,
-                                            description: `Item Sale: ${sellingItem.name}`,
-                                            amount: Number(arAmountUSD.toFixed(2)),
-                                            currency: 'USD',
-                                            item_id: sellingItem.id
+                                            entry_type: 'charge',
+                                            description: sellingItem.name,
+                                            amount: salePrice,
+                                            currency: 'Mesos (b)',
+                                            entry_date: entryDate,
+                                            notes: potentialParts.length > 0 ? potentialParts.join(' | ') : null,
                                         });
                                     }
 
