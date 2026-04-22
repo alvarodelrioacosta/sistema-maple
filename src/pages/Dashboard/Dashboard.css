@@ -32,6 +32,12 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+    user-select: none;
+    transition: border-color 0.15s ease;
+}
+
+.dash-kpi:hover {
+    border-color: var(--color-border-hover, var(--color-primary));
 }
 
 .dash-kpi__label {
@@ -49,19 +55,19 @@
     line-height: 1.1;
 }
 
-.dash-kpi__sub {
-    font-size: var(--font-size-sm);
-    color: var(--color-warning);
-}
-
 /* ── Bottom grid ── */
 .dash-bottom {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: var(--spacing-lg);
+    align-items: start;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1200px) {
+    .dash-bottom { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 700px) {
     .dash-bottom { grid-template-columns: 1fr; }
 }
 
@@ -109,7 +115,7 @@
 /* ── Client row ── */
 .dash-client-row {
     display: grid;
-    grid-template-columns: 1fr auto auto;
+    grid-template-columns: minmax(80px, 1fr) 120px auto;
     align-items: center;
     gap: var(--spacing-md);
     padding: var(--spacing-sm) 0;
@@ -133,26 +139,19 @@
     color: var(--color-text-primary);
 }
 
-.dash-client-row__desc {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-tertiary);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
 .dash-client-row__amount {
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-semibold);
     color: var(--color-warning);
     white-space: nowrap;
+    text-align: right;
 }
 
 /* ── Account row ── */
 .dash-account-row {
-    display: grid;
-    grid-template-columns: 1fr 120px auto;
+    display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: var(--spacing-md);
     padding: var(--spacing-sm) 0;
     border-bottom: 1px solid var(--color-border);
@@ -187,20 +186,53 @@
     text-align: right;
 }
 
+/* ── Item row ── */
+.dash-item-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.dash-item-row:last-child {
+    border-bottom: none;
+}
+
+.dash-item-row__name {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+.dash-item-row__amount {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-success);
+    white-space: nowrap;
+    text-align: right;
+    flex-shrink: 0;
+}
+
 /* ── Progress bar ── */
 .dash-progress-wrap {
     display: flex;
     flex-direction: column;
     gap: 3px;
-    min-width: 80px;
+    width: 120px;
 }
 
 .dash-progress {
     height: 4px;
+    width: 100%;
     background: var(--color-bg-tertiary);
     border-radius: var(--radius-full);
     overflow: hidden;
-    flex: 1;
 }
 
 .dash-progress__fill {

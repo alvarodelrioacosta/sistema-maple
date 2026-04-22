@@ -177,6 +177,17 @@ export const itemsService = {
         return (data as any) || [];
     },
 
+    async getTopForSale(limit = 6): Promise<Array<{ name: string; estimated_value: number }>> {
+        const { data, error } = await supabase
+            .from('items')
+            .select('name, estimated_value')
+            .eq('status', 'for_sale')
+            .order('estimated_value', { ascending: false })
+            .limit(limit);
+        if (error) throw error;
+        return (data as any) || [];
+    },
+
     // Update Auction House listing timestamp
     async updateAHListing(itemId: string, timestamp: string | null): Promise<Item> {
         const { data, error } = await supabase
