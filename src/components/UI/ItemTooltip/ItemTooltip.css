@@ -134,13 +134,13 @@
 .tooltip-pot-header.tier-epic      { color: var(--color-pot-epic,   #a259d6); }
 .tooltip-pot-header.tier-rare      { color: var(--color-pot-rare,   #3d7dd6); }
 
-/* Potential lines */
+/* Potential lines — always white */
 .tooltip-pot-lines {
     display: flex;
     flex-direction: column;
     gap: 3px;
     padding-left: 4px;
-    color: #b0b0bc;
+    color: #f0f0f6;
     font-size: 11px;
 }
 
@@ -148,16 +148,4 @@
     content: "•";
     margin-right: 6px;
     opacity: 0.5;
-}
-
-.tooltip-pot-lines.tier-legendary { color: var(--color-pot-legend, #2dbf9b); }
-.tooltip-pot-lines.tier-unique    { color: var(--color-pot-unique, #e2a93a); }
-.tooltip-pot-lines.tier-epic      { color: var(--color-pot-epic,   #a259d6); }
-.tooltip-pot-lines.tier-rare      { color: var(--color-pot-rare,   #3d7dd6); }
-
-.tooltip-pot-lines.tier-rare div::before,
-.tooltip-pot-lines.tier-epic div::before,
-.tooltip-pot-lines.tier-unique div::before,
-.tooltip-pot-lines.tier-legendary div::before {
-    opacity: 0.7;
 }

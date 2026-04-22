@@ -672,7 +672,7 @@
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    color: #4ade80;
+    color: #9a9aa4;
     font-size: 0.85rem;
     font-weight: 700;
     margin-bottom: 0.3rem;
@@ -681,7 +681,7 @@
 .maple-potential-tier-icon {
     width: 18px;
     height: 18px;
-    background: #4ade80;
+    background: #9a9aa4;
     color: #000;
     border-radius: 4px;
     display: flex;
@@ -690,6 +690,21 @@
     font-size: 0.7rem;
     font-weight: 900;
 }
+
+/* Tier colors — match ItemTooltip */
+.maple-potential-header.tier-legendary,
+.maple-potential-header.tier-legendary span { color: #2dbf9b; }
+.maple-potential-header.tier-unique,
+.maple-potential-header.tier-unique span    { color: #e2a93a; }
+.maple-potential-header.tier-epic,
+.maple-potential-header.tier-epic span      { color: #a259d6; }
+.maple-potential-header.tier-rare,
+.maple-potential-header.tier-rare span      { color: #3d7dd6; }
+
+.maple-potential-tier-icon.tier-legendary { background: #2dbf9b; }
+.maple-potential-tier-icon.tier-unique    { background: #e2a93a; }
+.maple-potential-tier-icon.tier-epic      { background: #a259d6; }
+.maple-potential-tier-icon.tier-rare      { background: #3d7dd6; }
 
 .maple-potential-lines {
     display: flex;

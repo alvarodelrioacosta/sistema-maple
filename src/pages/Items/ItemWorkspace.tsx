@@ -28,6 +28,13 @@ const TIER_OPTIONS = [
     { value: 'Legendary', label: 'Legendary' },
 ];
 
+const TIER_LETTER: Record<string, string> = {
+    Legendary: 'L',
+    Unique: 'U',
+    Epic: 'E',
+    Rare: 'R',
+};
+
 const TRADEABILITY_OPTIONS = [
     { value: 'Tradeable', label: 'Tradeable' },
     { value: 'Tradeable Once', label: 'Tradeable Once' },
@@ -1083,8 +1090,10 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
 
                         {/* Main Potential */}
                         <div className="maple-potential-section">
-                            <div className="maple-potential-header">
-                                <div className="maple-potential-tier-icon">P</div>
+                            <div className={`maple-potential-header tier-${editingItem.main_potential_tier?.toLowerCase() || 'none'}`}>
+                                <div className={`maple-potential-tier-icon tier-${editingItem.main_potential_tier?.toLowerCase() || 'none'}`}>
+                                    {TIER_LETTER[editingItem.main_potential_tier ?? ''] ?? 'P'}
+                                </div>
                                 <span>Main Potential</span>
                                 {editingField === 'main_tier' ? (
                                     <Select
@@ -1111,9 +1120,11 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
 
                         {/* Bonus Potential */}
                         <div className="maple-potential-section" style={{ borderTop: '1px dashed #555', paddingTop: '0.5rem' }}>
-                            <div className="maple-potential-header">
-                                <div className="maple-potential-tier-icon" style={{ background: '#60a5fa' }}>A</div>
-                                <span style={{ color: '#60a5fa' }}>Bonus Potential</span>
+                            <div className={`maple-potential-header tier-${editingItem.bonus_potential_tier?.toLowerCase() || 'none'}`}>
+                                <div className={`maple-potential-tier-icon tier-${editingItem.bonus_potential_tier?.toLowerCase() || 'none'}`}>
+                                    {TIER_LETTER[editingItem.bonus_potential_tier ?? ''] ?? 'A'}
+                                </div>
+                                <span>Bonus Potential</span>
                                 {editingField === 'bonus_tier' ? (
                                     <Select
                                         autoFocus
