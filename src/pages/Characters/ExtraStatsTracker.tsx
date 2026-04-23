@@ -64,7 +64,6 @@ export const ExtraStatsTracker: React.FC<Props> = ({
     }, [saveAccount]);
 
     const level = character.level ?? 0;
-    const hexaStatMet = (idx: number) => isSixthJobDone && level >= HEXA_LEVEL_REQS[idx];
 
     const hexaEnabled = [
         character.hexa_stat_1_enabled,
@@ -204,22 +203,20 @@ export const ExtraStatsTracker: React.FC<Props> = ({
 
                 {/* Hexa Stats 1-3 */}
                 {([0, 1, 2] as const).map(i => {
-                    const prereqsMet = hexaStatMet(i);
+                    if (!isSixthJobDone || level < HEXA_LEVEL_REQS[i]) return null;
                     const enabled = hexaEnabled[i];
                     const lv = hexaLevels[i];
                     const color = '#818cf8';
-                    const isActive = prereqsMet && enabled;
+                    const isActive = enabled;
 
                     return (
                         <div key={i} style={{ position: 'relative', flexShrink: 0 }}>
                             <img
                                 src={HEXA_STAT_IMG}
                                 alt={`Hexa Stat ${i + 1}`}
-                                title={prereqsMet
-                                    ? (enabled ? `Hexa Stat ${i + 1}` : `Click to enable Hexa Stat ${i + 1}`)
-                                    : `Requires Lv.${HEXA_LEVEL_REQS[i]} + 6th Job`}
-                                style={{ ...imgStyle(isActive, color), cursor: prereqsMet && !enabled ? 'pointer' : 'default' }}
-                                onClick={() => { if (prereqsMet && !enabled) save(hexaEnabledCols[i], true); }}
+                                title={enabled ? `Hexa Stat ${i + 1}` : `Click to enable Hexa Stat ${i + 1}`}
+                                style={{ ...imgStyle(isActive, color), cursor: !enabled ? 'pointer' : 'default' }}
+                                onClick={() => { if (!enabled) save(hexaEnabledCols[i], true); }}
                             />
                             {isActive && (
                                 <input
