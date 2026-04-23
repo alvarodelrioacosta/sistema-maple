@@ -6,6 +6,7 @@ import type {
   MysticFrontierExpedition,
   MysticFrontierRewardItem,
   MysticFrontierRewardEntry,
+  MysticFrontierExpeditionLog,
   ExpiringResourceType,
 } from '../types';
 import { resourcesService } from './resources';
@@ -174,24 +175,43 @@ export async function collectRewards(
     .eq('expedition_index', expeditionIndex);
   if (updateError) throw updateError;
 
-  const { error: historyError } = await supabase
-    .from('mystic_frontier_reward_history')
+  // Log every expedition (regardless of rewards) for aggregate KPI tracking
+  const pouchQty = (type: MysticFrontierRewardType) =>
+    rewards.find(r => r.type === type)?.quantity ?? 0;
+  const { error: logError } = await supabase
+    .from('mystic_frontier_expedition_log')
     .insert({
       character_id: characterId,
       expedition_index: expeditionIndex,
       site_rank: rank,
-      rewards: rewards,
-      collected_at: now,
+      purple_pouch: pouchQty('purple_pouch'),
+      orange_pouch: pouchQty('orange_pouch'),
+      green_pouch: pouchQty('green_pouch'),
+      completed_at: now,
     });
-  if (historyError) throw historyError;
+  if (logError) throw logError;
+
+  // Only write to reward history if there are non-pouch rewards to record
+  const nonPouchRewards = rewards.filter(r => !POUCH_REWARDS.has(r.type) && r.quantity > 0);
+  if (nonPouchRewards.length > 0) {
+    const { error: historyError } = await supabase
+      .from('mystic_frontier_reward_history')
+      .insert({
+        character_id: characterId,
+        expedition_index: expeditionIndex,
+        site_rank: rank,
+        rewards: nonPouchRewards,
+        collected_at: now,
+      });
+    if (historyError) throw historyError;
+  }
 
   const expiry = new Date();
   expiry.setDate(expiry.getDate() + 21);
   const expiresAt = expiry.toISOString().split('T')[0];
 
   await Promise.all(
-    rewards
-      .filter(r => r.quantity > 0 && !POUCH_REWARDS.has(r.type))
+    nonPouchRewards
       .map(r => resourcesService.addBatch(
         accountId,
         REWARD_TO_RESOURCE[r.type]!,
@@ -257,6 +277,15 @@ export async function getAllRewardHistory(): Promise<MysticFrontierRewardEntry[]
     .order('collected_at', { ascending: false });
   if (error) throw error;
   return (data ?? []) as MysticFrontierRewardEntry[];
+}
+
+export async function getAllExpeditionLog(): Promise<MysticFrontierExpeditionLog[]> {
+  const { data, error } = await supabase
+    .from('mystic_frontier_expedition_log')
+    .select('*')
+    .order('completed_at', { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as MysticFrontierExpeditionLog[];
 }
 
 export async function setUnlocked(characterId: string, unlocked: boolean): Promise<void> {

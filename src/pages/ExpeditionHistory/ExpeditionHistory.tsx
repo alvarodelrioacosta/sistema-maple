@@ -3,6 +3,7 @@ import { charactersService } from '../../services/characters';
 import { resourcesService } from '../../services/resources';
 import {
   getAllRewardHistory,
+  getAllExpeditionLog,
   REWARD_METADATA,
   CUBE_REWARDS,
   POUCH_REWARDS,
@@ -13,6 +14,7 @@ import {
 import type {
   CharacterWithAccount,
   MysticFrontierRewardEntry,
+  MysticFrontierExpeditionLog,
   MysticFrontierRewardType,
   MysticFrontierSiteRank,
 } from '../../types';
@@ -37,6 +39,7 @@ interface ExpeditionHistoryProps {
 
 export const ExpeditionHistory: React.FC<ExpeditionHistoryProps> = ({ embedded }) => {
   const [entries, setEntries] = useState<MysticFrontierRewardEntry[]>([]);
+  const [log, setLog] = useState<MysticFrontierExpeditionLog[]>([]);
   const [charMap, setCharMap] = useState<Record<string, CharacterWithAccount>>({});
   const [cubeImages, setCubeImages] = useState<Record<MysticFrontierRewardType, string>>(
     {} as Record<MysticFrontierRewardType, string>,
@@ -48,15 +51,17 @@ export const ExpeditionHistory: React.FC<ExpeditionHistoryProps> = ({ embedded }
     const init = async () => {
       setLoading(true);
       try {
-        const [all, history, meta] = await Promise.all([
+        const [all, history, expeditionLog, meta] = await Promise.all([
           charactersService.getAll(),
           getAllRewardHistory(),
+          getAllExpeditionLog(),
           resourcesService.getResourceMetadata(),
         ]);
         const map: Record<string, CharacterWithAccount> = {};
         for (const c of all) map[c.id] = c;
         setCharMap(map);
-        setEntries(history.filter(e => e.rewards.length > 0));
+        setEntries(history);
+        setLog(expeditionLog);
         const imgs = {} as Record<MysticFrontierRewardType, string>;
         for (const [resourceKey, rewardType] of Object.entries(CUBE_RESOURCE_KEYS)) {
           if (meta[resourceKey]?.image) imgs[rewardType] = meta[resourceKey].image;
@@ -69,30 +74,58 @@ export const ExpeditionHistory: React.FC<ExpeditionHistoryProps> = ({ embedded }
     init();
   }, []);
 
+  // Log is the source of truth for totals (includes expeditions with no rewards)
+  const filteredLog = filterRank === 'All' ? log : log.filter(e => e.site_rank === filterRank);
+  // History entries filtered for the list (only non-empty reward entries)
   const filtered = filterRank === 'All' ? entries : entries.filter(e => e.site_rank === filterRank);
 
-  // KPI: by-rank counts
+  // KPI: by-rank counts from the log (all expeditions)
   const byRank = SITE_RANKS.reduce((acc, r) => {
-    acc[r] = entries.filter(e => e.site_rank === r).length;
+    acc[r] = log.filter(e => e.site_rank === r).length;
     return acc;
   }, {} as Record<MysticFrontierSiteRank, number>);
 
-  // KPI: reward frequency stats (computed from filtered set)
-  const rewardStats: RewardStat[] = ALL_REWARD_TYPES.map(type => {
-    const withReward = filtered.filter(e => e.rewards.some(r => r.type === type && r.quantity > 0));
-    const totalQty = filtered.reduce((s, e) => {
-      const r = e.rewards.find(r => r.type === type);
-      return s + (r?.quantity ?? 0);
-    }, 0);
-    const isNumeric = CUBE_REWARDS.has(type) || POUCH_REWARDS.has(type);
-    return {
-      type,
-      rate: filtered.length > 0 ? withReward.length / filtered.length : 0,
-      avgQty: isNumeric && withReward.length > 0 ? totalQty / withReward.length : null,
-    };
-  }).filter(s => s.rate > 0); // hide types that never appeared
+  // KPI: pouch totals from the log (filtered by selected rank)
+  const pouchTotals = {
+    purple_pouch: filteredLog.reduce((s, e) => s + e.purple_pouch, 0),
+    orange_pouch: filteredLog.reduce((s, e) => s + e.orange_pouch, 0),
+    green_pouch:  filteredLog.reduce((s, e) => s + e.green_pouch, 0),
+  };
+  const pouchAppearance = {
+    purple_pouch: filteredLog.filter(e => e.purple_pouch > 0).length,
+    orange_pouch: filteredLog.filter(e => e.orange_pouch > 0).length,
+    green_pouch:  filteredLog.filter(e => e.green_pouch > 0).length,
+  };
 
-  const total = entries.length;
+  // KPI: reward frequency stats for non-pouch types (from reward_history, filtered)
+  const nonPouchStats: RewardStat[] = ALL_REWARD_TYPES
+    .filter(type => !POUCH_REWARDS.has(type))
+    .map(type => {
+      const withReward = filtered.filter(e => e.rewards.some(r => r.type === type && r.quantity > 0));
+      const totalQty = filtered.reduce((s, e) => {
+        const r = e.rewards.find(r => r.type === type);
+        return s + (r?.quantity ?? 0);
+      }, 0);
+      const isNumeric = CUBE_REWARDS.has(type);
+      return {
+        type,
+        rate: filteredLog.length > 0 ? withReward.length / filteredLog.length : 0,
+        avgQty: isNumeric && withReward.length > 0 ? totalQty / withReward.length : null,
+      };
+    }).filter(s => s.rate > 0);
+
+  // Pouch stats from log for the frequency table
+  const pouchStats: RewardStat[] = (['purple_pouch', 'orange_pouch', 'green_pouch'] as const)
+    .map(type => ({
+      type,
+      rate: filteredLog.length > 0 ? pouchAppearance[type] / filteredLog.length : 0,
+      avgQty: pouchAppearance[type] > 0 ? pouchTotals[type] / pouchAppearance[type] : null,
+    }))
+    .filter(s => s.rate > 0);
+
+  const rewardStats: RewardStat[] = [...pouchStats, ...nonPouchStats];
+
+  const total = log.length;
 
   return (
     <div className={embedded ? 'exp-history-embedded' : 'exp-history-page'}>
@@ -134,7 +167,7 @@ export const ExpeditionHistory: React.FC<ExpeditionHistoryProps> = ({ embedded }
             {rewardStats.length > 0 && (
               <div className="exp-kpi-freq">
                 <div className="exp-kpi-freq-title">
-                  Reward Frequency — {filtered.length} expedition{filtered.length !== 1 ? 's' : ''}
+                  Reward Frequency — {filteredLog.length} expedition{filteredLog.length !== 1 ? 's' : ''}
                   {filterRank !== 'All' && <span style={{ color: RANK_COLORS[filterRank] }}> ({filterRank})</span>}
                 </div>
                 <div className="exp-kpi-freq-table">

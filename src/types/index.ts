@@ -552,6 +552,17 @@ export interface MysticFrontierRewardEntry {
   collected_at: string;
 }
 
+export interface MysticFrontierExpeditionLog {
+  id: string;
+  character_id: string;
+  expedition_index: 1 | 2 | 3;
+  site_rank: MysticFrontierSiteRank;
+  purple_pouch: number;
+  orange_pouch: number;
+  green_pouch: number;
+  completed_at: string;
+}
+
 // ===== CLIENT LEDGER (AR v2) =====
 export type LedgerEntryType = 'charge' | 'payment';
 
