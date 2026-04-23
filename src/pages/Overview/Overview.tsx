@@ -786,7 +786,7 @@ const Overview: React.FC = () => {
                         <thead>
                             <tr className="header-top-row">
                                 <th rowSpan={2} className="col-account">ACCOUNT</th>
-                                {groupedDailyUnlocks.map(group => (
+                                {isAdmin && groupedDailyUnlocks.map(group => (
                                     <th key={group.key} colSpan={group.items.length} className="header-group-cell" style={{ color: CATEGORY_COLORS[group.category] }}>
                                         {group.label}
                                     </th>
@@ -799,7 +799,7 @@ const Overview: React.FC = () => {
                                 {showMF && <th rowSpan={2} className="col-panel">◈ MF</th>}
                             </tr>
                             <tr className="header-bottom-row">
-                                {groupedDailyUnlocks.map(group =>
+                                {isAdmin && groupedDailyUnlocks.map(group =>
                                     group.items.map((item: any) => {
                                         const count = item.isEvent
                                             ? (eventProgressCounts[item.id] || { completed: 0, total: 0 })
@@ -860,7 +860,7 @@ const Overview: React.FC = () => {
                                             </td>
 
                                             {/* Events */}
-                                            {activeEvents.map(event => {
+                                            {isAdmin && activeEvents.map(event => {
                                                 const isCompleted = row.eventProgress[event.id];
                                                 const weeklyCount = row.eventWeeklyCounts[event.id] || 0;
                                                 const totalCount = row.eventTotalCounts[event.id] || 0;
@@ -891,7 +891,7 @@ const Overview: React.FC = () => {
                                             })}
 
                                             {/* Unlocks */}
-                                            {visibleUnlocks.map(def => {
+                                            {isAdmin && visibleUnlocks.map(def => {
                                                 const isCompleted = !!row.unlockProgress[def.key];
                                                 const prereqKey = prereqMap.get(def.key);
                                                 const isLocked = !!(prereqKey && !row.unlockProgress[prereqKey]);
