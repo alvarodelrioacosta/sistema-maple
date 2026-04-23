@@ -30,6 +30,7 @@ import type {
 } from '../../types';
 import { EXPIRING_RESOURCE_TYPES, RESOURCE_LABELS } from '../../types';
 import { UNLOCK_DEFINITIONS, SEQUENTIAL_UNLOCK_GROUPS, type UnlockDef } from '../../constants/unlocks';
+import { useAuth } from '../../context/AuthContext';
 import {
     getExpeditions,
     CUBE_RESOURCE_KEYS,
@@ -85,6 +86,8 @@ const BOSS_NAME_ORDER: Record<string, number> = {
 };
 
 const Overview: React.FC = () => {
+    const { profile } = useAuth();
+    const isAdmin = profile?.role === 'admin';
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [accounts, setAccounts] = useState<Account[]>([]);
@@ -354,7 +357,8 @@ const Overview: React.FC = () => {
     const rows = useMemo(() => {
         if (!accounts || accounts.length === 0) return [];
         try {
-            return accounts.flatMap(acc => {
+            const visibleAccounts = isAdmin ? accounts : accounts.filter(acc => acc.number !== 0);
+            return visibleAccounts.flatMap(acc => {
                 if (acc.number === 0 && showAllAccount0Mains) {
                     const mains0 = (allChars || []).filter(c => c.account_id === acc.id && c.main === 'Main');
                     if (mains0.length === 0) return [buildRow(acc, null)];
@@ -369,7 +373,7 @@ const Overview: React.FC = () => {
             console.error('Error calculating Overview rows:', e);
             return [];
         }
-    }, [accounts, mainChars, allChars, buildRow, showAllAccount0Mains]);
+    }, [accounts, mainChars, allChars, buildRow, showAllAccount0Mains, isAdmin]);
 
     // Load MF data when panel is toggled on
     useEffect(() => {
@@ -727,17 +731,21 @@ const Overview: React.FC = () => {
                 subtitle={`Daily Status — ${formattedDate}`}
                 actions={
                     <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                        {/* Account 0 mains toggle */}
-                        <Button
-                            variant={showAllAccount0Mains ? 'primary' : 'secondary'}
-                            size="sm"
-                            onClick={() => setShowAllAccount0Mains(v => !v)}
-                            title={showAllAccount0Mains ? 'Showing all mains of account 0' : 'Showing only Alvaro'}
-                        >
-                            {showAllAccount0Mains ? 'All Mains' : 'Alvaro'}
-                        </Button>
+                        {/* Account 0 mains toggle — admin only */}
+                        {isAdmin && (
+                            <>
+                                <Button
+                                    variant={showAllAccount0Mains ? 'primary' : 'secondary'}
+                                    size="sm"
+                                    onClick={() => setShowAllAccount0Mains(v => !v)}
+                                    title={showAllAccount0Mains ? 'Showing all mains of account 0' : 'Showing only Alvaro'}
+                                >
+                                    {showAllAccount0Mains ? 'All Mains' : 'Alvaro'}
+                                </Button>
 
-                        <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.1)' }} />
+                                <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.1)' }} />
+                            </>
+                        )}
 
                         {/* Panel toggles */}
                         <Button variant={showMF ? 'primary' : 'secondary'} size="sm" onClick={() => setShowMF(v => !v)}>
