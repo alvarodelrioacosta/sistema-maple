@@ -112,6 +112,16 @@ const Overview: React.FC = () => {
     const [showCharDetails, setShowCharDetails] = useState(false);
     const [showResources, setShowResources] = useState(false);
     const [showExtraStats, setShowExtraStats] = useState(false);
+
+    // Workers start with the three main panels open
+    useEffect(() => {
+        if (profile && !isAdmin) {
+            setShowMF(true);
+            setShowCharDetails(true);
+            setShowExtraStats(true);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [profile?.role]);
     const [showAllAccount0Mains, setShowAllAccount0Mains] = useState(false);
 
     const [activeItemFilters, setActiveItemFilters] = useState<Set<string>>(new Set(['for_sale']));
@@ -152,8 +162,24 @@ const Overview: React.FC = () => {
                 setAllChars(prev => prev.map(c => c.id === updated.id ? { ...c, ...updated } : c));
                 setMainChars(prev => prev.map(c => c.id === updated.id ? { ...c, ...updated } : c));
             })
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'characters' }, (payload) => {
+                const added = payload.new as Character;
+                setAllChars(prev => [...prev, added]);
+                if (added.main === 'Main') setMainChars(prev => [...prev, added]);
+            })
+            .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'characters' }, (payload) => {
+                const removed = payload.old as Character;
+                setAllChars(prev => prev.filter(c => c.id !== removed.id));
+                setMainChars(prev => prev.filter(c => c.id !== removed.id));
+            })
             .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'accounts' }, (payload) => {
                 setAccounts(prev => prev.map(acc => acc.id === (payload.new as any).id ? { ...acc, ...payload.new } : acc));
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_batches' }, async (payload: any) => {
+                const accountId = (payload.new ?? payload.old)?.account_id;
+                if (!accountId) return;
+                const newBalances = await resourcesService.getAllBalances(accountId);
+                setAccountBalances(prev => ({ ...prev, [accountId]: newBalances }));
             })
             .on('postgres_changes', { event: '*', schema: 'public', table: 'items' }, (payload) => {
                 const TRACKED = ['for_sale', 'in_stock', 'bulk'];
