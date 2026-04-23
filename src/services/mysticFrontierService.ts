@@ -165,6 +165,7 @@ export async function collectRewards(
   rewards: MysticFrontierRewardItem[],
   rank: MysticFrontierSiteRank,
   accountId: string,
+  explorationStartedAt: string,
 ): Promise<void> {
   const now = new Date().toISOString();
 
@@ -175,20 +176,22 @@ export async function collectRewards(
     .eq('expedition_index', expeditionIndex);
   if (updateError) throw updateError;
 
-  // Log every expedition (regardless of rewards) for aggregate KPI tracking
+  // Upsert log entry — uses exploration_started_at as unique key so pre-inserted
+  // entries (e.g. manually created before the collect flow) are updated, not duplicated.
   const pouchQty = (type: MysticFrontierRewardType) =>
     rewards.find(r => r.type === type)?.quantity ?? 0;
   const { error: logError } = await supabase
     .from('mystic_frontier_expedition_log')
-    .insert({
+    .upsert({
       character_id: characterId,
       expedition_index: expeditionIndex,
       site_rank: rank,
       purple_pouch: pouchQty('purple_pouch'),
       orange_pouch: pouchQty('orange_pouch'),
       green_pouch: pouchQty('green_pouch'),
+      exploration_started_at: explorationStartedAt,
       completed_at: now,
-    });
+    }, { onConflict: 'character_id,expedition_index,exploration_started_at' });
   if (logError) throw logError;
 
   // Only write to reward history if there are non-pouch rewards to record

@@ -109,7 +109,7 @@ export const ExpeditionCard: React.FC<ExpeditionCardProps> = ({
           if (nonCubeChecked[type]) rewards.push({ type, quantity: 1 });
         }
       }
-      await collectRewards(characterId, expeditionNumber, rewards, expedition.site_rank, accountId);
+      await collectRewards(characterId, expeditionNumber, rewards, expedition.site_rank, accountId, expedition.exploration_started_at ?? new Date().toISOString());
       localStorage.removeItem(storageKey);
       setShowRewardPicker(false);
       setCubeQtys({});
