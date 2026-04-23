@@ -198,13 +198,14 @@ export type ItemInsert = Omit<Item, 'id' | 'created_at'>;
 export type ItemUpdate = Partial<ItemInsert>;
 
 // ===== RESOURCES =====
-export type ResourceType = 'bright_cubes' | 'bonus_bright_cubes' | 'reward_points' | 'psok' | 'guardian_scroll' | 'solid_cubes' | 'perfect_innoc';
+export type ResourceType = 'bright_cubes' | 'bonus_bright_cubes' | 'reward_points' | 'psok' | 'guardian_scroll' | 'solid_cubes' | 'perfect_innoc' | 'familiar_ring_box' | 'black_heart' | 'dawn_accessory_box' | 'pitched_boss_accessory_box';
 
 // Resources tracked with per-batch expiry dates (excludes mesos_b and perfect_innoc)
-export type ExpiringResourceType = 'bright_cubes' | 'bonus_bright_cubes' | 'reward_points' | 'psok' | 'guardian_scroll' | 'solid_cubes';
+export type ExpiringResourceType = 'bright_cubes' | 'bonus_bright_cubes' | 'reward_points' | 'psok' | 'guardian_scroll' | 'solid_cubes' | 'familiar_ring_box' | 'black_heart' | 'dawn_accessory_box' | 'pitched_boss_accessory_box';
 
 export const EXPIRING_RESOURCE_TYPES: ExpiringResourceType[] = [
-    'solid_cubes', 'bright_cubes', 'bonus_bright_cubes', 'reward_points', 'psok', 'guardian_scroll'
+    'solid_cubes', 'bright_cubes', 'bonus_bright_cubes', 'reward_points', 'psok', 'guardian_scroll',
+    'familiar_ring_box', 'black_heart', 'dawn_accessory_box', 'pitched_boss_accessory_box'
 ];
 
 export const RESOURCE_LABELS: Record<ExpiringResourceType, string> = {
@@ -213,7 +214,11 @@ export const RESOURCE_LABELS: Record<ExpiringResourceType, string> = {
     bonus_bright_cubes: 'Bonus Bright Cubes',
     reward_points: 'Reward Points',
     psok: 'PSOK',
-    guardian_scroll: 'Guardian Scroll'
+    guardian_scroll: 'Guardian Scroll',
+    familiar_ring_box: 'Familiar Box',
+    black_heart: 'Black Heart',
+    dawn_accessory_box: 'Dawn Accessory Box',
+    pitched_boss_accessory_box: 'Pitched Boss Acc. Box'
 };
 
 export interface ResourceBatch {

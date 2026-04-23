@@ -98,6 +98,20 @@ export const resourcesService = {
         return (data || []).reduce((sum, row) => sum + row.quantity, 0);
     },
 
+    // One-shot fetch of all non-expired batches for multiple accounts (used by the Resources page)
+    async getBulkBatchesForAccounts(accountIds: string[]): Promise<ResourceBatch[]> {
+        if (accountIds.length === 0) return [];
+        const { data, error } = await supabase
+            .from('account_resource_batches')
+            .select('id, account_id, resource_type, quantity, expires_at, created_at')
+            .in('account_id', accountIds)
+            .gt('quantity', 0)
+            .or(notExpiredFilter())
+            .order('expires_at', { ascending: true, nullsFirst: false });
+        if (error) throw error;
+        return (data || []) as ResourceBatch[];
+    },
+
     // Balances for all expiring resource types at once
     async getAllBalances(accountId: string): Promise<Record<ExpiringResourceType, number>> {
         const { data, error } = await supabase

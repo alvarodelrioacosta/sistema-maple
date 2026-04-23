@@ -4,30 +4,58 @@
 
 import React, { useEffect, useState } from 'react';
 import { Header } from '../../components/Layout';
-import { Button, Card, Table, Modal, KPICard, LoadingScreen, AccountCell } from '../../components/UI';
+import { Button, Card, Modal, KPICard, LoadingScreen, AccountCell } from '../../components/UI';
 import { resourcesService, accountsService, sharedInventoryService } from '../../services';
 import type { SharedInventory, Account, ResourceBatch, ExpiringResourceType } from '../../types';
 import { EXPIRING_RESOURCE_TYPES, RESOURCE_LABELS } from '../../types';
-import type { Column } from '../../components/UI/Table';
 import './Resources.css';
+
+// ---- Group configuration ----
+
+type GroupResourceKey = ExpiringResourceType | 'mesos_b';
+
+interface ResourceGroupDef {
+    key: string;
+    label: string;
+    color: string;
+    resources: GroupResourceKey[];
+}
+
+const RESOURCE_GROUPS: ResourceGroupDef[] = [
+    { key: 'cubes',    label: 'Cubes',           color: '#4ade80', resources: ['solid_cubes', 'bright_cubes', 'bonus_bright_cubes'] },
+    { key: 'currency', label: 'Currency',         color: '#fbbf24', resources: ['reward_points', 'mesos_b'] },
+    { key: 'nx',       label: 'NX',               color: '#60a5fa', resources: ['psok', 'guardian_scroll'] },
+    { key: 'mystic',   label: 'Mystic Frontier',  color: '#c084fc', resources: ['familiar_ring_box', 'black_heart', 'dawn_accessory_box', 'pitched_boss_accessory_box'] },
+];
+
+const SHORT_LABELS: Record<GroupResourceKey, string> = {
+    solid_cubes:                 'Solid',
+    bright_cubes:                'Bright',
+    bonus_bright_cubes:          'Bonus',
+    reward_points:               'nRP',
+    mesos_b:                     'Mesos',
+    psok:                        'PSOK',
+    guardian_scroll:             'Guardian',
+    familiar_ring_box:           'Familiar',
+    black_heart:                 'B. Heart',
+    dawn_accessory_box:          'Dawn Box',
+    pitched_boss_accessory_box:  'PB Box',
+};
+
+// ---- Data types ----
 
 interface AccountResources {
     accountId: string;
     accountNumber: number;
     accountEmail: string | null;
     tag: string | null;
-    brightCubes: number;
-    bonusCubes: number;
-    solid_cubes: number;
-    rewardPoints: number;
-    psok: number;
-    guardianScroll: number;
     mesosB: number;
 }
 
+// ---- Helper functions ----
+
 const formatExpiryDate = (expiresAt: string | null): string => {
     if (!expiresAt) return 'No expiry';
-    // Add noon to avoid timezone shifts on date-only strings
     const d = new Date(expiresAt + 'T12:00:00');
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 };
@@ -39,12 +67,55 @@ const daysUntilExpiry = (expiresAt: string | null): number | null => {
     return Math.ceil((d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 };
 
+// ---- Sub-components ----
+
+const ExpiryBadge: React.FC<{ expiresAt: string | null }> = ({ expiresAt }) => {
+    if (!expiresAt) return null;
+    const days = daysUntilExpiry(expiresAt);
+    if (days === null || days > 30) return null;
+    if (days < 0) return <span className="expiry-badge expiry-badge--expired">Exp</span>;
+    const cls = days <= 7 ? 'expiry-badge expiry-badge--urgent' : 'expiry-badge expiry-badge--warning';
+    return <span className={cls}>{days}d</span>;
+};
+
+interface GroupItem {
+    key: string;
+    label: string;
+    qty: number;
+    expiresAt: string | null;
+    icon: string;
+    isMesos?: boolean;
+}
+
+const ResourceGroupCell: React.FC<{ items: GroupItem[] }> = ({ items }) => (
+    <div className="resource-group-cell">
+        {items.map(item => (
+            <div key={item.key} className={`resource-item-row${item.qty === 0 ? ' resource-item-row--zero' : ''}`}>
+                <span className="resource-item-left">
+                    {item.icon
+                        ? <img src={item.icon} alt={item.label} className="resource-icon-xs" />
+                        : <span className="resource-icon-dot" />
+                    }
+                    <span className="resource-item-label">{item.label}</span>
+                    <span className="resource-item-qty">
+                        {item.qty.toLocaleString()}{item.isMesos ? 'B' : ''}
+                    </span>
+                </span>
+                <ExpiryBadge expiresAt={item.expiresAt} />
+            </div>
+        ))}
+    </div>
+);
+
+// ---- Main Component ----
+
 export const Resources: React.FC = () => {
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [resourceImages, setResourceImages] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(true);
     const [sharedChest, setSharedChest] = useState<SharedInventory | null>(null);
     const [accountBalances, setAccountBalances] = useState<Record<string, Record<string, number>>>({});
+    const [accountEarliestExpiry, setAccountEarliestExpiry] = useState<Record<string, Record<string, string | null>>>({});
 
     // Batch modal state
     const [modalOpen, setModalOpen] = useState(false);
@@ -79,16 +150,44 @@ export const Resources: React.FC = () => {
             ]);
             setAccounts(accountsData);
             setSharedChest(sharedData);
+
             const imagesMap: Record<string, string> = {};
             Object.keys(imagesData).forEach(key => { imagesMap[key] = imagesData[key].image; });
             setResourceImages(imagesMap);
 
-            const balancesArr = await Promise.all(accountsData.map(acc => resourcesService.getAllBalances(acc.id)));
-            const newBalances: Record<string, Record<string, number>> = {};
-            accountsData.forEach((acc, i) => {
-                newBalances[acc.id] = balancesArr[i];
-            });
-            setAccountBalances(newBalances);
+            if (accountsData.length > 0) {
+                const accountIds = accountsData.map(a => a.id);
+                const allBatches = await resourcesService.getBulkBatchesForAccounts(accountIds);
+
+                const newBalances: Record<string, Record<string, number>> = {};
+                const newExpiry: Record<string, Record<string, string | null>> = {};
+
+                accountsData.forEach(acc => {
+                    newBalances[acc.id] = {};
+                    newExpiry[acc.id] = {};
+                    EXPIRING_RESOURCE_TYPES.forEach(t => {
+                        newBalances[acc.id][t] = 0;
+                        newExpiry[acc.id][t] = null;
+                    });
+                });
+
+                // Batches are ordered by expires_at ASC (nulls last) so first hit per
+                // account+type has the earliest non-null expiry
+                allBatches.forEach(batch => {
+                    const { account_id, resource_type, quantity, expires_at } = batch;
+                    if (!newBalances[account_id]) return;
+                    newBalances[account_id][resource_type] = (newBalances[account_id][resource_type] || 0) + quantity;
+                    if (expires_at) {
+                        const current = newExpiry[account_id][resource_type];
+                        if (!current || expires_at < current) {
+                            newExpiry[account_id][resource_type] = expires_at;
+                        }
+                    }
+                });
+
+                setAccountBalances(newBalances);
+                setAccountEarliestExpiry(newExpiry);
+            }
         } catch (error) {
             console.error('Error loading data:', error);
         } finally {
@@ -101,30 +200,29 @@ export const Resources: React.FC = () => {
         setBatches(updated);
     };
 
-    const totalBrightCubes = accounts.reduce((sum, a) => sum + ((accountBalances[a.id]?.bright_cubes) || 0), 0);
-    const totalBonusCubes = accounts.reduce((sum, a) => sum + ((accountBalances[a.id]?.bonus_bright_cubes) || 0), 0);
-    const totalSolidCubes = accounts.reduce((sum, a) => sum + ((accountBalances[a.id]?.solid_cubes) || 0), 0);
+    // KPI totals
+    const totalSolidCubes  = accounts.reduce((sum, a) => sum + (accountBalances[a.id]?.solid_cubes || 0), 0);
+    const totalBrightCubes = accounts.reduce((sum, a) => sum + (accountBalances[a.id]?.bright_cubes || 0), 0);
+    const totalBonusCubes  = accounts.reduce((sum, a) => sum + (accountBalances[a.id]?.bonus_bright_cubes || 0), 0);
 
+    // Count (account × resource) pairs with something expiring within 7 days
+    const urgentExpiryCount = Object.values(accountEarliestExpiry).reduce((total, accountExpiry) =>
+        total + Object.values(accountExpiry).filter(date => {
+            if (!date) return false;
+            const days = daysUntilExpiry(date);
+            return days !== null && days >= 0 && days <= 7;
+        }).length, 0);
+
+    const solidCubeUrl  = resourceImages['solid_cubes'] || '';
     const brightCubeUrl = resourceImages['bright_cubes'] || '';
-    const bonusCubeUrl = resourceImages['bonus_bright_cubes'] || '';
-    const solidCubeUrl = resourceImages['solid_cubes'] || '';
-    const psokUrl = resourceImages['psok'] || '';
-    const rewardPointsUrl = resourceImages['reward_points'] || '';
-    const guardianScrollUrl = resourceImages['guardian_scroll'] || '';
-    const mesosUrl = resourceImages['mesos'] || '';
+    const bonusCubeUrl  = resourceImages['bonus_bright_cubes'] || '';
 
     const tableData: AccountResources[] = accounts.map(account => ({
-        accountId: account.id,
+        accountId:     account.id,
         accountNumber: account.number,
-        accountEmail: account.email,
-        tag: account.tag,
-        brightCubes: accountBalances[account.id]?.bright_cubes || 0,
-        bonusCubes: accountBalances[account.id]?.bonus_bright_cubes || 0,
-        solid_cubes: accountBalances[account.id]?.solid_cubes || 0,
-        rewardPoints: accountBalances[account.id]?.reward_points || 0,
-        psok: accountBalances[account.id]?.psok || 0,
-        guardianScroll: accountBalances[account.id]?.guardian_scroll || 0,
-        mesosB: account.mesos_b || 0
+        accountEmail:  account.email,
+        tag:           account.tag,
+        mesosB:        account.mesos_b || 0,
     })).sort((a, b) => a.accountNumber - b.accountNumber);
 
     // ---- Handlers ----
@@ -215,101 +313,8 @@ export const Resources: React.FC = () => {
         }
     };
 
-    // ---- Table columns ----
-
-    const columns: Column<AccountResources>[] = [
-        {
-            key: 'accountNumber',
-            header: 'Account',
-            width: '190px',
-            render: (row) => (
-                <AccountCell number={row.accountNumber} email={row.accountEmail} tag={row.tag} />
-            )
-        },
-        {
-            key: 'solid_cubes' as any,
-            header: 'Solid Cubes',
-            render: (row: any) => (
-                <div className="resource-cell">
-                    {solidCubeUrl ? <img src={solidCubeUrl} alt="SC" className="resource-icon-sm" /> : <span>SC</span>}
-                    <span>{(row.solid_cubes || 0).toLocaleString()}</span>
-                </div>
-            )
-        },
-        {
-            key: 'brightCubes',
-            header: 'Bright Cubes',
-            render: (row) => (
-                <div className="resource-cell">
-                    {brightCubeUrl ? <img src={brightCubeUrl} alt="BC" className="resource-icon-sm" /> : <span>BC</span>}
-                    <span>{row.brightCubes.toLocaleString()}</span>
-                </div>
-            )
-        },
-        {
-            key: 'bonusCubes',
-            header: 'Bonus Bright Cubes',
-            render: (row) => (
-                <div className="resource-cell">
-                    {bonusCubeUrl ? <img src={bonusCubeUrl} alt="BBC" className="resource-icon-sm" /> : <span>BBC</span>}
-                    <span>{row.bonusCubes.toLocaleString()}</span>
-                </div>
-            )
-        },
-        {
-            key: 'rewardPoints',
-            header: 'Reward Points',
-            render: (row) => (
-                <div className="resource-cell">
-                    {rewardPointsUrl ? <img src={rewardPointsUrl} alt="RP" className="resource-icon-sm" /> : <span className="resource-icon-text">🎁</span>}
-                    <span>{row.rewardPoints.toLocaleString()}</span>
-                </div>
-            )
-        },
-        {
-            key: 'psok',
-            header: 'PSOK',
-            render: (row) => (
-                <div className="resource-cell">
-                    {psokUrl ? <img src={psokUrl} alt="PSOK" className="resource-icon-sm" /> : <span className="resource-icon-text">✂️</span>}
-                    <span>{row.psok.toLocaleString()}</span>
-                </div>
-            )
-        },
-        {
-            key: 'guardianScroll',
-            header: 'Guardian',
-            render: (row) => (
-                <div className="resource-cell">
-                    {guardianScrollUrl ? <img src={guardianScrollUrl} alt="Guardian" className="resource-icon-sm" /> : <span className="resource-icon-text">🛡️</span>}
-                    <span>{row.guardianScroll.toLocaleString()}</span>
-                </div>
-            )
-        },
-        {
-            key: 'mesosB',
-            header: 'Mesos (B)',
-            render: (row) => (
-                <div className="resource-cell">
-                    {mesosUrl ? <img src={mesosUrl} alt="Mesos" className="resource-icon-sm" /> : <span className="resource-icon-text">💰</span>}
-                    <span>{row.mesosB.toLocaleString()}</span>
-                </div>
-            )
-        },
-        {
-            key: 'actions',
-            header: 'Actions',
-            render: (row) => (
-                <div className="table-actions">
-                    <Button size="sm" variant="ghost" onClick={() => handleEdit(row)}>Manage</Button>
-                </div>
-            )
-        }
-    ];
-
     // ---- Batch modal helpers ----
 
-    // Compute per-resource totals from loaded batches
     const batchTotals: Record<ExpiringResourceType, number> = (() => {
         const totals: Record<string, number> = {};
         EXPIRING_RESOURCE_TYPES.forEach(t => { totals[t] = 0; });
@@ -326,18 +331,21 @@ export const Resources: React.FC = () => {
             <div className="page-content">
                 {/* KPIs */}
                 <div className="resources-kpis">
-                    <div className="kpi-wrapper">
-                        <KPICard title="Total Solid Cubes" value={totalSolidCubes.toLocaleString()}
-                            icon={<img src={solidCubeUrl} alt="SC" style={{ width: '40px', height: '40px' }} />} color="success" />
-                    </div>
-                    <div className="kpi-wrapper">
-                        <KPICard title="Total Bright Cubes" value={totalBrightCubes.toLocaleString()}
-                            icon={<img src={brightCubeUrl} alt="BC" style={{ width: '40px', height: '40px' }} />} color="primary" />
-                    </div>
-                    <div className="kpi-wrapper">
-                        <KPICard title="Total Bonus Bright Cubes" value={totalBonusCubes.toLocaleString()}
-                            icon={<img src={bonusCubeUrl} alt="BBC" style={{ width: '40px', height: '40px' }} />} color="info" />
-                    </div>
+                    <KPICard title="Total Solid Cubes" value={totalSolidCubes.toLocaleString()}
+                        icon={solidCubeUrl ? <img src={solidCubeUrl} alt="SC" style={{ width: '40px', height: '40px' }} /> : undefined}
+                        color="success" />
+                    <KPICard title="Total Bright Cubes" value={totalBrightCubes.toLocaleString()}
+                        icon={brightCubeUrl ? <img src={brightCubeUrl} alt="BC" style={{ width: '40px', height: '40px' }} /> : undefined}
+                        color="primary" />
+                    <KPICard title="Total Bonus Bright" value={totalBonusCubes.toLocaleString()}
+                        icon={bonusCubeUrl ? <img src={bonusCubeUrl} alt="BBC" style={{ width: '40px', height: '40px' }} /> : undefined}
+                        color="info" />
+                    <KPICard
+                        title="Expiring ≤ 7 Days"
+                        value={urgentExpiryCount.toLocaleString()}
+                        icon={<span style={{ fontSize: '1.75rem', lineHeight: 1 }}>⚠</span>}
+                        color={urgentExpiryCount > 0 ? 'warning' : 'success'}
+                    />
                 </div>
 
                 {/* Shared Chest */}
@@ -360,9 +368,56 @@ export const Resources: React.FC = () => {
                     </Card>
                 )}
 
-                {/* Table */}
+                {/* Grouped Resource Table */}
                 <Card padding="none" className="mt-6">
-                    <Table data={tableData} columns={columns} keyExtractor={(row) => row.accountId} emptyMessage="No accounts found." />
+                    <div className="resources-table-wrapper">
+                        <table className="resources-table">
+                            <thead>
+                                <tr>
+                                    <th className="res-th res-th-account">Account</th>
+                                    {RESOURCE_GROUPS.map(g => (
+                                        <th key={g.key} className="res-th res-th-group">
+                                            <span className="res-group-label" style={{ color: g.color }}>{g.label}</span>
+                                        </th>
+                                    ))}
+                                    <th className="res-th res-th-actions">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {tableData.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={RESOURCE_GROUPS.length + 2} style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
+                                            No accounts found.
+                                        </td>
+                                    </tr>
+                                ) : tableData.map(row => (
+                                    <tr key={row.accountId} className="res-tr">
+                                        <td className="res-td res-td-account">
+                                            <AccountCell number={row.accountNumber} email={row.accountEmail} tag={row.tag} />
+                                        </td>
+                                        {RESOURCE_GROUPS.map(group => {
+                                            const items: GroupItem[] = group.resources.map(rk => ({
+                                                key:       rk,
+                                                label:     SHORT_LABELS[rk],
+                                                qty:       rk === 'mesos_b' ? row.mesosB : (accountBalances[row.accountId]?.[rk] || 0),
+                                                expiresAt: rk === 'mesos_b' ? null : (accountEarliestExpiry[row.accountId]?.[rk] || null),
+                                                icon:      resourceImages[rk] || '',
+                                                isMesos:   rk === 'mesos_b',
+                                            }));
+                                            return (
+                                                <td key={group.key} className="res-td">
+                                                    <ResourceGroupCell items={items} />
+                                                </td>
+                                            );
+                                        })}
+                                        <td className="res-td res-td-actions">
+                                            <Button size="sm" variant="ghost" onClick={() => handleEdit(row)}>Manage</Button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </Card>
             </div>
 
@@ -370,6 +425,7 @@ export const Resources: React.FC = () => {
             <Modal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
+                size="lg"
                 title={
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                         <span style={{ fontSize: '1.2rem', fontWeight: 700 }}>Manage Resources</span>
@@ -381,12 +437,19 @@ export const Resources: React.FC = () => {
             >
                 <div className="batch-modal-body">
 
-                    {/* Totals summary */}
-                    <div className="batch-totals-row">
-                        {EXPIRING_RESOURCE_TYPES.map(rt => (
-                            <div key={rt} className="batch-total-chip">
-                                <span className="batch-total-label">{RESOURCE_LABELS[rt]}</span>
-                                <span className="batch-total-value">{(batchTotals[rt] || 0).toLocaleString()}</span>
+                    {/* Totals summary — grouped by category */}
+                    <div className="batch-totals-groups">
+                        {RESOURCE_GROUPS.filter(g => g.key !== 'currency' || true).map(group => (
+                            <div key={group.key} className="batch-totals-group">
+                                <span className="batch-totals-group-label" style={{ color: group.color }}>{group.label}</span>
+                                <div className="batch-totals-chips">
+                                    {(group.resources.filter(rk => rk !== 'mesos_b') as ExpiringResourceType[]).map(rt => (
+                                        <div key={rt} className="batch-total-chip">
+                                            <span className="batch-total-label">{RESOURCE_LABELS[rt]}</span>
+                                            <span className="batch-total-value">{(batchTotals[rt] || 0).toLocaleString()}</span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         ))}
                     </div>

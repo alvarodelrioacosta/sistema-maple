@@ -6,12 +6,8 @@
 
 .resources-kpis {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: var(--spacing-lg);
-}
-
-.kpi-wrapper {
-    flex: 1;
 }
 
 .resource-cell {
@@ -378,4 +374,193 @@
     align-items: center;
     padding-top: 0.5rem;
     border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* =============================================
+   GROUPED RESOURCE TABLE
+   ============================================= */
+
+.resources-table-wrapper {
+    overflow-x: auto;
+}
+
+.resources-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.res-th {
+    padding: 0.65rem 1rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-secondary, #64748b);
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.02);
+    white-space: nowrap;
+}
+
+.res-th-group {
+    text-align: center;
+    border-left: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.res-th-actions {
+    text-align: center;
+    border-left: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.res-group-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+
+.res-td {
+    padding: 0.65rem 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.res-td:not(.res-td-account) {
+    border-left: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.res-tr:last-child .res-td {
+    border-bottom: none;
+}
+
+.res-tr:hover .res-td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.res-td-account {
+    min-width: 160px;
+}
+
+.res-td-actions {
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* =============================================
+   RESOURCE GROUP CELL
+   ============================================= */
+
+.resource-group-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.28rem;
+}
+
+.resource-item-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem;
+    min-width: 120px;
+}
+
+.resource-item-row--zero {
+    opacity: 0.28;
+}
+
+.resource-item-left {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.resource-icon-xs {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.resource-icon-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+    display: inline-block;
+}
+
+.resource-item-label {
+    font-size: 0.75rem;
+    color: #64748b;
+    flex-shrink: 0;
+    min-width: 46px;
+}
+
+.resource-item-qty {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    text-align: right;
+    flex: 1;
+}
+
+/* =============================================
+   EXPIRY BADGES (inline in table cells)
+   ============================================= */
+
+.expiry-badge {
+    font-size: 0.62rem;
+    font-weight: 700;
+    border-radius: 4px;
+    padding: 0.1rem 0.3rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+    letter-spacing: 0.02em;
+}
+
+.expiry-badge--warning {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.14);
+}
+
+.expiry-badge--urgent {
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.14);
+}
+
+.expiry-badge--expired {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+/* =============================================
+   BATCH TOTALS — grouped display
+   ============================================= */
+
+.batch-totals-groups {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.batch-totals-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 0;
+}
+
+.batch-totals-group-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.batch-totals-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
 }
