@@ -175,10 +175,20 @@ export async function collectRewards(
     });
   if (historyError) throw historyError;
 
+  const expiry = new Date();
+  expiry.setDate(expiry.getDate() + 21);
+  const expiresAt = expiry.toISOString().split('T')[0];
+
   await Promise.all(
     rewards
       .filter(r => r.quantity > 0)
-      .map(r => resourcesService.addBatch(accountId, REWARD_TO_RESOURCE[r.type], r.quantity, null)),
+      .map(r => resourcesService.addBatch(
+        accountId,
+        REWARD_TO_RESOURCE[r.type],
+        r.quantity,
+        expiresAt,
+        CUBE_REWARDS.has(r.type),
+      )),
   );
 }
 

@@ -291,6 +291,29 @@
     padding: 0.1rem 0.35rem;
 }
 
+.badge-karma {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #c084fc;
+    background: rgba(192, 132, 252, 0.12);
+    border: 1px solid rgba(192, 132, 252, 0.3);
+    border-radius: 4px;
+    padding: 0.1rem 0.35rem;
+    margin-left: 0.35rem;
+    vertical-align: middle;
+}
+
+.batch-karma-label {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.82rem;
+    color: #c084fc;
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+}
+
 .batch-delete-btn {
     background: none;
     border: none;

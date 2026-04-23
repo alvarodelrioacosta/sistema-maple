@@ -227,6 +227,7 @@ export interface ResourceBatch {
     resource_type: ExpiringResourceType;
     quantity: number;
     expires_at: string | null; // ISO date YYYY-MM-DD, null = never expires
+    is_karma: boolean;
     created_at: string;
 }
 

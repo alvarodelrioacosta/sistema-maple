@@ -143,6 +143,7 @@ export const Resources: React.FC = () => {
     const [newResource, setNewResource] = useState<ExpiringResourceType>('solid_cubes');
     const [newQty, setNewQty] = useState(1);
     const [newExpiry, setNewExpiry] = useState('');
+    const [newIsKarma, setNewIsKarma] = useState(false);
     const [isAddingBatch, setIsAddingBatch] = useState(false);
 
     // Guild Chest modal state
@@ -295,11 +296,12 @@ export const Resources: React.FC = () => {
         if (!editingAccount || isAddingBatch || newQty <= 0) return;
         setIsAddingBatch(true);
         try {
-            await resourcesService.addBatch(editingAccount.accountId, newResource, newQty, newExpiry || null);
+            await resourcesService.addBatch(editingAccount.accountId, newResource, newQty, newExpiry || null, newIsKarma);
             await refreshBatches(editingAccount.accountId);
             await loadData();
             setNewQty(1);
             setNewExpiry('');
+            setNewIsKarma(false);
         } catch (err) {
             console.error('Error adding batch:', err);
         } finally {
@@ -581,7 +583,12 @@ export const Resources: React.FC = () => {
                                         const expired = days !== null && days < 0;
                                         return (
                                             <tr key={batch.id} className={expired ? 'batch-row--expired' : expiringSoon ? 'batch-row--warning' : ''}>
-                                                <td className="batch-resource-name">{RESOURCE_LABELS[batch.resource_type]}</td>
+                                                <td className="batch-resource-name">
+                                                    {RESOURCE_LABELS[batch.resource_type]}
+                                                    {batch.is_karma && (
+                                                        <span className="badge-karma" title="Karma — obtained from Mystic Frontier">Karma</span>
+                                                    )}
+                                                </td>
                                                 <td className="batch-qty">{batch.quantity.toLocaleString()}</td>
                                                 <td className="batch-expiry">
                                                     <span>{formatExpiryDate(batch.expires_at)}</span>
@@ -637,6 +644,15 @@ export const Resources: React.FC = () => {
                                 onChange={e => setNewExpiry(e.target.value)}
                                 title="Expiry date (leave empty for no expiry)"
                             />
+                            <label className="batch-karma-label" title="Mark as Karma (obtained from Mystic Frontier)">
+                                <input
+                                    type="checkbox"
+                                    checked={newIsKarma}
+                                    onChange={e => setNewIsKarma(e.target.checked)}
+                                    style={{ accentColor: 'var(--color-accent-primary)' }}
+                                />
+                                Karma
+                            </label>
                             <Button size="sm" onClick={handleAddBatch} loading={isAddingBatch} disabled={isAddingBatch || newQty <= 0}>
                                 Add
                             </Button>

@@ -137,7 +137,8 @@ export const resourcesService = {
         accountId: string,
         resourceType: ExpiringResourceType,
         quantity: number,
-        expiresAt?: string | null
+        expiresAt?: string | null,
+        isKarma?: boolean,
     ): Promise<void> {
         const { error } = await supabase
             .from('account_resource_batches')
@@ -145,7 +146,8 @@ export const resourcesService = {
                 account_id: accountId,
                 resource_type: resourceType,
                 quantity,
-                expires_at: expiresAt || null
+                expires_at: expiresAt || null,
+                is_karma: isKarma ?? false,
             });
         if (error) throw error;
     },
