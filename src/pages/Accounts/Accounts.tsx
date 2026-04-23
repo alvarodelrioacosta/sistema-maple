@@ -2,6 +2,9 @@
 // ACCOUNTS PAGE - Gestión de cuentas
 // =============================================
 
+// This account is always #0 — many features are hardcoded to account 0.
+const MAIN_ACCOUNT_EMAIL = 'alvarodelrioacosta@gmail.com';
+
 import React, { useEffect, useState } from 'react';
 import { Header } from '../../components/Layout';
 import { Button, Table, Modal, Input, Card } from '../../components/UI';
@@ -112,13 +115,17 @@ export const Accounts: React.FC = () => {
     };
 
     const handleReorder = async () => {
-        if (!window.confirm('¿Renumerar las cuentas propias consecutivamente (1, 2, 3...)?')) return;
+        if (!window.confirm('¿Renumerar las cuentas propias (1, 2, 3...)? La cuenta #0 no se modifica.')) return;
         try {
-            const owned = accounts
-                .filter(a => a.owned)
+            const mainAccount = accounts.find(a => a.email === MAIN_ACCOUNT_EMAIL);
+            if (mainAccount && mainAccount.number !== 0) {
+                await accountsService.update(mainAccount.id, { number: 0 });
+            }
+            const toReorder = accounts
+                .filter(a => a.owned && a.email !== MAIN_ACCOUNT_EMAIL)
                 .sort((a, b) => a.number - b.number);
-            for (let i = 0; i < owned.length; i++) {
-                await accountsService.update(owned[i].id, { number: i + 1 });
+            for (let i = 0; i < toReorder.length; i++) {
+                await accountsService.update(toReorder[i].id, { number: i + 1 });
             }
             await loadAccounts();
         } catch (error) {
@@ -191,6 +198,7 @@ export const Accounts: React.FC = () => {
                         value={formData.number}
                         onChange={(e) => setFormData({ ...formData, number: parseInt(e.target.value) || 0 })}
                         required
+                        disabled={editingAccount?.email === MAIN_ACCOUNT_EMAIL}
                     />
                     <Input
                         label="Email"
