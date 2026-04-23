@@ -162,6 +162,8 @@ export const ExpeditionCard: React.FC<ExpeditionCardProps> = ({
         {visibleTypes.map(type => {
           const meta = REWARD_METADATA[type];
           const isCube = CUBE_REWARDS.has(type);
+          const isPouch = POUCH_REWARDS.has(type);
+          const isNumeric = isCube || isPouch;
           const imgSrc = isCube ? cubeImages[type] : meta.image_url;
           return (
             <div key={type} className="mf-reward-row">
@@ -170,7 +172,7 @@ export const ExpeditionCard: React.FC<ExpeditionCardProps> = ({
                 : <div style={{ width: 28, height: 28, background: 'rgba(255,255,255,0.06)', borderRadius: 4, flexShrink: 0 }} />
               }
               <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-                {isCube ? (
+                {isNumeric ? (
                   <input
                     type="number" min={0} max={10}
                     className="mf-reward-qty-input"
@@ -255,7 +257,7 @@ export const ExpeditionCard: React.FC<ExpeditionCardProps> = ({
           <span style={rankBadgeStyle}>{activeRank}</span>
           {(() => {
             const selected = ALL_REWARD_TYPES.filter(type =>
-              CUBE_REWARDS.has(type) ? (cubeQtys[type] ?? 0) > 0 : !!nonCubeChecked[type]
+              (CUBE_REWARDS.has(type) || POUCH_REWARDS.has(type)) ? (cubeQtys[type] ?? 0) > 0 : !!nonCubeChecked[type]
             );
             if (selected.length === 0) return null;
             return (
@@ -263,7 +265,7 @@ export const ExpeditionCard: React.FC<ExpeditionCardProps> = ({
                 {selected.map(type => {
                   const meta = REWARD_METADATA[type];
                   const imgSrc = CUBE_REWARDS.has(type) ? cubeImages[type] : meta.image_url;
-                  const qty = CUBE_REWARDS.has(type) ? (cubeQtys[type] ?? 0) : 1;
+                  const qty = (CUBE_REWARDS.has(type) || POUCH_REWARDS.has(type)) ? (cubeQtys[type] ?? 0) : 1;
                   return (
                     <React.Fragment key={type}>
                       {imgSrc && <img src={imgSrc} alt={meta.label} title={meta.label} className="mf-reward-img" style={{ width: 22, height: 22 }} />}
