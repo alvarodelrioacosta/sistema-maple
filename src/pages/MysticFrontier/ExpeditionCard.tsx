@@ -168,7 +168,16 @@ export const ExpeditionCard: React.FC<ExpeditionCardProps> = ({
           return (
             <div key={type} className="mf-reward-row">
               {imgSrc
-                ? <img src={imgSrc} alt={meta.label} title={meta.label} className="mf-reward-img" />
+                ? <img
+                    src={imgSrc} alt={meta.label}
+                    title={isPouch ? `${meta.label} — click to add 1` : meta.label}
+                    className="mf-reward-img"
+                    onClick={isPouch ? () => setCubeQtys(prev => ({
+                      ...prev,
+                      [type]: Math.min(10, (prev[type] ?? 0) + 1),
+                    })) : undefined}
+                    style={isPouch ? { cursor: 'pointer' } : undefined}
+                  />
                 : <div style={{ width: 28, height: 28, background: 'rgba(255,255,255,0.06)', borderRadius: 4, flexShrink: 0 }} />
               }
               <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
