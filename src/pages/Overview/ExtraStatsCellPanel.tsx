@@ -5,9 +5,10 @@ import type { CharacterWithAccount } from '../../types';
 interface Props {
     character: CharacterWithAccount;
     onCharacterUpdate: (charId: string, col: string, value: number | boolean | string | null) => void;
+    onAccountUpdate?: (accountId: string, col: string, value: number | boolean | string | null) => void;
 }
 
-export const ExtraStatsCellPanel: React.FC<Props> = ({ character: characterProp, onCharacterUpdate }) => {
+export const ExtraStatsCellPanel: React.FC<Props> = ({ character: characterProp, onCharacterUpdate, onAccountUpdate }) => {
     const [localCharacter, setLocalCharacter] = React.useState(characterProp);
 
     React.useEffect(() => { setLocalCharacter(characterProp); }, [characterProp]);
@@ -24,6 +25,7 @@ export const ExtraStatsCellPanel: React.FC<Props> = ({ character: characterProp,
             ...prev,
             account: prev.account ? { ...prev.account, [col]: value } : prev.account,
         }));
+        if (character.account) onAccountUpdate?.(character.account.id, col, value);
     };
 
     return (

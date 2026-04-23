@@ -684,6 +684,10 @@ const Overview: React.FC = () => {
         setMainChars(prev => prev.map(c => c.id === charId ? { ...c, [col]: value } : c));
     };
 
+    const handleAccountFieldUpdate = (accountId: string, col: string, value: number | boolean | string | null) => {
+        setAccounts(prev => prev.map(a => a.id === accountId ? { ...a, [col]: value } : a));
+    };
+
     const handleMFRefresh = async (characterId: string) => {
         const exps = await getExpeditions(characterId);
         setMfExpeditions(prev => ({ ...prev, [characterId]: exps }));
@@ -1036,7 +1040,7 @@ const Overview: React.FC = () => {
                                             {showExtraStats && (
                                                 <td className="col-panel-cell">
                                                     {charWithAccount
-                                                        ? <ExtraStatsCellPanel character={charWithAccount} onCharacterUpdate={handleCharacterUpdate} />
+                                                        ? <ExtraStatsCellPanel character={charWithAccount} onCharacterUpdate={handleCharacterUpdate} onAccountUpdate={handleAccountFieldUpdate} />
                                                         : <span className="overview-panel-empty">—</span>
                                                     }
                                                 </td>
