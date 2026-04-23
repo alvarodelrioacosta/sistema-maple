@@ -26,6 +26,7 @@ export interface ExpeditionCardProps {
   expeditionNumber: 1 | 2 | 3;
   expedition: MysticFrontierExpedition | null;
   characterId: string;
+  accountId: string;
   cubeImages: Record<MysticFrontierRewardType, string>;
   onRefresh: () => void;
 }
@@ -34,6 +35,7 @@ export const ExpeditionCard: React.FC<ExpeditionCardProps> = ({
   expeditionNumber,
   expedition,
   characterId,
+  accountId,
   cubeImages,
   onRefresh,
 }) => {
@@ -106,7 +108,7 @@ export const ExpeditionCard: React.FC<ExpeditionCardProps> = ({
           if (nonCubeChecked[type]) rewards.push({ type, quantity: 1 });
         }
       }
-      await collectRewards(characterId, expeditionNumber, rewards, expedition.site_rank);
+      await collectRewards(characterId, expeditionNumber, rewards, expedition.site_rank, accountId);
       localStorage.removeItem(storageKey);
       setShowRewardPicker(false);
       setCubeQtys({});

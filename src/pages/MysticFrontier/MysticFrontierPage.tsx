@@ -101,6 +101,7 @@ export const CharacterRow: React.FC<CharacterRowProps> = ({
                 expeditionNumber={n}
                 expedition={expByNumber(n)}
                 characterId={character.id}
+                accountId={character.account_id}
                 cubeImages={cubeImages}
                 onRefresh={() => onRefresh(character.id)}
               />

@@ -125,6 +125,7 @@ export const MysticFrontierModal: React.FC<Props> = ({ character, onClose }) => 
               expeditionNumber={n}
               expedition={expByNumber(n)}
               characterId={character!.id}
+              accountId={character!.account_id}
               cubeImages={cubeImages}
               onRefresh={fetchData}
             />

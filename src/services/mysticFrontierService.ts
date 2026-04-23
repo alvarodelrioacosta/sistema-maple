@@ -6,7 +6,9 @@ import type {
   MysticFrontierExpedition,
   MysticFrontierRewardItem,
   MysticFrontierRewardEntry,
+  ExpiringResourceType,
 } from '../types';
+import { resourcesService } from './resources';
 
 export const SITE_RANKS: MysticFrontierSiteRank[] = ['Common', 'Rare', 'Epic', 'Unique', 'Legendary'];
 
@@ -31,6 +33,17 @@ export const EXPLORATION_HOURS: Record<MysticFrontierSiteRank, number> = {
 
 export const REST_HOURS: Record<MysticFrontierSiteRank, number> = {
   Common: 1, Rare: 1, Epic: 2, Unique: 3, Legendary: 3,
+};
+
+// Maps each MysticFrontierRewardType to its ExpiringResourceType for resource batch creation
+export const REWARD_TO_RESOURCE: Record<MysticFrontierRewardType, ExpiringResourceType> = {
+  karma_solid_cubes:          'solid_cubes',
+  karma_bright_cubes:         'bright_cubes',
+  karma_bonus_bright_cubes:   'bonus_bright_cubes',
+  familiar_ring_box:          'familiar_ring_box',
+  black_heart:                'black_heart',
+  dawn_accessory_box:         'dawn_accessory_box',
+  pitched_boss_accessory_box: 'pitched_boss_accessory_box',
 };
 
 // Non-cube rewards use checkbox (quantity always 1).
@@ -140,6 +153,7 @@ export async function collectRewards(
   expeditionIndex: 1 | 2 | 3,
   rewards: MysticFrontierRewardItem[],
   rank: MysticFrontierSiteRank,
+  accountId: string,
 ): Promise<void> {
   const now = new Date().toISOString();
 
@@ -160,6 +174,12 @@ export async function collectRewards(
       collected_at: now,
     });
   if (historyError) throw historyError;
+
+  await Promise.all(
+    rewards
+      .filter(r => r.quantity > 0)
+      .map(r => resourcesService.addBatch(accountId, REWARD_TO_RESOURCE[r.type], r.quantity, null)),
+  );
 }
 
 export async function completeRest(
