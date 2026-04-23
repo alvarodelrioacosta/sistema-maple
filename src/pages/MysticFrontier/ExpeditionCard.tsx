@@ -15,6 +15,7 @@ import {
   formatDuration,
   REWARD_METADATA,
   CUBE_REWARDS,
+  POUCH_REWARDS,
   SITE_RANKS,
   RANK_COLORS,
   shiftStartTime,
@@ -101,6 +102,7 @@ export const ExpeditionCard: React.FC<ExpeditionCardProps> = ({
     try {
       const rewards: MysticFrontierRewardItem[] = [];
       for (const type of ALL_REWARD_TYPES) {
+        if (POUCH_REWARDS.has(type)) continue;
         if (CUBE_REWARDS.has(type)) {
           const qty = cubeQtys[type] ?? 0;
           if (qty > 0) rewards.push({ type, quantity: qty });
@@ -148,10 +150,16 @@ export const ExpeditionCard: React.FC<ExpeditionCardProps> = ({
     alignSelf: 'flex-start',
   };
 
-  const renderRewardPicker = (isCollection: boolean) => (
+  const renderRewardPicker = (isCollection: boolean) => {
+    const visibleTypes = ALL_REWARD_TYPES.filter(type => {
+      if (!isCollection && CUBE_REWARDS.has(type)) return false;
+      if (isCollection && POUCH_REWARDS.has(type)) return false;
+      return true;
+    });
+    return (
     <div className="mf-reward-picker">
       <div className="mf-reward-list">
-        {ALL_REWARD_TYPES.map(type => {
+        {visibleTypes.map(type => {
           const meta = REWARD_METADATA[type];
           const isCube = CUBE_REWARDS.has(type);
           const imgSrc = isCube ? cubeImages[type] : meta.image_url;
@@ -194,6 +202,7 @@ export const ExpeditionCard: React.FC<ExpeditionCardProps> = ({
       )}
     </div>
   );
+  };
 
   return (
     <div className="mf-expedition-card">

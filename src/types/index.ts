@@ -519,6 +519,9 @@ export type MysticFrontierRewardType =
   | 'pitched_boss_accessory_box'
   | 'black_heart'
   | 'dawn_accessory_box'
+  | 'purple_pouch'
+  | 'orange_pouch'
+  | 'green_pouch'
   | 'karma_solid_cubes'
   | 'karma_bright_cubes'
   | 'karma_bonus_bright_cubes';

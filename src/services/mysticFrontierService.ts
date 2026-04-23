@@ -36,7 +36,7 @@ export const REST_HOURS: Record<MysticFrontierSiteRank, number> = {
 };
 
 // Maps each MysticFrontierRewardType to its ExpiringResourceType for resource batch creation
-export const REWARD_TO_RESOURCE: Record<MysticFrontierRewardType, ExpiringResourceType> = {
+export const REWARD_TO_RESOURCE: Partial<Record<MysticFrontierRewardType, ExpiringResourceType>> = {
   karma_solid_cubes:          'solid_cubes',
   karma_bright_cubes:         'bright_cubes',
   karma_bonus_bright_cubes:   'bonus_bright_cubes',
@@ -54,12 +54,22 @@ export const CUBE_REWARDS = new Set<MysticFrontierRewardType>([
   'karma_bonus_bright_cubes',
 ]);
 
+// Pouch rewards — shown only in pre-start picker, not in collect picker, not tracked as resources.
+export const POUCH_REWARDS = new Set<MysticFrontierRewardType>([
+  'purple_pouch',
+  'orange_pouch',
+  'green_pouch',
+]);
+
 // Images for non-cube rewards. Cube images are fetched at runtime from resourcesService.
 export const REWARD_METADATA: Record<MysticFrontierRewardType, { label: string; image_url: string }> = {
   familiar_ring_box:           { label: 'Familiar Ring Box',            image_url: 'https://g.nexonstatic.com/media/ocifg5cz/bright-familiar-ring-box.png' },
   pitched_boss_accessory_box:  { label: 'Pitched Boss Accessory Box',   image_url: 'https://g.nexonstatic.com/media/lizna4vx/chaos-pitched-accessory-box.png' },
   black_heart:                 { label: 'Black Heart',                  image_url: 'https://g.nexonstatic.com/media/nqjlkgtg/damaged-black-heart-coupon.png' },
   dawn_accessory_box:          { label: 'Dawn Accessory Box',           image_url: 'https://g.nexonstatic.com/media/raagpngb/resonant-dawn-accessory-box.png' },
+  purple_pouch:                { label: 'Purple Pouch',                 image_url: 'https://raw.githubusercontent.com/alvarodelrioacosta/maplestory-assets/refs/heads/main/Purple%20Pouch.png' },
+  orange_pouch:                { label: 'Orange Pouch',                 image_url: 'https://raw.githubusercontent.com/alvarodelrioacosta/maplestory-assets/refs/heads/main/Orange%20Pouch.png' },
+  green_pouch:                 { label: 'Green Pouch',                  image_url: 'https://raw.githubusercontent.com/alvarodelrioacosta/maplestory-assets/refs/heads/main/Green%20Pouch.png' },
   karma_solid_cubes:           { label: 'Karma Solid Cubes',            image_url: '' }, // loaded from resourcesService key: solid_cubes
   karma_bright_cubes:          { label: 'Karma Bright Cubes',           image_url: '' }, // loaded from resourcesService key: bright_cubes
   karma_bonus_bright_cubes:    { label: 'Karma Bonus Bright Cubes',     image_url: '' }, // loaded from resourcesService key: bonus_bright_cubes
@@ -181,10 +191,10 @@ export async function collectRewards(
 
   await Promise.all(
     rewards
-      .filter(r => r.quantity > 0)
+      .filter(r => r.quantity > 0 && !POUCH_REWARDS.has(r.type))
       .map(r => resourcesService.addBatch(
         accountId,
-        REWARD_TO_RESOURCE[r.type],
+        REWARD_TO_RESOURCE[r.type]!,
         r.quantity,
         expiresAt,
         CUBE_REWARDS.has(r.type),
