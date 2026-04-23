@@ -489,7 +489,7 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
             if (method === 'Stock') {
                 if (type === 'perfect_innoc') {
                     const vaultStock = sharedChest?.perfect_innocence_stock || 0;
-                    if (vaultStock < 1) throw new Error('Sin stock de Perfect Innocence en Shared Chest.');
+                    if (vaultStock < 1) throw new Error('Sin stock de Perfect Innocence en Guild Chest.');
                     await sharedInventoryService.updatePerfectInnocence(vaultStock - 1);
                 } else {
                     const stock = accountBalances[itemAccountId]?.[type] || 0;
@@ -1202,7 +1202,7 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                     {/* Shared Chest */}
                     {sharedChest && (
                         <div className="ws-section shared-chest-pool">
-                            <h4>🗄️ Shared Chest</h4>
+                            <h4>🗄️ Guild Chest</h4>
                             <div className="shared-chest-row">
                                 <div className="shared-chest-stat">
                                     <span className="sc-label">Mesos (B)</span>
@@ -1334,7 +1334,7 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                             return (
                                 <div className="ws-modal-options">
                                     <button className="ws-modal-option-btn" onClick={() => handleConfirmResourceUsage('Stock')} disabled={stockVal < 1}>
-                                        <strong>{resourceModal.type === 'perfect_innoc' ? 'Shared Chest' : 'Inventario'}</strong>
+                                        <strong>{resourceModal.type === 'perfect_innoc' ? 'Guild Chest' : 'Inventario'}</strong>
                                         <small>Disponible: {stockVal}</small>
                                         <span className="option-cost">Costo: 1 Stock</span>
                                     </button>

@@ -52,6 +52,15 @@ interface AccountResources {
     mesosB: number;
 }
 
+interface ExpiryDetailRow {
+    accountNumber: number;
+    accountTag: string | null;
+    resourceLabel: string;
+    quantity: number;
+    daysRemaining: number;
+    expiresAt: string;
+}
+
 // ---- Helper functions ----
 
 const formatExpiryDate = (expiresAt: string | null): string => {
@@ -116,6 +125,10 @@ export const Resources: React.FC = () => {
     const [sharedChest, setSharedChest] = useState<SharedInventory | null>(null);
     const [accountBalances, setAccountBalances] = useState<Record<string, Record<string, number>>>({});
     const [accountEarliestExpiry, setAccountEarliestExpiry] = useState<Record<string, Record<string, string | null>>>({});
+    const [allBatches, setAllBatches] = useState<ResourceBatch[]>([]);
+
+    // Active expiry filter: null = no filter, 7 or 30 = show only accounts with resources expiring within N days
+    const [activeExpiryFilter, setActiveExpiryFilter] = useState<null | 7 | 30>(null);
 
     // Batch modal state
     const [modalOpen, setModalOpen] = useState(false);
@@ -132,7 +145,7 @@ export const Resources: React.FC = () => {
     const [newExpiry, setNewExpiry] = useState('');
     const [isAddingBatch, setIsAddingBatch] = useState(false);
 
-    // Shared Chest modal state
+    // Guild Chest modal state
     const [sharedChestModalOpen, setSharedChestModalOpen] = useState(false);
     const [sharedChestValues, setSharedChestValues] = useState({ mesos_stock: 0, perfect_innocence_stock: 0 });
     const [isSavingChest, setIsSavingChest] = useState(false);
@@ -157,7 +170,8 @@ export const Resources: React.FC = () => {
 
             if (accountsData.length > 0) {
                 const accountIds = accountsData.map(a => a.id);
-                const allBatches = await resourcesService.getBulkBatchesForAccounts(accountIds);
+                const fetchedBatches = await resourcesService.getBulkBatchesForAccounts(accountIds);
+                setAllBatches(fetchedBatches);
 
                 const newBalances: Record<string, Record<string, number>> = {};
                 const newExpiry: Record<string, Record<string, string | null>> = {};
@@ -171,9 +185,7 @@ export const Resources: React.FC = () => {
                     });
                 });
 
-                // Batches are ordered by expires_at ASC (nulls last) so first hit per
-                // account+type has the earliest non-null expiry
-                allBatches.forEach(batch => {
+                fetchedBatches.forEach(batch => {
                     const { account_id, resource_type, quantity, expires_at } = batch;
                     if (!newBalances[account_id]) return;
                     newBalances[account_id][resource_type] = (newBalances[account_id][resource_type] || 0) + quantity;
@@ -200,22 +212,49 @@ export const Resources: React.FC = () => {
         setBatches(updated);
     };
 
-    // KPI totals
-    const totalSolidCubes  = accounts.reduce((sum, a) => sum + (accountBalances[a.id]?.solid_cubes || 0), 0);
+    // ---- KPI computed values ----
+
     const totalBrightCubes = accounts.reduce((sum, a) => sum + (accountBalances[a.id]?.bright_cubes || 0), 0);
     const totalBonusCubes  = accounts.reduce((sum, a) => sum + (accountBalances[a.id]?.bonus_bright_cubes || 0), 0);
 
-    // Count (account × resource) pairs with something expiring within 7 days
     const urgentExpiryCount = Object.values(accountEarliestExpiry).reduce((total, accountExpiry) =>
         total + Object.values(accountExpiry).filter(date => {
-            if (!date) return false;
-            const days = daysUntilExpiry(date);
-            return days !== null && days >= 0 && days <= 7;
+            const d = daysUntilExpiry(date);
+            return d !== null && d >= 0 && d <= 7;
         }).length, 0);
 
-    const solidCubeUrl  = resourceImages['solid_cubes'] || '';
+    const warningExpiryCount = Object.values(accountEarliestExpiry).reduce((total, accountExpiry) =>
+        total + Object.values(accountExpiry).filter(date => {
+            const d = daysUntilExpiry(date);
+            return d !== null && d >= 0 && d <= 30;
+        }).length, 0);
+
+    // ---- Expiry panel rows (flat list of all expiring batches within active threshold) ----
+
+    const expiryPanelRows: ExpiryDetailRow[] = activeExpiryFilter === null ? [] :
+        allBatches
+            .filter(batch => {
+                if (!batch.expires_at) return false;
+                const d = daysUntilExpiry(batch.expires_at);
+                return d !== null && d >= 0 && d <= activeExpiryFilter;
+            })
+            .map(batch => {
+                const account = accounts.find(a => a.id === batch.account_id);
+                return {
+                    accountNumber: account?.number ?? 0,
+                    accountTag:    account?.tag ?? null,
+                    resourceLabel: RESOURCE_LABELS[batch.resource_type],
+                    quantity:      batch.quantity,
+                    daysRemaining: daysUntilExpiry(batch.expires_at)!,
+                    expiresAt:     batch.expires_at!,
+                };
+            })
+            .sort((a, b) => a.daysRemaining - b.daysRemaining);
+
     const brightCubeUrl = resourceImages['bright_cubes'] || '';
     const bonusCubeUrl  = resourceImages['bonus_bright_cubes'] || '';
+
+    // ---- Table data ----
 
     const tableData: AccountResources[] = accounts.map(account => ({
         accountId:     account.id,
@@ -225,7 +264,20 @@ export const Resources: React.FC = () => {
         mesosB:        account.mesos_b || 0,
     })).sort((a, b) => a.accountNumber - b.accountNumber);
 
+    // Filtered to only accounts with an expiring resource within the active threshold
+    const filteredTableData = activeExpiryFilter === null
+        ? tableData
+        : tableData.filter(row =>
+            EXPIRING_RESOURCE_TYPES.some(rt => {
+                const d = daysUntilExpiry(accountEarliestExpiry[row.accountId]?.[rt] ?? null);
+                return d !== null && d >= 0 && d <= activeExpiryFilter;
+            })
+        );
+
     // ---- Handlers ----
+
+    const handleExpiryKPIClick = (days: 7 | 30) =>
+        setActiveExpiryFilter(prev => prev === days ? null : days);
 
     const handleEdit = async (row: AccountResources) => {
         setEditingAccount(row);
@@ -289,7 +341,7 @@ export const Resources: React.FC = () => {
         }
     };
 
-    const handleEditSharedChest = () => {
+    const handleEditGuildChest = () => {
         if (sharedChest) {
             setSharedChestValues({
                 mesos_stock: sharedChest.mesos_stock || 0,
@@ -299,7 +351,7 @@ export const Resources: React.FC = () => {
         setSharedChestModalOpen(true);
     };
 
-    const handleSaveSharedChest = async (e: React.FormEvent) => {
+    const handleSaveGuildChest = async (e: React.FormEvent) => {
         e.preventDefault();
         if (isSavingChest) return;
         setIsSavingChest(true);
@@ -331,28 +383,76 @@ export const Resources: React.FC = () => {
             <div className="page-content">
                 {/* KPIs */}
                 <div className="resources-kpis">
-                    <KPICard title="Total Solid Cubes" value={totalSolidCubes.toLocaleString()}
-                        icon={solidCubeUrl ? <img src={solidCubeUrl} alt="SC" style={{ width: '40px', height: '40px' }} /> : undefined}
-                        color="success" />
-                    <KPICard title="Total Bright Cubes" value={totalBrightCubes.toLocaleString()}
+                    <KPICard
+                        title="Total Bright Cubes"
+                        value={totalBrightCubes.toLocaleString()}
                         icon={brightCubeUrl ? <img src={brightCubeUrl} alt="BC" style={{ width: '40px', height: '40px' }} /> : undefined}
-                        color="primary" />
-                    <KPICard title="Total Bonus Bright" value={totalBonusCubes.toLocaleString()}
+                        color="primary"
+                    />
+                    <KPICard
+                        title="Total Bonus Bright"
+                        value={totalBonusCubes.toLocaleString()}
                         icon={bonusCubeUrl ? <img src={bonusCubeUrl} alt="BBC" style={{ width: '40px', height: '40px' }} /> : undefined}
-                        color="info" />
+                        color="info"
+                    />
                     <KPICard
                         title="Expiring ≤ 7 Days"
                         value={urgentExpiryCount.toLocaleString()}
                         icon={<span style={{ fontSize: '1.75rem', lineHeight: 1 }}>⚠</span>}
-                        color={urgentExpiryCount > 0 ? 'warning' : 'success'}
+                        color={urgentExpiryCount > 0 ? 'danger' : 'success'}
+                        onClick={() => handleExpiryKPIClick(7)}
+                        isActive={activeExpiryFilter === 7}
+                    />
+                    <KPICard
+                        title="Expiring ≤ 30 Days"
+                        value={warningExpiryCount.toLocaleString()}
+                        icon={<span style={{ fontSize: '1.75rem', lineHeight: 1 }}>📅</span>}
+                        color={warningExpiryCount > 0 ? 'warning' : 'success'}
+                        onClick={() => handleExpiryKPIClick(30)}
+                        isActive={activeExpiryFilter === 30}
                     />
                 </div>
 
-                {/* Shared Chest */}
+                {/* Expiry detail panel — visible when a filter KPI is active */}
+                {activeExpiryFilter !== null && (
+                    <div className="expiry-panel">
+                        <div className="expiry-panel__header">
+                            <span className="expiry-panel__title">
+                                {expiryPanelRows.length > 0
+                                    ? `${expiryPanelRows.length} batch${expiryPanelRows.length !== 1 ? 'es' : ''} expiring within ${activeExpiryFilter} days`
+                                    : `No batches expiring within ${activeExpiryFilter} days`
+                                }
+                            </span>
+                            <button className="expiry-panel__dismiss" onClick={() => setActiveExpiryFilter(null)}>
+                                Clear filter ✕
+                            </button>
+                        </div>
+                        {expiryPanelRows.length > 0 && (
+                            <div className="expiry-panel__list">
+                                {expiryPanelRows.map((row, i) => (
+                                    <div
+                                        key={i}
+                                        className={`expiry-panel__row expiry-panel__row--${row.daysRemaining <= 7 ? 'urgent' : 'warning'}`}
+                                    >
+                                        <span className="expiry-panel__account">
+                                            #{row.accountNumber}{row.accountTag ? ` · ${row.accountTag}` : ''}
+                                        </span>
+                                        <span className="expiry-panel__resource">{row.resourceLabel}</span>
+                                        <span className="expiry-panel__qty">{row.quantity.toLocaleString()}</span>
+                                        <span className="expiry-panel__days">{row.daysRemaining}d</span>
+                                        <span className="expiry-panel__date">{formatExpiryDate(row.expiresAt)}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Guild Chest */}
                 {sharedChest && (
                     <Card className="shared-chest-card mt-4" style={{ border: '1px solid #c084fc', background: 'linear-gradient(135deg, #3b0764 0%, #1e1b4b 100%)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <h4 style={{ margin: 0, color: '#e9d5ff', fontWeight: 700 }}>SHARED CHEST</h4>
+                            <h4 style={{ margin: 0, color: '#e9d5ff', fontWeight: 700 }}>🗄 GUILD CHEST</h4>
                             <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
                                 <div style={{ textAlign: 'center' }}>
                                     <span style={{ fontSize: '0.75rem', color: '#d8b4fe', display: 'block', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Mesos (B)</span>
@@ -362,7 +462,7 @@ export const Resources: React.FC = () => {
                                     <span style={{ fontSize: '0.75rem', color: '#d8b4fe', display: 'block', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Perfect Innoc.</span>
                                     <strong style={{ fontSize: '1.5rem', color: '#fff' }}>{sharedChest.perfect_innocence_stock || 0}</strong>
                                 </div>
-                                <Button size="sm" variant="ghost" onClick={handleEditSharedChest} style={{ color: '#e9d5ff' }}>Edit</Button>
+                                <Button size="sm" variant="ghost" onClick={handleEditGuildChest} style={{ color: '#e9d5ff' }}>Edit</Button>
                             </div>
                         </div>
                     </Card>
@@ -384,13 +484,16 @@ export const Resources: React.FC = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {tableData.length === 0 ? (
+                                {filteredTableData.length === 0 ? (
                                     <tr>
                                         <td colSpan={RESOURCE_GROUPS.length + 2} style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
-                                            No accounts found.
+                                            {activeExpiryFilter !== null
+                                                ? `No accounts have resources expiring within ${activeExpiryFilter} days.`
+                                                : 'No accounts found.'
+                                            }
                                         </td>
                                     </tr>
-                                ) : tableData.map(row => (
+                                ) : filteredTableData.map(row => (
                                     <tr key={row.accountId} className="res-tr">
                                         <td className="res-td res-td-account">
                                             <AccountCell number={row.accountNumber} email={row.accountEmail} tag={row.tag} />
@@ -439,7 +542,7 @@ export const Resources: React.FC = () => {
 
                     {/* Totals summary — grouped by category */}
                     <div className="batch-totals-groups">
-                        {RESOURCE_GROUPS.filter(g => g.key !== 'currency' || true).map(group => (
+                        {RESOURCE_GROUPS.map(group => (
                             <div key={group.key} className="batch-totals-group">
                                 <span className="batch-totals-group-label" style={{ color: group.color }}>{group.label}</span>
                                 <div className="batch-totals-chips">
@@ -579,9 +682,9 @@ export const Resources: React.FC = () => {
                 </div>
             </Modal>
 
-            {/* ---- SHARED CHEST MODAL ---- */}
-            <Modal isOpen={sharedChestModalOpen} onClose={() => setSharedChestModalOpen(false)} title="Edit Shared Chest">
-                <form onSubmit={handleSaveSharedChest} className="modal-form">
+            {/* ---- GUILD CHEST MODAL ---- */}
+            <Modal isOpen={sharedChestModalOpen} onClose={() => setSharedChestModalOpen(false)} title="Edit Guild Chest">
+                <form onSubmit={handleSaveGuildChest} className="modal-form">
                     <div className="premium-modal-container">
                         <div className="premium-input-row">
                             <div className="input-value-box">

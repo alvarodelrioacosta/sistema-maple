@@ -564,3 +564,115 @@
     flex-wrap: wrap;
     gap: 0.35rem;
 }
+
+/* =============================================
+   EXPIRY DETAIL PANEL
+   ============================================= */
+
+.expiry-panel {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    border-radius: var(--radius-lg, 12px);
+    overflow: hidden;
+}
+
+.expiry-panel__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 1rem;
+    background: rgba(245, 158, 11, 0.06);
+    border-bottom: 1px solid rgba(245, 158, 11, 0.12);
+}
+
+.expiry-panel__title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #fbbf24;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.expiry-panel__dismiss {
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    transition: color 0.15s;
+    font-family: inherit;
+}
+
+.expiry-panel__dismiss:hover {
+    color: #f87171;
+}
+
+.expiry-panel__list {
+    display: flex;
+    flex-direction: column;
+}
+
+.expiry-panel__row {
+    display: grid;
+    grid-template-columns: 140px 1fr auto auto auto;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.45rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    font-size: 0.82rem;
+}
+
+.expiry-panel__row:last-child {
+    border-bottom: none;
+}
+
+.expiry-panel__row--urgent {
+    background: rgba(239, 68, 68, 0.04);
+}
+
+.expiry-panel__row--warning {
+    background: rgba(245, 158, 11, 0.03);
+}
+
+.expiry-panel__account {
+    font-weight: 600;
+    color: #cbd5e1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.expiry-panel__resource {
+    color: #94a3b8;
+}
+
+.expiry-panel__qty {
+    font-weight: 700;
+    color: #e2e8f0;
+    text-align: right;
+    min-width: 50px;
+}
+
+.expiry-panel__days {
+    font-weight: 700;
+    min-width: 28px;
+    text-align: right;
+}
+
+.expiry-panel__row--urgent .expiry-panel__days {
+    color: #f87171;
+}
+
+.expiry-panel__row--warning .expiry-panel__days {
+    color: #fbbf24;
+}
+
+.expiry-panel__date {
+    color: #64748b;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    min-width: 90px;
+    text-align: right;
+}

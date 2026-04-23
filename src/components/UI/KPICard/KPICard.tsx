@@ -17,6 +17,8 @@ interface KPICardProps {
     color?: 'primary' | 'success' | 'warning' | 'danger' | 'info';
     className?: string;
     style?: React.CSSProperties;
+    onClick?: () => void;
+    isActive?: boolean;
 }
 
 export const KPICard: React.FC<KPICardProps> = ({
@@ -26,10 +28,17 @@ export const KPICard: React.FC<KPICardProps> = ({
     trend,
     color = 'primary',
     className = '',
-    style
+    style,
+    onClick,
+    isActive = false,
 }) => {
     return (
-        <Card className={`kpi-card kpi-card--${color} ${className}`} hover style={style}>
+        <Card
+            className={`kpi-card kpi-card--${color}${isActive ? ' kpi-card--active' : ''} ${className}`}
+            hover
+            style={style}
+            onClick={onClick}
+        >
             <div className="kpi-card__header">
                 {icon && <div className="kpi-card__icon">{icon}</div>}
                 <span className="kpi-card__title">{title}</span>
