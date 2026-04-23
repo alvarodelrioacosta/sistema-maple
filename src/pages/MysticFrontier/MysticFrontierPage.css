@@ -4,7 +4,39 @@
 }
 
 .mfp-header {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+/* ── Tab navigation ── */
+.mfp-tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding-bottom: 0;
+}
+
+.mfp-tab {
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: var(--color-text-muted);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  border-radius: 0;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.mfp-tab:hover {
+  color: var(--color-text-primary);
+}
+
+.mfp-tab.active {
+  color: var(--color-accent-primary, #7c3aed);
+  border-bottom-color: var(--color-accent-primary, #7c3aed);
 }
 
 .mfp-title {

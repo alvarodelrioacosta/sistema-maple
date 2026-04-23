@@ -24,7 +24,6 @@ import {
     Login,
     Bosses,
     MysticFrontierPage,
-    ExpeditionHistory,
 } from './pages';
 
 const ProtectedRoute: React.FC<{ children: React.ReactElement; adminOnly?: boolean }> = ({ children, adminOnly }) => {
@@ -78,7 +77,6 @@ function AppRoutes() {
                 <Route path="tasks" element={<ProtectedRoute adminOnly><Tasks /></ProtectedRoute>} />
                 <Route path="bosses" element={<ProtectedRoute adminOnly><Bosses /></ProtectedRoute>} />
                 <Route path="mystic-frontier" element={<ProtectedRoute adminOnly><MysticFrontierPage /></ProtectedRoute>} />
-                <Route path="expedition-history" element={<ProtectedRoute adminOnly><ExpeditionHistory /></ProtectedRoute>} />
                 <Route path="settings" element={<ProtectedRoute adminOnly><Settings /></ProtectedRoute>} />
             </Route>
         </Routes>

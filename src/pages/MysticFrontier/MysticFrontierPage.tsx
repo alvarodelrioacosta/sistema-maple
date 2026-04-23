@@ -6,6 +6,7 @@ import {
   getExpeditions,
   CUBE_RESOURCE_KEYS,
 } from '../../services/mysticFrontierService';
+import { ExpeditionHistory } from '../ExpeditionHistory/ExpeditionHistory';
 
 const FAM_BADGE_IMG = 'https://static.wikia.nocookie.net/maplestory/images/3/3d/FamiliarBadge_Void_Badge.png/revision/latest?cb=20200825222246';
 const USEFUL_FAMS_IMG = 'https://static.wikia.nocookie.net/maplestory/images/d/de/Use_Ascendion_Familiar.png/revision/latest?cb=20200822011947';
@@ -116,6 +117,7 @@ export const CharacterRow: React.FC<CharacterRowProps> = ({
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export const MysticFrontierPage: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'expeditions' | 'history'>('expeditions');
   const [characters, setCharacters] = useState<CharacterWithAccount[]>([]);
   const [expeditions, setExpeditions] = useState<Record<string, MysticFrontierExpedition[]>>({});
   const [cubeImages, setCubeImages] = useState<Record<MysticFrontierRewardType, string>>(
@@ -166,7 +168,24 @@ export const MysticFrontierPage: React.FC = () => {
         <p className="mfp-subtitle">Track expedition timers and rewards across all accounts</p>
       </div>
 
-      {loading ? (
+      <div className="mfp-tabs">
+        <button
+          className={`mfp-tab${activeTab === 'expeditions' ? ' active' : ''}`}
+          onClick={() => setActiveTab('expeditions')}
+        >
+          Expeditions
+        </button>
+        <button
+          className={`mfp-tab${activeTab === 'history' ? ' active' : ''}`}
+          onClick={() => setActiveTab('history')}
+        >
+          History
+        </button>
+      </div>
+
+      {activeTab === 'history' ? (
+        <ExpeditionHistory embedded />
+      ) : loading ? (
         <div className="mfp-loading">Loading expeditions…</div>
       ) : characters.length === 0 ? (
         <div className="mfp-empty">No main characters found.</div>

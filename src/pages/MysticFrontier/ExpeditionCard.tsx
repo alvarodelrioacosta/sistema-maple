@@ -102,7 +102,6 @@ export const ExpeditionCard: React.FC<ExpeditionCardProps> = ({
     try {
       const rewards: MysticFrontierRewardItem[] = [];
       for (const type of ALL_REWARD_TYPES) {
-        if (POUCH_REWARDS.has(type)) continue;
         if (CUBE_REWARDS.has(type)) {
           const qty = cubeQtys[type] ?? 0;
           if (qty > 0) rewards.push({ type, quantity: qty });
