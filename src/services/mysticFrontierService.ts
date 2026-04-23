@@ -191,7 +191,7 @@ export async function collectRewards(
       green_pouch: pouchQty('green_pouch'),
       exploration_started_at: explorationStartedAt,
       completed_at: now,
-    }, { onConflict: 'character_id,expedition_index,exploration_started_at' });
+    }, { onConflict: 'character_id,expedition_index,exploration_started_at', ignoreDuplicates: true });
   if (logError) throw logError;
 
   // Only write to reward history if there are non-pouch rewards to record

@@ -111,11 +111,15 @@ export const ExpeditionCard: React.FC<ExpeditionCardProps> = ({
       }
       await collectRewards(characterId, expeditionNumber, rewards, expedition.site_rank, accountId, expedition.exploration_started_at ?? new Date().toISOString());
       localStorage.removeItem(storageKey);
-      setShowRewardPicker(false);
       setCubeQtys({});
       setNonCubeChecked({});
+    } catch (err) {
+      console.error('collectRewards error:', err);
+    } finally {
+      setActionLoading(false);
+      setShowRewardPicker(false);
       onRefresh();
-    } finally { setActionLoading(false); }
+    }
   };
 
   const handleCompleteRest = async () => {
