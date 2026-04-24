@@ -124,8 +124,14 @@ export const ExpeditionCard: React.FC<ExpeditionCardProps> = ({
 
   const handleCompleteRest = async () => {
     setActionLoading(true);
-    try { await completeRest(characterId, expeditionNumber); onRefresh(); }
-    finally { setActionLoading(false); }
+    try {
+      await completeRest(characterId, expeditionNumber);
+      onRefresh();
+    } catch (err) {
+      console.error('completeRest error:', err);
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const handleReduceTime = async () => {

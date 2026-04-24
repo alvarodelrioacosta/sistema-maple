@@ -228,9 +228,9 @@ export async function collectRewards(
 export async function completeRest(
   characterId: string,
   expeditionIndex: 1 | 2 | 3,
-): Promise<MysticFrontierExpedition> {
+): Promise<void> {
   const now = new Date().toISOString();
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from('character_mystic_frontier_expeditions')
     .update({
       status: 'available',
@@ -239,11 +239,8 @@ export async function completeRest(
       updated_at: now,
     })
     .eq('character_id', characterId)
-    .eq('expedition_index', expeditionIndex)
-    .select()
-    .single();
+    .eq('expedition_index', expeditionIndex);
   if (error) throw error;
-  return data as MysticFrontierExpedition;
 }
 
 /** Shifts exploration_started_at or rest_started_at backwards by shiftMs to reduce remaining time. */
