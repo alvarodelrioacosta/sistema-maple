@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import supabase from '../../lib/supabase';
 import { SYMBOLS } from '../../constants/symbols';
 import type { Character } from '../../types';
@@ -111,16 +111,21 @@ const SymbolThumb: React.FC<{
 
 export const SymbolTracker: React.FC<Props> = ({ character, characterLevel, onUpdate, compact, noWrapper }) => {
     const [saving, setSaving] = useState<string | null>(null);
+    const saveTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
-    const handleChange = useCallback(async (sym: typeof SYMBOLS[0], raw: string) => {
+    const handleChange = useCallback((sym: typeof SYMBOLS[0], raw: string) => {
         const val = Math.min(sym.maxLevel, Math.max(0, parseInt(raw) || 0));
         onUpdate(sym.column, val);
-        setSaving(sym.column);
-        try {
-            await supabase.from('characters').update({ [sym.column]: val }).eq('id', character.id);
-        } finally {
-            setSaving(null);
-        }
+
+        clearTimeout(saveTimers.current[sym.column]);
+        saveTimers.current[sym.column] = setTimeout(async () => {
+            setSaving(sym.column);
+            try {
+                await supabase.from('characters').update({ [sym.column]: val }).eq('id', character.id);
+            } finally {
+                setSaving(null);
+            }
+        }, 600);
     }, [character.id, onUpdate]);
 
     const arcane = SYMBOLS.filter(s => s.type === 'arcane' && characterLevel >= s.unlockLevel);
