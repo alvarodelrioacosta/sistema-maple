@@ -247,7 +247,7 @@ export const ExpeditionCard: React.FC<ExpeditionCardProps> = ({
               background: 'rgba(255,255,255,0.04)',
               border: '1px solid rgba(255,255,255,0.12)',
               borderRadius: 'var(--radius-sm, 4px)',
-              color: 'var(--color-text-primary, #f8fafc)',
+              color: RANK_COLORS[selectedRank],
               padding: '0.3rem 0.5rem',
               fontSize: '0.85rem',
               width: '100%',
@@ -277,20 +277,30 @@ export const ExpeditionCard: React.FC<ExpeditionCardProps> = ({
             const selected = ALL_REWARD_TYPES.filter(type =>
               (CUBE_REWARDS.has(type) || POUCH_REWARDS.has(type)) ? (cubeQtys[type] ?? 0) > 0 : !!nonCubeChecked[type]
             );
+            if (selected.length > 0) {
+              return (
+                <div className="mf-active-rewards">
+                  {selected.map(type => {
+                    const meta = REWARD_METADATA[type];
+                    const imgSrc = CUBE_REWARDS.has(type) ? cubeImages[type] : meta.image_url;
+                    const qty = (CUBE_REWARDS.has(type) || POUCH_REWARDS.has(type)) ? (cubeQtys[type] ?? 0) : 1;
+                    return (
+                      <React.Fragment key={type}>
+                        {imgSrc && <img src={imgSrc} alt={meta.label} title={meta.label} className="mf-reward-img" style={{ width: 22, height: 22 }} />}
+                        {qty > 1 && <span style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)' }}>×{qty}</span>}
+                      </React.Fragment>
+                    );
+                  })}
+                </div>
+              );
+            }
             return (
-              <div className="mf-active-rewards">
-                {selected.map(type => {
-                  const meta = REWARD_METADATA[type];
-                  const imgSrc = CUBE_REWARDS.has(type) ? cubeImages[type] : meta.image_url;
-                  const qty = (CUBE_REWARDS.has(type) || POUCH_REWARDS.has(type)) ? (cubeQtys[type] ?? 0) : 1;
-                  return (
-                    <React.Fragment key={type}>
-                      {imgSrc && <img src={imgSrc} alt={meta.label} title={meta.label} className="mf-reward-img" style={{ width: 22, height: 22 }} />}
-                      {qty > 1 && <span style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)' }}>×{qty}</span>}
-                    </React.Fragment>
-                  );
-                })}
-              </div>
+              <>
+                <button className="mf-prereward-toggle" onClick={() => setPrePickerOpen(p => !p)}>
+                  {prePickerOpen ? '▾' : '▸'} Rewards
+                </button>
+                {prePickerOpen && renderRewardPicker(false)}
+              </>
             );
           })()}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
