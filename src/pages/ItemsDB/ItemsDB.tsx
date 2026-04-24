@@ -5,7 +5,7 @@
 import React, { useEffect, useState } from 'react';
 import { Header } from '../../components/Layout';
 import { Button, Table, Modal, Input, Card } from '../../components/UI';
-import { itemsDBService } from '../../services';
+import { itemsDBService, itemsService } from '../../services';
 import type { ItemDB, ItemDBInsert, ItemType } from '../../types';
 import type { Column } from '../../components/UI/Table';
 import '../Accounts/Accounts.css';
@@ -94,7 +94,11 @@ export const ItemsDB: React.FC = () => {
         e.preventDefault();
         try {
             if (editingItem) {
+                const oldName = editingItem.name;
                 await itemsDBService.update(editingItem.id, formData);
+                if (formData.name && formData.name !== oldName) {
+                    await itemsService.updateNameBulk(oldName, formData.name);
+                }
             } else {
                 await itemsDBService.create(formData);
             }

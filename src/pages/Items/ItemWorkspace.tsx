@@ -102,7 +102,13 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
 
     // ---- Modals ----
     const [resourceModal, setResourceModal] = useState<ResourceModalState | null>(null);
-    const [transferConfirm, setTransferConfirm] = useState<{ accountId: string; accountName: string } | null>(null);
+    const [transferConfirm, setTransferConfirm] = useState<{ accountId: string; accountName: string; characterId: string } | null>(null);
+
+    // ---- Selected character per account (pool panel) ----
+    const [selectedCharByAccount, setSelectedCharByAccount] = useState<Record<string, string>>({});
+
+    // ---- Delete item ----
+    const [deleteConfirm, setDeleteConfirm] = useState<boolean>(false);
 
     // ========================= INIT =========================
 
@@ -134,6 +140,23 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
             if (char) setItemAccountId(char.account_id);
         }
     }, [characters, editingItem.character_id]);
+
+    // Initialize selected character per account — default to Main, else first character
+    useEffect(() => {
+        if (characters.length === 0 || accounts.length === 0) return;
+        setSelectedCharByAccount(prev => {
+            const next = { ...prev };
+            accounts.forEach(acc => {
+                if (!next[acc.id]) {
+                    const main = characters.find(c => c.account_id === acc.id && c.main === 'Main');
+                    const first = characters.find(c => c.account_id === acc.id);
+                    const def = main || first;
+                    if (def) next[acc.id] = def.id;
+                }
+            });
+            return next;
+        });
+    }, [characters, accounts]);
 
     const loadData = async () => {
         setLoading(true);
@@ -588,9 +611,9 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
         if (!transferConfirm) return;
         setSaving(true);
         try {
-            const { accountId } = transferConfirm;
+            const { accountId, characterId } = transferConfirm;
             const accountChars = characters.filter(c => c.account_id === accountId);
-            const targetCharId = accountChars.length > 0 ? accountChars[0].id : null;
+            const targetCharId = characterId || (accountChars.length > 0 ? accountChars[0].id : null);
 
             const updates: any = { character_id: targetCharId };
             if (editingItem.tradeability === 'Tradeable Once') updates.tradeability = 'Untradeable';
@@ -648,6 +671,19 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
             showMessage('error', 'Error al procesar imagen');
         } finally {
             setOcrLoading(false);
+        }
+    };
+
+    // ========================= DELETE ITEM =========================
+
+    const handleDeleteItem = async () => {
+        setSaving(true);
+        try {
+            await itemsService.delete(initialItem.id);
+            onBack();
+        } catch (err: any) {
+            showMessage('error', err.message || 'Error al eliminar el item');
+            setSaving(false);
         }
     };
 
@@ -735,6 +771,9 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
             <div className="workspace-topbar">
                 <button className="workspace-back-btn" onClick={onBack}>
                     ← Items
+                </button>
+                <button className="workspace-delete-btn" onClick={() => setDeleteConfirm(true)} title="Eliminar item">
+                    🗑
                 </button>
 
                 {dbInfo.image ? (
@@ -1242,7 +1281,31 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                                 <div key={acc.id} className={`account-pool-row ${isCurrent ? 'is-current' : ''}`}>
                                     <div className="account-pool-row-header">
                                         <span className="pool-acc-number">#{acc.number}</span>
-                                        <span className="pool-acc-name">{getMainName(acc.id) || acc.email || acc.id.slice(0, 8)}</span>
+                                        {(() => {
+                                            const accChars = characters.filter(c => c.account_id === acc.id);
+                                            if (accChars.length === 0) {
+                                                return <span className="pool-acc-name">{acc.email || acc.id.slice(0, 8)}</span>;
+                                            }
+                                            const sorted = [...accChars].sort((a, b) => {
+                                                if (a.main === 'Main') return -1;
+                                                if (b.main === 'Main') return 1;
+                                                return a.name.localeCompare(b.name);
+                                            });
+                                            return (
+                                                <select
+                                                    className="pool-acc-name-select"
+                                                    value={selectedCharByAccount[acc.id] || ''}
+                                                    onChange={e => setSelectedCharByAccount(prev => ({ ...prev, [acc.id]: e.target.value }))}
+                                                    onClick={e => e.stopPropagation()}
+                                                >
+                                                    {sorted.map(char => (
+                                                        <option key={char.id} value={char.id}>
+                                                            {char.name}{char.main === 'Main' ? ' ★' : ''}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            );
+                                        })()}
                                         {isCurrent && <span className="pool-current-badge">Actual</span>}
                                     </div>
 
@@ -1298,7 +1361,15 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                                         ) : (
                                             <button
                                                 className="pool-action-btn transfer"
-                                                onClick={() => setTransferConfirm({ accountId: acc.id, accountName: getMainName(acc.id) || acc.email || `#${acc.number}` })}
+                                                onClick={() => {
+                                                    const selCharId = selectedCharByAccount[acc.id] || '';
+                                                    const selChar = characters.find(c => c.id === selCharId);
+                                                    setTransferConfirm({
+                                                        accountId: acc.id,
+                                                        accountName: selChar?.name || getMainName(acc.id) || acc.email || `#${acc.number}`,
+                                                        characterId: selCharId,
+                                                    });
+                                                }}
                                             >
                                                 ⇄ Transferir Item Aquí
                                             </button>
@@ -1368,6 +1439,22 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
 
                         <div className="ws-modal-cancel-row">
                             <Button variant="ghost" size="sm" onClick={() => setResourceModal(null)}>Cancelar</Button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ===== DELETE CONFIRM MODAL ===== */}
+            {deleteConfirm && (
+                <div className="ws-modal-overlay" onClick={() => setDeleteConfirm(false)}>
+                    <div className="ws-modal-box" onClick={e => e.stopPropagation()}>
+                        <h3>Eliminar Item</h3>
+                        <p className="transfer-confirm-text">
+                            ¿Estás seguro de que quieres eliminar <strong>{editingItem.name}</strong>? Esta acción no se puede deshacer.
+                        </p>
+                        <div className="session-actions-row">
+                            <Button variant="secondary" onClick={() => setDeleteConfirm(false)}>Cancelar</Button>
+                            <Button variant="danger" onClick={handleDeleteItem} loading={saving}>Eliminar</Button>
                         </div>
                     </div>
                 </div>

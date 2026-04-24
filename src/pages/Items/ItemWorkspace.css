@@ -43,6 +43,25 @@
     border-color: rgba(255, 255, 255, 0.2);
 }
 
+.workspace-delete-btn {
+    display: flex;
+    align-items: center;
+    padding: 0.4rem 0.6rem;
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: 6px;
+    color: #f87171;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.workspace-delete-btn:hover {
+    background: rgba(239, 68, 68, 0.18);
+    border-color: rgba(239, 68, 68, 0.5);
+}
+
 .workspace-item-info {
     display: flex;
     align-items: center;
@@ -836,6 +855,25 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.pool-acc-name-select {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 0;
+    appearance: auto;
+}
+
+.pool-acc-name-select option {
+    background: var(--color-bg-secondary, #1e1e2e);
+    color: var(--color-text-primary);
 }
 
 .pool-current-badge {

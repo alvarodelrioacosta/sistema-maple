@@ -9,6 +9,8 @@ interface SlotDef {
     capacity: number;
 }
 
+const RING_PINNED_LAST = new Set(['Ring of Restraint', 'Continuous Ring']);
+
 const EQUIPMENT_SLOTS: SlotDef[] = [
     { type: 'Ring',       label: 'Ring',       capacity: 4 },
     { type: 'Pendant',    label: 'Pendant',    capacity: 2 },
@@ -76,7 +78,14 @@ export const UseView: React.FC<UseViewProps> = ({
 
             const assignedByType: Partial<Record<ItemType, ItemWithCharacter[]>> = {};
             for (const slot of EQUIPMENT_SLOTS) {
-                const group = [...(byType[slot.type] ?? [])].sort((a, b) => a.name.localeCompare(b.name));
+                const group = [...(byType[slot.type] ?? [])].sort((a, b) => {
+                    if (slot.type === 'Ring') {
+                        const aLast = RING_PINNED_LAST.has(a.name);
+                        const bLast = RING_PINNED_LAST.has(b.name);
+                        if (aLast !== bLast) return aLast ? 1 : -1;
+                    }
+                    return a.name.localeCompare(b.name);
+                });
                 assignedByType[slot.type] = group.slice(0, slot.capacity);
                 for (const item of group.slice(slot.capacity)) {
                     overflow.push({ item, charName: char?.name ?? 'Unknown', type: slot.type, capacity: slot.capacity });

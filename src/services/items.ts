@@ -221,7 +221,16 @@ export const itemsService = {
             .eq('id', id);
 
         if (error) throw error;
-    }
+    },
+
+    async updateNameBulk(oldName: string, newName: string): Promise<void> {
+        const { error } = await supabase
+            .from('items')
+            .update({ name: newName })
+            .eq('name', oldName);
+
+        if (error) throw error;
+    },
 };
 
 export default itemsService;
