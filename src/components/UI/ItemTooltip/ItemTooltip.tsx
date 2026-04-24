@@ -17,7 +17,7 @@ const TIER_LETTER: Record<string, string> = {
     Rare: 'R',
 };
 
-export const ItemTooltip: React.FC<ItemTooltipProps> = ({ item, image, baseSlots, canStarforce, infiniteTrades }) => {
+export const ItemTooltip: React.FC<ItemTooltipProps> = ({ item, image, canStarforce, infiniteTrades }) => {
     const getTierClass = (tier?: PotentialTier | null) => tier ? `tier-${tier.toLowerCase()}` : '';
 
     return (
@@ -43,8 +43,8 @@ export const ItemTooltip: React.FC<ItemTooltipProps> = ({ item, image, baseSlots
 
             <div className="tooltip-meta">
                 {item.tradeability && <span>{item.tradeability}</span>}
-                {!infiniteTrades && baseSlots !== undefined && (
-                    <span>Slots: {baseSlots}</span>
+                {!infiniteTrades && item.remaining_trade_slots != null && (
+                    <span>Slots: {item.remaining_trade_slots}</span>
                 )}
             </div>
 
