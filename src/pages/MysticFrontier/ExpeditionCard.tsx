@@ -156,7 +156,7 @@ export const ExpeditionCard: React.FC<ExpeditionCardProps> = ({
     color: rankColor,
     border: `1px solid ${rankColor}55`,
     display: 'inline-block',
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
   };
 
   const renderRewardPicker = (isCollection: boolean) => {
@@ -277,7 +277,6 @@ export const ExpeditionCard: React.FC<ExpeditionCardProps> = ({
             const selected = ALL_REWARD_TYPES.filter(type =>
               (CUBE_REWARDS.has(type) || POUCH_REWARDS.has(type)) ? (cubeQtys[type] ?? 0) > 0 : !!nonCubeChecked[type]
             );
-            if (selected.length === 0) return null;
             return (
               <div className="mf-active-rewards">
                 {selected.map(type => {

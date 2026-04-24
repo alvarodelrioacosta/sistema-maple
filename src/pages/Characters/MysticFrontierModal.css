@@ -207,6 +207,8 @@
 .mf-active-rewards {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.25rem;
   flex-wrap: wrap;
+  min-height: 22px;
 }

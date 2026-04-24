@@ -18,7 +18,7 @@ export const RANK_COLORS: Record<MysticFrontierSiteRank, string> = {
   Rare:      '#4299e1',
   Epic:      '#9f7aea',
   Unique:    '#ed8936',
-  Legendary: '#d69e2e',
+  Legendary: '#2dbf9b',
 };
 
 // Maps resourcesService metadata keys → MysticFrontierRewardType for cube images
