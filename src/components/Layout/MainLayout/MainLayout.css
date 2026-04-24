@@ -5,7 +5,32 @@
 
 .layout__main {
     flex: 1;
-    margin-left: var(--sidebar-width);
+    margin-left: 0;
     background: var(--color-bg-primary);
     min-height: 100vh;
+}
+
+.sidebar-wrapper {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 8px;
+    z-index: calc(var(--z-sticky) + 1);
+}
+
+.sidebar-wrapper::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--color-accent-primary), var(--color-accent-secondary));
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+}
+
+.sidebar-wrapper:hover::before {
+    opacity: 0;
 }

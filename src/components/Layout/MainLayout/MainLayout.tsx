@@ -10,7 +10,9 @@ import './MainLayout.css';
 export const MainLayout: React.FC = () => {
     return (
         <div className="layout">
-            <Sidebar />
+            <div className="sidebar-wrapper">
+                <Sidebar />
+            </div>
             <main className="layout__main">
                 <Outlet />
             </main>

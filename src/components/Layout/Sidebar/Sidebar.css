@@ -9,6 +9,13 @@
     left: 0;
     top: 0;
     z-index: var(--z-sticky);
+    transform: translateX(calc(-1 * var(--sidebar-width)));
+    transition: transform 0.25s ease;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
+}
+
+.sidebar-wrapper:hover .sidebar {
+    transform: translateX(0);
 }
 
 .sidebar__clocks {
