@@ -198,14 +198,14 @@ export type ItemInsert = Omit<Item, 'id' | 'created_at'>;
 export type ItemUpdate = Partial<ItemInsert>;
 
 // ===== RESOURCES =====
-export type ResourceType = 'bright_cubes' | 'bonus_bright_cubes' | 'reward_points' | 'psok' | 'guardian_scroll' | 'solid_cubes' | 'perfect_innoc' | 'familiar_ring_box' | 'black_heart' | 'dawn_accessory_box' | 'pitched_boss_accessory_box';
+export type ResourceType = 'bright_cubes' | 'bonus_bright_cubes' | 'reward_points' | 'psok' | 'guardian_scroll' | 'solid_cubes' | 'perfect_innoc' | 'familiar_ring_box' | 'black_heart' | 'dawn_accessory_box' | 'pitched_boss_accessory_box' | 'pitched_star_core';
 
 // Resources tracked with per-batch expiry dates (excludes mesos_b and perfect_innoc)
-export type ExpiringResourceType = 'bright_cubes' | 'bonus_bright_cubes' | 'reward_points' | 'psok' | 'guardian_scroll' | 'solid_cubes' | 'familiar_ring_box' | 'black_heart' | 'dawn_accessory_box' | 'pitched_boss_accessory_box';
+export type ExpiringResourceType = 'bright_cubes' | 'bonus_bright_cubes' | 'reward_points' | 'psok' | 'guardian_scroll' | 'solid_cubes' | 'familiar_ring_box' | 'black_heart' | 'dawn_accessory_box' | 'pitched_boss_accessory_box' | 'pitched_star_core';
 
 export const EXPIRING_RESOURCE_TYPES: ExpiringResourceType[] = [
     'solid_cubes', 'bright_cubes', 'bonus_bright_cubes', 'reward_points', 'psok', 'guardian_scroll',
-    'familiar_ring_box', 'black_heart', 'dawn_accessory_box', 'pitched_boss_accessory_box'
+    'familiar_ring_box', 'black_heart', 'dawn_accessory_box', 'pitched_boss_accessory_box', 'pitched_star_core'
 ];
 
 export const RESOURCE_LABELS: Record<ExpiringResourceType, string> = {
@@ -218,7 +218,8 @@ export const RESOURCE_LABELS: Record<ExpiringResourceType, string> = {
     familiar_ring_box: 'Familiar Box',
     black_heart: 'Black Heart',
     dawn_accessory_box: 'Dawn Accessory Box',
-    pitched_boss_accessory_box: 'Pitched Boss Acc. Box'
+    pitched_boss_accessory_box: 'Pitched Boss Acc. Box',
+    pitched_star_core: 'Pitched Star Core',
 };
 
 export interface ResourceBatch {
@@ -517,6 +518,7 @@ export type MysticFrontierStatus = 'available' | 'exploring' | 'resting';
 export type MysticFrontierRewardType =
   | 'familiar_ring_box'
   | 'pitched_boss_accessory_box'
+  | 'pitched_star_core'
   | 'black_heart'
   | 'dawn_accessory_box'
   | 'purple_pouch'

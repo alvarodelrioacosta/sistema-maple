@@ -45,7 +45,13 @@ export const REWARD_TO_RESOURCE: Partial<Record<MysticFrontierRewardType, Expiri
   black_heart:                'black_heart',
   dawn_accessory_box:         'dawn_accessory_box',
   pitched_boss_accessory_box: 'pitched_boss_accessory_box',
+  pitched_star_core:          'pitched_star_core',
 };
+
+// Rewards that never expire — addBatch receives null for expires_at
+export const NO_EXPIRY_REWARDS = new Set<MysticFrontierRewardType>([
+  'pitched_star_core',
+]);
 
 // Non-cube rewards use checkbox (quantity always 1).
 // Cube rewards (karma_*_cubes) use number input 0-10.
@@ -66,6 +72,7 @@ export const POUCH_REWARDS = new Set<MysticFrontierRewardType>([
 export const REWARD_METADATA: Record<MysticFrontierRewardType, { label: string; image_url: string }> = {
   familiar_ring_box:           { label: 'Familiar Ring Box',            image_url: 'https://g.nexonstatic.com/media/ocifg5cz/bright-familiar-ring-box.png' },
   pitched_boss_accessory_box:  { label: 'Pitched Boss Accessory Box',   image_url: 'https://g.nexonstatic.com/media/lizna4vx/chaos-pitched-accessory-box.png' },
+  pitched_star_core:           { label: 'Pitched Star Core',            image_url: 'https://raw.githubusercontent.com/alvarodelrioacosta/maplestory-assets/refs/heads/main/Pitched%20Star%20Core.png' },
   black_heart:                 { label: 'Black Heart',                  image_url: 'https://g.nexonstatic.com/media/nqjlkgtg/damaged-black-heart-coupon.png' },
   dawn_accessory_box:          { label: 'Dawn Accessory Box',           image_url: 'https://g.nexonstatic.com/media/raagpngb/resonant-dawn-accessory-box.png' },
   purple_pouch:                { label: 'Purple Pouch',                 image_url: 'https://raw.githubusercontent.com/alvarodelrioacosta/maplestory-assets/refs/heads/main/Purple%20Pouch.png' },
@@ -211,7 +218,7 @@ export async function collectRewards(
 
   const expiry = new Date();
   expiry.setDate(expiry.getDate() + 21);
-  const expiresAt = expiry.toISOString().split('T')[0];
+  const defaultExpiresAt = expiry.toISOString().split('T')[0];
 
   await Promise.all(
     nonPouchRewards
@@ -219,7 +226,7 @@ export async function collectRewards(
         accountId,
         REWARD_TO_RESOURCE[r.type]!,
         r.quantity,
-        expiresAt,
+        NO_EXPIRY_REWARDS.has(r.type) ? null : defaultExpiresAt,
         CUBE_REWARDS.has(r.type),
       )),
   );

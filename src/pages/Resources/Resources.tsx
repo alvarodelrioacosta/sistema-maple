@@ -25,7 +25,7 @@ const RESOURCE_GROUPS: ResourceGroupDef[] = [
     { key: 'cubes',    label: 'Cubes',           color: '#4ade80', resources: ['solid_cubes', 'bright_cubes', 'bonus_bright_cubes'] },
     { key: 'currency', label: 'Currency',         color: '#fbbf24', resources: ['reward_points', 'mesos_b'] },
     { key: 'nx',       label: 'NX',               color: '#60a5fa', resources: ['psok', 'guardian_scroll'] },
-    { key: 'mystic',   label: 'Mystic Frontier',  color: '#c084fc', resources: ['familiar_ring_box', 'black_heart', 'dawn_accessory_box', 'pitched_boss_accessory_box'] },
+    { key: 'mystic',   label: 'Mystic Frontier',  color: '#c084fc', resources: ['familiar_ring_box', 'black_heart', 'dawn_accessory_box', 'pitched_boss_accessory_box', 'pitched_star_core'] },
 ];
 
 const SHORT_LABELS: Record<GroupResourceKey, string> = {
@@ -40,6 +40,7 @@ const SHORT_LABELS: Record<GroupResourceKey, string> = {
     black_heart:                 'B. Heart',
     dawn_accessory_box:          'Dawn Box',
     pitched_boss_accessory_box:  'PB Box',
+    pitched_star_core:           'Star Core',
 };
 
 // ---- Data types ----
