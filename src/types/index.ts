@@ -140,7 +140,7 @@ export type CharacterUpdate = Partial<CharacterInsert>;
 
 // ===== ITEMS DB (Catálogo de ítems) =====
 // ===== ITEMS DB (Catálogo de ítems) =====
-export type ItemType = 'Hat' | 'Top' | 'Bottom' | 'Gloves' | 'Shoes' | 'Cape' | 'Belt' | 'Shoulder' | 'Face Acc.' | 'Eye Acc.' | 'Ring' | 'Earring' | 'Pendant' | 'Weapon' | 'Secondary' | 'Emblem' | 'Heart' | 'Pocket' | 'Badge';
+export type ItemType = 'Hat' | 'Top' | 'Bottom' | 'Gloves' | 'Shoes' | 'Cape' | 'Belt' | 'Shoulder' | 'Face Acc.' | 'Eye Acc.' | 'Ring' | 'Earring' | 'Pendant' | 'Weapon' | 'Secondary' | 'Emblem' | 'Heart' | 'Pocket' | 'Badge' | 'Totem' | 'Medal';
 
 export interface ItemDB {
     id: string;

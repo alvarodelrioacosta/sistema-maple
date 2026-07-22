@@ -29,7 +29,11 @@ const ITEM_TYPES: { value: ItemType; label: string }[] = [
     { value: 'Weapon', label: 'Weapon' },
     { value: 'Secondary', label: 'Secondary' },
     { value: 'Emblem', label: 'Emblem' },
-    { value: 'Heart', label: 'Heart' }
+    { value: 'Heart', label: 'Heart' },
+    { value: 'Pocket', label: 'Pocket' },
+    { value: 'Badge', label: 'Badge' },
+    { value: 'Totem', label: 'Totem' },
+    { value: 'Medal', label: 'Medal' },
 ];
 
 export const ItemsDB: React.FC = () => {
