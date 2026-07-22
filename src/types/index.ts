@@ -4,6 +4,8 @@
 // =============================================
 
 // ===== ACCOUNTS =====
+export type AccountStatus = 'owned' | 'sold' | 'banned';
+
 export interface Account {
     id: string;
     number: number;
@@ -13,7 +15,7 @@ export interface Account {
     created_at: string;
     legion_artifact: boolean;
     legion_artifact_level: number | null;
-    owned: boolean;
+    status: AccountStatus;
 }
 
 export interface SharedInventory {
@@ -22,10 +24,10 @@ export interface SharedInventory {
     perfect_innocence_stock: number;
 }
 
-export type AccountInsert = Omit<Account, 'id' | 'created_at' | 'legion_artifact' | 'legion_artifact_level' | 'owned'> & {
+export type AccountInsert = Omit<Account, 'id' | 'created_at' | 'legion_artifact' | 'legion_artifact_level' | 'status'> & {
     legion_artifact?: boolean;
     legion_artifact_level?: number | null;
-    owned?: boolean;
+    status?: AccountStatus;
 };
 export type AccountUpdate = Partial<AccountInsert>;
 

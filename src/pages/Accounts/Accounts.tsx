@@ -9,7 +9,7 @@ import React, { useEffect, useState } from 'react';
 import { Header } from '../../components/Layout';
 import { Button, Table, Modal, Input, Card } from '../../components/UI';
 import { accountsService } from '../../services';
-import type { Account, AccountInsert } from '../../types';
+import type { Account, AccountInsert, AccountStatus } from '../../types';
 import type { Column } from '../../components/UI/Table';
 import './Accounts.css';
 
@@ -23,7 +23,7 @@ export const Accounts: React.FC = () => {
         email: '',
         tag: '',
         mesos_b: 0,
-        owned: true
+        status: 'owned'
     });
 
     useEffect(() => {
@@ -49,18 +49,18 @@ export const Accounts: React.FC = () => {
                 email: account.email || '',
                 tag: account.tag || '',
                 mesos_b: account.mesos_b || 0,
-                owned: account.owned
+                status: account.status
             });
         } else {
             setEditingAccount(null);
-            const ownedAccounts = accounts.filter(a => a.owned);
+            const ownedAccounts = accounts.filter(a => a.status === 'owned');
             const maxNumber = ownedAccounts.length > 0 ? Math.max(...ownedAccounts.map(a => a.number)) : 0;
             setFormData({
                 number: maxNumber + 1,
                 email: '',
                 tag: '',
                 mesos_b: 0,
-                owned: true
+                status: 'owned'
             });
         }
         setModalOpen(true);
@@ -69,21 +69,23 @@ export const Accounts: React.FC = () => {
     const handleCloseModal = () => {
         setModalOpen(false);
         setEditingAccount(null);
-        setFormData({ number: 0, email: '', tag: '', mesos_b: 0, owned: true });
+        setFormData({ number: 0, email: '', tag: '', mesos_b: 0, status: 'owned' });
     };
 
-    const handleOwnershipToggle = (value: boolean) => {
-        if (!value) {
-            // Moving to sold: assign a 999+ number
-            const soldAccounts = accounts.filter(a => !a.owned);
-            const soldNumbers = soldAccounts.map(a => a.number);
+    const handleStatusChange = (status: AccountStatus) => {
+        if (status === 'sold') {
+            // Sold: assign a 999+ number
+            const soldNumbers = accounts.filter(a => a.status === 'sold').map(a => a.number);
             const nextSoldNumber = soldNumbers.length > 0 ? Math.max(...soldNumbers) + 1 : 999;
-            setFormData(prev => ({ ...prev, owned: false, number: nextSoldNumber }));
-        } else {
-            // Reclaiming: assign next owned number
-            const ownedAccounts = accounts.filter(a => a.owned && a.id !== editingAccount?.id);
+            setFormData(prev => ({ ...prev, status, number: nextSoldNumber }));
+        } else if (status === 'owned') {
+            // Owned: assign next owned number
+            const ownedAccounts = accounts.filter(a => a.status === 'owned' && a.id !== editingAccount?.id);
             const maxNumber = ownedAccounts.length > 0 ? Math.max(...ownedAccounts.map(a => a.number)) : 0;
-            setFormData(prev => ({ ...prev, owned: true, number: maxNumber + 1 }));
+            setFormData(prev => ({ ...prev, status, number: maxNumber + 1 }));
+        } else {
+            // Banned: keep the current number, just hide it everywhere
+            setFormData(prev => ({ ...prev, status }));
         }
     };
 
@@ -122,7 +124,7 @@ export const Accounts: React.FC = () => {
                 await accountsService.update(mainAccount.id, { number: 0 });
             }
             const toReorder = accounts
-                .filter(a => a.owned && a.email !== MAIN_ACCOUNT_EMAIL)
+                .filter(a => a.status === 'owned' && a.email !== MAIN_ACCOUNT_EMAIL)
                 .sort((a, b) => a.number - b.number);
             for (let i = 0; i < toReorder.length; i++) {
                 await accountsService.update(toReorder[i].id, { number: i + 1 });
@@ -138,11 +140,13 @@ export const Accounts: React.FC = () => {
         { key: 'email', header: 'Email', render: (a) => a.email || '-' },
         { key: 'tag', header: 'Tag', render: (a) => a.tag ? <span className="tag">{a.tag}</span> : '-' },
         {
-            key: 'owned',
+            key: 'status',
             header: 'Estado',
-            render: (a) => a.owned
-                ? <span className="tag tag--owned">Propia</span>
-                : <span className="tag tag--sold">Vendida</span>
+            render: (a) => {
+                if (a.status === 'owned') return <span className="tag tag--owned">Propia</span>;
+                if (a.status === 'sold') return <span className="tag tag--sold">Vendida</span>;
+                return <span className="tag tag--banned">Baneada</span>;
+            }
         },
         {
             key: 'created_at',
@@ -181,7 +185,7 @@ export const Accounts: React.FC = () => {
                         keyExtractor={(a) => a.id}
                         loading={loading}
                         emptyMessage="No accounts yet. Create your first one!"
-                        rowClassName={(a) => a.owned ? '' : 'row--sold'}
+                        rowClassName={(a) => a.status === 'banned' ? 'row--banned' : a.status === 'sold' ? 'row--sold' : ''}
                     />
                 </Card>
             </div>
@@ -214,16 +218,25 @@ export const Accounts: React.FC = () => {
                     />
                     <div className="ownership-toggle">
                         <label className="ownership-toggle__label">
-                            <input
-                                type="checkbox"
-                                checked={formData.owned ?? true}
-                                onChange={(e) => handleOwnershipToggle(e.target.checked)}
-                            />
-                            <span>Cuenta propia</span>
+                            <span>Estado</span>
+                            <select
+                                value={formData.status ?? 'owned'}
+                                onChange={(e) => handleStatusChange(e.target.value as AccountStatus)}
+                            >
+                                <option value="owned">Propia</option>
+                                <option value="sold">Vendida</option>
+                                <option value="banned">Baneada</option>
+                            </select>
                         </label>
-                        {!(formData.owned ?? true) && (
+                        {formData.status === 'sold' && (
                             <p className="ownership-toggle__hint">
-                                Esta cuenta está marcada como vendida. Se le asignó el número {formData.number}.
+                                Cuenta vendida. Se le asignó el número {formData.number}.
+                            </p>
+                        )}
+                        {formData.status === 'banned' && (
+                            <p className="ownership-toggle__hint ownership-toggle__hint--danger">
+                                Baneada: se oculta de todo el app (personajes, items, recursos, sesiones)
+                                y de todos los totales. No se borra nada — es reversible.
                             </p>
                         )}
                     </div>
