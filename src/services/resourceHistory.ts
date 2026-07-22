@@ -40,11 +40,13 @@ export const resourceHistoryService = {
     async getAll(): Promise<ResourceUsageHistory[]> {
         const { data, error } = await supabase
             .from('resource_usage_history')
-            .select('*')
+            .select('*, account:accounts(status)')
             .order('created_at', { ascending: false });
 
         if (error) throw error;
-        return data || [];
+        return ((data as any[]) || []).filter(
+            (row) => !row.account || row.account.status !== 'banned'
+        );
     },
 
     /**

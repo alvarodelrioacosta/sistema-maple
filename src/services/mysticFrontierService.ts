@@ -280,7 +280,8 @@ export async function getRewardHistory(characterId: string): Promise<MysticFront
 export async function getAllRewardHistory(): Promise<MysticFrontierRewardEntry[]> {
   const { data, error } = await supabase
     .from('mystic_frontier_reward_history')
-    .select('*')
+    .select('*, character:characters!inner(account:accounts!inner(status))')
+    .neq('character.account.status', 'banned')
     .order('collected_at', { ascending: false });
   if (error) throw error;
   return (data ?? []) as MysticFrontierRewardEntry[];
@@ -289,7 +290,8 @@ export async function getAllRewardHistory(): Promise<MysticFrontierRewardEntry[]
 export async function getAllExpeditionLog(): Promise<MysticFrontierExpeditionLog[]> {
   const { data, error } = await supabase
     .from('mystic_frontier_expedition_log')
-    .select('*')
+    .select('*, character:characters!inner(account:accounts!inner(status))')
+    .neq('character.account.status', 'banned')
     .order('completed_at', { ascending: false });
   if (error) throw error;
   return (data ?? []) as MysticFrontierExpeditionLog[];
