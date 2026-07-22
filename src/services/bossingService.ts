@@ -45,8 +45,9 @@ export const bossingService = {
     async getWeekSessions(weekStart: string): Promise<BossingSession[]> {
         const { data, error } = await supabase
             .from('bossing_sessions')
-            .select('*')
-            .eq('week_start', weekStart);
+            .select('*, account:accounts!inner(status)')
+            .eq('week_start', weekStart)
+            .neq('account.status', 'banned');
         if (error) throw error;
         return (data || []) as BossingSession[];
     },

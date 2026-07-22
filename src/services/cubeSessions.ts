@@ -6,7 +6,8 @@ export const cubeSessionsService = {
     async getAll(): Promise<CubeSession[]> {
         const { data, error } = await supabase
             .from('cube_sessions')
-            .select('*')
+            .select('*, account:accounts!inner(status)')
+            .neq('account.status', 'banned')
             .order('created_at', { ascending: false });
 
         if (error) throw error;
