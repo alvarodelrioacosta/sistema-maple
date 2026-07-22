@@ -89,6 +89,14 @@ export const itemsService = {
         return data;
     },
 
+    async updateSlotIndexes(updates: { id: string; slot_index: number }[]): Promise<void> {
+        await Promise.all(
+            updates.map(u =>
+                supabase.from('items').update({ slot_index: u.slot_index }).eq('id', u.id)
+            )
+        );
+    },
+
     async transferToCharacter(itemId: string, characterId: string | null): Promise<Item> {
         const { data, error } = await supabase
             .from('items')

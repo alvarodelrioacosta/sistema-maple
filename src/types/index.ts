@@ -193,6 +193,8 @@ export interface Item {
     delivered: boolean;
     ah_listed_at: string | null;
     is_favorite?: boolean;
+    slot_index?: number | null;
+    ring_level?: number | null;
     created_at: string;
 }
 
