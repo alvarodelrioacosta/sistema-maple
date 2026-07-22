@@ -67,8 +67,7 @@
 .equip-window__char {
     grid-area: ch;
     border-radius: var(--radius-lg);
-    background: var(--color-bg-tertiary);
-    border: 1px solid var(--color-border);
+    background: transparent;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -85,7 +84,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.25);
+    background: transparent;
 }
 .equip-window__char-avatar img {
     width: 100%;
