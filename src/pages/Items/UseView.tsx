@@ -187,7 +187,11 @@ export const UseView: React.FC<UseViewProps> = ({
                     <div className="use-conflicts-title">⚠ Slot conflicts</div>
                     <div className="use-conflicts-list">
                         {overflow.map(({ item, type, capacity }) => (
-                            <div key={item.id} className="use-conflict-item">
+                            <div
+                                key={item.id}
+                                className="use-conflict-item"
+                                onClick={() => onEdit(item)}
+                            >
                                 <span className="use-conflict-name">{item.name}</span>
                                 <span className="use-conflict-warning">
                                     Only {capacity} {type} slot{capacity > 1 ? 's' : ''}

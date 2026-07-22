@@ -121,6 +121,13 @@
     align-items: center;
     gap: var(--spacing-sm);
     font-size: var(--font-size-sm);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    padding: 2px 4px;
+    transition: background var(--transition-fast);
+}
+.use-conflict-item:hover {
+    background: rgba(245, 158, 11, 0.10);
 }
 .use-conflict-name {
     font-weight: var(--font-weight-semibold);
