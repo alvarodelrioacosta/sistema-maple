@@ -205,7 +205,10 @@ export const charactersService = {
     }): Promise<{ synced: number; failed: number; skipped: number }> {
         const { accountId, onProgress } = options || {};
 
-        let query = supabase.from('characters').select('id, name, account_id, main, last_synced_at');
+        let query = supabase
+            .from('characters')
+            .select('id, name, account_id, main, last_synced_at, account:accounts!inner(status)')
+            .neq('account.status', 'banned');
         if (accountId) query = query.eq('account_id', accountId);
 
         const { data: chars, error } = await query;

@@ -216,8 +216,8 @@ export const Accounts: React.FC = () => {
                         onChange={(e) => setFormData({ ...formData, tag: e.target.value })}
                         placeholder="e.g. Main, Alt, Mule"
                     />
-                    <div className="ownership-toggle">
-                        <label className="ownership-toggle__label">
+                    <div className="status-field">
+                        <label className="status-field__label">
                             <span>Estado</span>
                             <select
                                 value={formData.status ?? 'owned'}
@@ -229,12 +229,12 @@ export const Accounts: React.FC = () => {
                             </select>
                         </label>
                         {formData.status === 'sold' && (
-                            <p className="ownership-toggle__hint">
+                            <p className="status-field__hint">
                                 Cuenta vendida. Se le asignó el número {formData.number}.
                             </p>
                         )}
                         {formData.status === 'banned' && (
-                            <p className="ownership-toggle__hint ownership-toggle__hint--danger">
+                            <p className="status-field__hint status-field__hint--danger">
                                 Baneada: se oculta de todo el app (personajes, items, recursos, sesiones)
                                 y de todos los totales. No se borra nada — es reversible.
                             </p>

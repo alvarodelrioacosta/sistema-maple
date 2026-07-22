@@ -46,13 +46,13 @@
     opacity: 0.5;
 }
 
-.ownership-toggle {
+.status-field {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-xs);
 }
 
-.ownership-toggle__label {
+.status-field__label {
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
@@ -60,7 +60,7 @@
     font-size: var(--font-size-sm);
 }
 
-.ownership-toggle__hint {
+.status-field__hint {
     font-size: var(--font-size-xs);
     color: var(--color-text-muted);
     margin: 0;
@@ -75,11 +75,11 @@
     text-decoration: line-through;
 }
 
-.ownership-toggle__hint--danger {
+.status-field__hint--danger {
     color: var(--color-danger, #ef4444);
 }
 
-.ownership-toggle__label select {
+.status-field__label select {
     padding: 4px 8px;
     border-radius: var(--radius-md, 6px);
     border: 1px solid var(--color-border, #33333a);
