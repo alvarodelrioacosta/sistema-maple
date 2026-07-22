@@ -157,8 +157,9 @@ export const eventsService = {
     async getDailyProgress(eventId: string, date?: string, startDate?: string, endDate?: string): Promise<EventDailyProgress[]> {
         let query = supabase
             .from('event_daily_progress')
-            .select('*')
-            .eq('event_id', eventId);
+            .select('*, account:accounts!inner(status)')
+            .eq('event_id', eventId)
+            .neq('account.status', 'banned');
 
         if (date) {
             query = query.eq('date', date);
@@ -204,8 +205,9 @@ export const eventsService = {
     async getDailyClaims(eventId: string): Promise<EventDailyClaim[]> {
         const { data, error } = await supabase
             .from('event_daily_claims')
-            .select('*')
+            .select('*, account:accounts!inner(status)')
             .eq('event_id', eventId)
+            .neq('account.status', 'banned')
             .limit(5000);
 
         if (error) throw error;
@@ -272,8 +274,9 @@ export const eventsService = {
     async getBossingProgress(eventId: string): Promise<EventBossingProgress[]> {
         const { data, error } = await supabase
             .from('event_bossing_progress')
-            .select('*')
+            .select('*, account:accounts!inner(status)')
             .eq('event_id', eventId)
+            .neq('account.status', 'banned')
             .limit(5000);
 
         if (error) throw error;
@@ -333,8 +336,9 @@ export const eventsService = {
     async getShopPurchases(eventId: string): Promise<EventShopPurchase[]> {
         const { data, error } = await supabase
             .from('event_shop_purchases')
-            .select('*')
+            .select('*, account:accounts!inner(status)')
             .eq('event_id', eventId)
+            .neq('account.status', 'banned')
             .limit(5000);
 
         if (error) throw error;
@@ -500,8 +504,9 @@ export const eventsService = {
         if (eventIds.length === 0) return [];
         const { data, error } = await supabase
             .from('event_account_progress')
-            .select('*')
-            .in('event_id', eventIds);
+            .select('*, account:accounts!inner(status)')
+            .in('event_id', eventIds)
+            .neq('account.status', 'banned');
         if (error) throw error;
         return data || [];
     },
