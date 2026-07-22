@@ -90,11 +90,13 @@ export const itemsService = {
     },
 
     async updateSlotIndexes(updates: { id: string; slot_index: number }[]): Promise<void> {
-        await Promise.all(
+        const results = await Promise.all(
             updates.map(u =>
                 supabase.from('items').update({ slot_index: u.slot_index }).eq('id', u.id)
             )
         );
+        const failed = results.find(r => r.error);
+        if (failed?.error) throw failed.error;
     },
 
     async transferToCharacter(itemId: string, characterId: string | null): Promise<Item> {
