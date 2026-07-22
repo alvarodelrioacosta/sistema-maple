@@ -27,3 +27,6 @@ Thumbs.db
 # Java (from previous project)
 *.class
 bin/
+
+# MCP config con tokens en texto plano
+.mcp.json
