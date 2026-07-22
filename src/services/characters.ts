@@ -13,8 +13,9 @@ export const charactersService = {
             .from('characters')
             .select(`
         *,
-        account:accounts(*)
+        account:accounts!inner(*)
       `)
+            .neq('account.status', 'banned')
             .order('created_at', { ascending: false });
 
         if (error) throw error;
@@ -24,8 +25,9 @@ export const charactersService = {
     async getMainCharacters(): Promise<Character[]> {
         const { data, error } = await supabase
             .from('characters')
-            .select('*')
-            .eq('main', 'Main');
+            .select('*, account:accounts!inner(status)')
+            .eq('main', 'Main')
+            .neq('account.status', 'banned');
 
         if (error) throw error;
         return data || [];
