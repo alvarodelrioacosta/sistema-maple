@@ -32,7 +32,7 @@ export const Accounts: React.FC = () => {
 
     const loadAccounts = async () => {
         try {
-            const data = await accountsService.getAll();
+            const data = await accountsService.getAll({ includeBanned: true });
             setAccounts(data);
         } catch (error) {
             console.error('Error loading accounts:', error);

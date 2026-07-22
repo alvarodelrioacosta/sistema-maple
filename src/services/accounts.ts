@@ -6,12 +6,17 @@ import supabase from '../lib/supabase';
 import type { Account, AccountInsert, AccountUpdate } from '../types';
 
 export const accountsService = {
-    async getAll(): Promise<Account[]> {
-        const { data, error } = await supabase
+    async getAll(opts?: { includeBanned?: boolean }): Promise<Account[]> {
+        let query = supabase
             .from('accounts')
             .select('*')
             .order('number', { ascending: true });
 
+        if (!opts?.includeBanned) {
+            query = query.neq('status', 'banned');
+        }
+
+        const { data, error } = await query;
         if (error) throw error;
         return data || [];
     },
@@ -62,7 +67,8 @@ export const accountsService = {
     async getTotalMesos(): Promise<number> {
         const { data, error } = await supabase
             .from('accounts')
-            .select('mesos_b');
+            .select('mesos_b')
+            .neq('status', 'banned');
 
         if (error) throw error;
         return data?.reduce((sum, acc) => sum + (acc.mesos_b || 0), 0) || 0;
