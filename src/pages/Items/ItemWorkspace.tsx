@@ -41,6 +41,18 @@ const TRADEABILITY_OPTIONS = [
     { value: 'Untradeable', label: 'Untradeable' },
 ];
 
+const LEVELED_RINGS = new Set(['Ring of Restraint', 'Continuous Ring']);
+
+const RING_LEVEL_OPTIONS = [
+    { value: '', label: '—' },
+    { value: '1', label: '1' },
+    { value: '2', label: '2' },
+    { value: '3', label: '3' },
+    { value: '4', label: '4' },
+    { value: '5', label: '5' },
+    { value: '6', label: '6' },
+];
+
 // ========================= TYPES =========================
 
 interface ResourceModalState {
@@ -348,6 +360,7 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                 tradeability: editingItem.tradeability,
                 remaining_trade_slots: editingItem.remaining_trade_slots,
                 star_force: editingItem.star_force,
+                ring_level: editingItem.ring_level ?? null,
             });
 
             const client = getActiveClient();
@@ -1121,6 +1134,24 @@ export const ItemWorkspace: React.FC<Props> = ({ item: initialItem, onBack }) =>
                                     ) : (
                                         <span className="premium-editable" onClick={() => setEditingField('remaining_trade_slots')}>
                                             Slots: {editingItem.remaining_trade_slots ?? 0}
+                                        </span>
+                                    )
+                                )}
+
+                                {LEVELED_RINGS.has(editingItem.name ?? '') && (
+                                    editingField === 'ring_level' ? (
+                                        <Select
+                                            autoFocus
+                                            value={editingItem.ring_level != null ? String(editingItem.ring_level) : ''}
+                                            onChange={v => {
+                                                setEditingItem(prev => ({ ...prev, ring_level: v ? parseInt(v) : null }));
+                                                setEditingField(null);
+                                            }}
+                                            options={RING_LEVEL_OPTIONS}
+                                        />
+                                    ) : (
+                                        <span className="premium-editable" onClick={() => setEditingField('ring_level')}>
+                                            Ring Lv: {editingItem.ring_level ?? '—'}
                                         </span>
                                     )
                                 )}

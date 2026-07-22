@@ -46,6 +46,7 @@ export const ItemTooltip: React.FC<ItemTooltipProps> = ({ item, image, canStarfo
                 {!infiniteTrades && item.remaining_trade_slots != null && (
                     <span>Slots: {item.remaining_trade_slots}</span>
                 )}
+                {item.ring_level != null && <span>Ring Lv {item.ring_level}</span>}
             </div>
 
             <hr className="tooltip-divider" />
