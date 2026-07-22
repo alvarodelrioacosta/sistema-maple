@@ -89,3 +89,26 @@
     from { opacity: 0; transform: translateY(4px); }
     to   { opacity: 1; transform: translateY(0); }
 }
+
+/* Drag & drop target highlight */
+.equip-slot--droptarget {
+    outline: 2px dashed var(--color-accent-primary);
+    outline-offset: 1px;
+}
+
+/* Ring level badge */
+.equip-slot__lv {
+    position: absolute;
+    bottom: -6px;
+    right: -6px;
+    font-family: var(--font-family-mono);
+    font-weight: 700;
+    font-size: 9px;
+    color: #f0f0f6;
+    background: linear-gradient(180deg, #6d43e0, #7c3aed);
+    border: 1px solid rgba(0, 0, 0, 0.35);
+    border-radius: 6px;
+    padding: 1px 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+

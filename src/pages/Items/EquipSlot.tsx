@@ -22,6 +22,11 @@ interface EquipSlotProps {
     imageUrl?: string | null;
     itemsDB: ItemDB[];
     onEdit?: () => void;
+    draggable?: boolean;
+    canDrop?: boolean;
+    onDragStartItem?: () => void;
+    onDragEndItem?: () => void;
+    onDropItem?: () => void;
 }
 
 export const EquipSlot: React.FC<EquipSlotProps> = ({
@@ -31,6 +36,11 @@ export const EquipSlot: React.FC<EquipSlotProps> = ({
     imageUrl,
     itemsDB,
     onEdit,
+    draggable,
+    canDrop,
+    onDragStartItem,
+    onDragEndItem,
+    onDropItem,
 }) => {
     const [hovered, setHovered] = useState(false);
     const [previewStyle, setPreviewStyle] = useState<React.CSSProperties>({});
@@ -53,9 +63,19 @@ export const EquipSlot: React.FC<EquipSlotProps> = ({
         setHovered(true);
     }, []);
 
+    const dropProps = {
+        onDragOver: canDrop ? (e: React.DragEvent) => e.preventDefault() : undefined,
+        onDrop: canDrop ? (e: React.DragEvent) => { e.preventDefault(); onDropItem?.(); } : undefined,
+    };
+    const dropClass = canDrop ? ' equip-slot--droptarget' : '';
+
     if (!item) {
         return (
-            <div className="equip-slot equip-slot--empty" style={{ gridArea }}>
+            <div
+                className={`equip-slot equip-slot--empty${dropClass}`}
+                style={{ gridArea }}
+                {...dropProps}
+            >
                 <span>{label}</span>
             </div>
         );
@@ -68,11 +88,19 @@ export const EquipSlot: React.FC<EquipSlotProps> = ({
     return (
         <div
             ref={ref}
-            className="equip-slot equip-slot--filled"
+            className={`equip-slot equip-slot--filled${dropClass}`}
             style={{ gridArea, '--slot-tier': borderColor } as React.CSSProperties}
+            draggable={draggable}
+            onDragStart={draggable ? (e) => {
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', '');
+                onDragStartItem?.();
+            } : undefined}
+            onDragEnd={draggable ? () => onDragEndItem?.() : undefined}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={() => setHovered(false)}
             onClick={onEdit}
+            {...dropProps}
         >
             <div className="equip-slot__thumb">
                 {imageUrl
@@ -88,6 +116,10 @@ export const EquipSlot: React.FC<EquipSlotProps> = ({
                     </svg>
                     {item.star_force}
                 </span>
+            )}
+
+            {item.ring_level != null && (
+                <span className="equip-slot__lv">Lv{item.ring_level}</span>
             )}
 
             {hovered && ReactDOM.createPortal(
