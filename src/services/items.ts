@@ -11,24 +11,28 @@ export const itemsService = {
             .from('items')
             .select(`
                 *,
-                character:characters(*)
+                character:characters(*, account:accounts(status))
             `)
             .order('created_at', { ascending: false })
             .limit(200);
 
         if (error) throw error;
-        return (data as any) || [];
+        return ((data as any[]) || []).filter(
+            (i) => !i.character || i.character.account?.status !== 'banned'
+        );
     },
 
     async getByStatus(status: ItemStatus): Promise<Item[]> {
         const { data, error } = await supabase
             .from('items')
-            .select('*')
+            .select('*, character:characters(account:accounts(status))')
             .eq('status', status)
             .order('created_at', { ascending: false });
 
         if (error) throw error;
-        return (data as any) || [];
+        return ((data as any[]) || []).filter(
+            (i) => !i.character || i.character.account?.status !== 'banned'
+        );
     },
 
     async getByCharacterId(characterId: string): Promise<Item[]> {
@@ -122,7 +126,7 @@ export const itemsService = {
     async getStatusCounts(): Promise<Record<ItemStatus, number>> {
         const { data, error } = await supabase
             .from('items')
-            .select('status'); // Optimized: only fetch status column
+            .select('status, character:characters(account:accounts(status))');
 
         if (error) throw error;
 
@@ -136,7 +140,8 @@ export const itemsService = {
             in_use: 0
         };
 
-        data?.forEach(item => {
+        (data as any[])?.forEach(item => {
+            if (item.character && item.character.account?.status === 'banned') return;
             if (counts[item.status as ItemStatus] !== undefined) {
                 counts[item.status as ItemStatus]++;
             }
@@ -152,16 +157,17 @@ export const itemsService = {
     async getTotalStockValue(): Promise<number> {
         const { data, error } = await supabase
             .from('items')
-            .select('status, costo_item, estimated_value') // Optimized: only fetch needed columns
+            .select('status, costo_item, estimated_value, character:characters(account:accounts(status))')
             .neq('status', 'sold')
             .neq('status', 'Service');
 
         if (error) throw error;
 
-        return data?.reduce((sum, item) => {
+        return (data as any[])?.reduce((sum, item) => {
+            if (item.character && item.character.account?.status === 'banned') return sum;
             if (item.status === 'in_stock' || item.status === 'in_progress') return sum + (item.costo_item || 0);
             if (item.status === 'for_sale') return sum + (item.estimated_value || 0);
-            return sum; // bulk or other unknown
+            return sum;
         }, 0) || 0;
     },
 
@@ -169,23 +175,27 @@ export const itemsService = {
     async getItemBreakdown(): Promise<Array<{ status: string; costo_item: number; estimated_value: number }>> {
         const { data, error } = await supabase
             .from('items')
-            .select('status, costo_item, estimated_value')
+            .select('status, costo_item, estimated_value, character:characters(account:accounts(status))')
             .neq('status', 'sold')
             .neq('status', 'Service');
 
         if (error) throw error;
-        return (data as any) || [];
+        return ((data as any[]) || [])
+            .filter(item => !item.character || item.character.account?.status !== 'banned')
+            .map(({ status, costo_item, estimated_value }) => ({ status, costo_item, estimated_value }));
     },
 
     async getTopForSale(limit = 6): Promise<Array<{ name: string; estimated_value: number }>> {
         const { data, error } = await supabase
             .from('items')
-            .select('name, estimated_value')
+            .select('name, estimated_value, character:characters(account:accounts(status))')
             .eq('status', 'for_sale')
-            .order('estimated_value', { ascending: false })
-            .limit(limit);
+            .order('estimated_value', { ascending: false });
         if (error) throw error;
-        return (data as any) || [];
+        return ((data as any[]) || [])
+            .filter(item => !item.character || item.character.account?.status !== 'banned')
+            .slice(0, limit)
+            .map(({ name, estimated_value }) => ({ name, estimated_value }));
     },
 
     // Update Auction House listing timestamp
