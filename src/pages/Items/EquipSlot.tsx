@@ -109,17 +109,20 @@ export const EquipSlot: React.FC<EquipSlotProps> = ({
                 }
             </div>
 
-            {item.star_force > 0 && (
-                <span className="equip-slot__sf">
-                    <svg viewBox="0 0 24 24" width="9" height="9" fill="currentColor">
-                        <path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z" />
-                    </svg>
-                    {item.star_force}
-                </span>
-            )}
-
-            {item.ring_level != null && (
-                <span className="equip-slot__lv">Lv{item.ring_level}</span>
+            {(item.star_force > 0 || item.ring_level != null) && (
+                <div className="equip-slot__badges">
+                    {item.star_force > 0 && (
+                        <span className="equip-slot__sf">
+                            <svg viewBox="0 0 24 24" width="9" height="9" fill="currentColor">
+                                <path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z" />
+                            </svg>
+                            {item.star_force}
+                        </span>
+                    )}
+                    {item.ring_level != null && (
+                        <span className="equip-slot__lv">Lv{item.ring_level}</span>
+                    )}
+                </div>
             )}
 
             {hovered && ReactDOM.createPortal(

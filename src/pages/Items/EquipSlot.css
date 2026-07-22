@@ -61,11 +61,19 @@
     background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0 5px, transparent 5px 10px);
 }
 
-/* Star-force badge */
-.equip-slot__sf {
+/* Top-left badge stack (star force + ring level) */
+.equip-slot__badges {
     position: absolute;
     top: -6px;
     left: -6px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+
+/* Star-force badge */
+.equip-slot__sf {
     display: inline-flex;
     align-items: center;
     gap: 1px;
@@ -96,16 +104,15 @@
     outline-offset: 1px;
 }
 
-/* Ring level badge */
+/* Ring level badge — top-left stack, white (mirrors the star-force badge) */
 .equip-slot__lv {
-    position: absolute;
-    bottom: -6px;
-    right: -6px;
+    display: inline-flex;
+    align-items: center;
     font-family: var(--font-family-mono);
     font-weight: 700;
-    font-size: 9px;
-    color: #f0f0f6;
-    background: linear-gradient(180deg, #6d43e0, #7c3aed);
+    font-size: 10px;
+    color: #1a1a1f;
+    background: linear-gradient(180deg, #ffffff, #d9d9df);
     border: 1px solid rgba(0, 0, 0, 0.35);
     border-radius: 6px;
     padding: 1px 5px;
