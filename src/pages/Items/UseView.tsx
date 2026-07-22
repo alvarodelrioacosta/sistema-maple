@@ -10,8 +10,8 @@ interface SlotPos {
 }
 
 const RING_PINNED_LAST = new Set(['Ring of Restraint', 'Continuous Ring']);
+const DRAGGABLE_TYPES = new Set<ItemType>(['Ring', 'Pendant', 'Totem']);
 
-// Capacity = how many positions a type occupies in the window.
 const CAPACITY: Partial<Record<ItemType, number>> = {
     Ring: 5,
     Totem: 3,
@@ -19,8 +19,6 @@ const CAPACITY: Partial<Record<ItemType, number>> = {
 };
 const capacityOf = (type: ItemType) => CAPACITY[type] ?? 1;
 
-// Grid positions, in the MapleStory equipment-window layout.
-// `area` matches the grid-template-areas names in UseView.css.
 const SLOT_POSITIONS: SlotPos[] = [
     { area: 't1',  type: 'Totem',     index: 0 },
     { area: 't2',  type: 'Totem',     index: 1 },
@@ -52,28 +50,52 @@ const SLOT_POSITIONS: SlotPos[] = [
     { area: 'ba',  type: 'Badge',     index: 0 },
 ];
 
+const DISTINCT_TYPES: ItemType[] = [...new Set(SLOT_POSITIONS.map(p => p.type))];
+
 const slotLabel = (type: ItemType, index: number) =>
     capacityOf(type) > 1 ? `${type} ${index + 1}` : type;
+
+function derivedCompare(a: ItemWithCharacter, b: ItemWithCharacter, type: ItemType): number {
+    if (type === 'Ring') {
+        const aLast = RING_PINNED_LAST.has(a.name);
+        const bLast = RING_PINNED_LAST.has(b.name);
+        if (aLast !== bLast) return aLast ? 1 : -1;
+    }
+    return a.name.localeCompare(b.name);
+}
+
+// Build a fixed-length positions array for a type, honoring persisted slot_index.
+function buildPositions(items: ItemWithCharacter[], type: ItemType, cap: number) {
+    const positions: (ItemWithCharacter | null)[] = Array(cap).fill(null);
+    const pinned: ItemWithCharacter[] = [];
+    const floating: ItemWithCharacter[] = [];
+    for (const it of items) {
+        if (it.slot_index != null && it.slot_index >= 0 && it.slot_index < cap) pinned.push(it);
+        else floating.push(it);
+    }
+    pinned.sort((a, b) => (a.slot_index! - b.slot_index!));
+    for (const it of pinned) {
+        if (positions[it.slot_index!] == null) positions[it.slot_index!] = it;
+        else floating.push(it);
+    }
+    floating.sort((a, b) => derivedCompare(a, b, type));
+    let f = 0;
+    for (let p = 0; p < cap; p++) {
+        if (positions[p] == null && f < floating.length) positions[p] = floating[f++];
+    }
+    return { positions, overflow: floating.slice(f) };
+}
 
 interface UseViewProps {
     items: ItemWithCharacter[];
     itemsDB: ItemDB[];
     getImageUrl: (name: string) => string | null | undefined;
-    getAccountNumber: (charId: string | null) => number | null;
-    getAccountTag: (charId: string | null) => string | null;
-    formatValue: (v: number) => string;
     onEdit: (item: ItemWithCharacter) => void;
+    onReorder: (updates: { id: string; slot_index: number }[]) => void;
 }
 
-export const UseView: React.FC<UseViewProps> = ({
-    items,
-    itemsDB,
-    getImageUrl,
-    getAccountNumber,
-    getAccountTag,
-    onEdit,
-}) => {
-    // Characters that have at least one in-use item, sorted by name.
+export const UseView: React.FC<UseViewProps> = ({ items, itemsDB, getImageUrl, onEdit, onReorder }) => {
+    // Characters with in-use items: Main first, then alphabetical.
     const characters = useMemo(() => {
         const map = new Map<string, ItemWithCharacter['character']>();
         for (const item of items) {
@@ -83,46 +105,42 @@ export const UseView: React.FC<UseViewProps> = ({
         }
         return [...map.entries()]
             .map(([id, char]) => ({ id, char }))
-            .sort((a, b) => (a.char?.name ?? '').localeCompare(b.char?.name ?? ''));
+            .sort((a, b) => {
+                const am = a.char?.main === 'Main' ? 0 : 1;
+                const bm = b.char?.main === 'Main' ? 0 : 1;
+                if (am !== bm) return am - bm;
+                return (a.char?.name ?? '').localeCompare(b.char?.name ?? '');
+            });
     }, [items]);
 
     const [selectedId, setSelectedId] = useState<string | null>(null);
+    const [drag, setDrag] = useState<{ type: ItemType; fromIndex: number } | null>(null);
 
-    // Resolve the active character, falling back to the first when the stored id is gone.
     const activeId = selectedId && characters.some(c => c.id === selectedId)
         ? selectedId
         : characters[0]?.id ?? null;
 
-    const { assigned, overflow } = useMemo(() => {
-        const result: Partial<Record<ItemType, ItemWithCharacter[]>> = {};
+    const { positionsByType, overflow } = useMemo(() => {
+        const posByType: Partial<Record<ItemType, (ItemWithCharacter | null)[]>> = {};
         const over: { item: ItemWithCharacter; type: ItemType; capacity: number }[] = [];
-        if (!activeId) return { assigned: result, overflow: over };
+        if (!activeId) return { positionsByType: posByType, overflow: over };
 
         const charItems = items.filter(i => i.character_id === activeId);
         const byType: Partial<Record<ItemType, ItemWithCharacter[]>> = {};
-        for (const item of charItems) {
-            const type = itemsDB.find(db => db.name === item.name)?.type;
+        for (const it of charItems) {
+            const type = itemsDB.find(db => db.name === it.name)?.type;
             if (!type) continue;
             if (!byType[type]) byType[type] = [];
-            byType[type]!.push(item);
+            byType[type]!.push(it);
         }
 
-        for (const type of Object.keys(byType) as ItemType[]) {
-            const group = [...byType[type]!].sort((a, b) => {
-                if (type === 'Ring') {
-                    const aLast = RING_PINNED_LAST.has(a.name);
-                    const bLast = RING_PINNED_LAST.has(b.name);
-                    if (aLast !== bLast) return aLast ? 1 : -1;
-                }
-                return a.name.localeCompare(b.name);
-            });
+        for (const type of DISTINCT_TYPES) {
             const cap = capacityOf(type);
-            result[type] = group.slice(0, cap);
-            for (const item of group.slice(cap)) {
-                over.push({ item, type, capacity: cap });
-            }
+            const { positions, overflow: ov } = buildPositions(byType[type] ?? [], type, cap);
+            posByType[type] = positions;
+            for (const it of ov) over.push({ item: it, type, capacity: cap });
         }
-        return { assigned: result, overflow: over };
+        return { positionsByType: posByType, overflow: over };
     }, [items, itemsDB, activeId]);
 
     if (characters.length === 0) {
@@ -130,42 +148,56 @@ export const UseView: React.FC<UseViewProps> = ({
     }
 
     const activeChar = characters.find(c => c.id === activeId);
-    const accountNumber = getAccountNumber(activeId);
-    const accountTag = getAccountTag(activeId);
+    const avatarUrl = activeChar?.char?.avatar_url ?? null;
+
+    const handleDrop = (type: ItemType, toIndex: number) => {
+        if (!drag || drag.type !== type || drag.fromIndex === toIndex) { setDrag(null); return; }
+        const positions = [...(positionsByType[type] ?? [])];
+        const moving = positions[drag.fromIndex];
+        if (!moving) { setDrag(null); return; }
+        const target = positions[toIndex];
+        positions[toIndex] = moving;
+        positions[drag.fromIndex] = target ?? null;
+        const updates: { id: string; slot_index: number }[] = [];
+        positions.forEach((it, p) => {
+            if (it && it.slot_index !== p) updates.push({ id: it.id, slot_index: p });
+        });
+        setDrag(null);
+        if (updates.length) onReorder(updates);
+    };
 
     return (
         <div className="use-view">
             {/* Character selector */}
             <div className="use-selector">
-                {characters.map(({ id, char }) => {
-                    const acct = getAccountNumber(id);
-                    return (
-                        <button
-                            key={id}
-                            className={`use-chip${id === activeId ? ' active' : ''}`}
-                            onClick={() => setSelectedId(id)}
-                        >
-                            <span className="use-chip__name">{char?.name ?? 'Unknown'}</span>
-                            {acct != null && <span className="use-chip__acct">#{acct}</span>}
-                        </button>
-                    );
-                })}
+                {characters.map(({ id, char }) => (
+                    <button
+                        key={id}
+                        className={`use-chip${id === activeId ? ' active' : ''}`}
+                        onClick={() => setSelectedId(id)}
+                    >
+                        <span className="use-chip__name">{char?.name ?? 'Unknown'}</span>
+                    </button>
+                ))}
             </div>
 
             {/* Equipment window */}
             <div className="use-window-scroll">
                 <div className="equip-window">
                     <div className="equip-window__char">
+                        <div className="equip-window__char-avatar">
+                            {avatarUrl
+                                ? <img src={avatarUrl} alt={activeChar?.char?.name ?? ''} />
+                                : <div className="equip-window__char-avatar-empty" />
+                            }
+                        </div>
                         <div className="equip-window__char-name">{activeChar?.char?.name ?? 'Unknown'}</div>
-                        {accountNumber != null && (
-                            <div className="equip-window__char-acct">
-                                #{accountNumber}{accountTag ? ` · ${accountTag}` : ''}
-                            </div>
-                        )}
                     </div>
 
                     {SLOT_POSITIONS.map(pos => {
-                        const item = assigned[pos.type]?.[pos.index];
+                        const item = positionsByType[pos.type]?.[pos.index] ?? undefined;
+                        const isDraggableType = DRAGGABLE_TYPES.has(pos.type);
+                        const canDrop = !!drag && drag.type === pos.type;
                         return (
                             <EquipSlot
                                 key={pos.area}
@@ -175,6 +207,11 @@ export const UseView: React.FC<UseViewProps> = ({
                                 imageUrl={item ? getImageUrl(item.name) : undefined}
                                 itemsDB={itemsDB}
                                 onEdit={item ? () => onEdit(item) : undefined}
+                                draggable={isDraggableType && !!item}
+                                canDrop={canDrop}
+                                onDragStartItem={isDraggableType && item ? () => setDrag({ type: pos.type, fromIndex: pos.index }) : undefined}
+                                onDragEndItem={() => setDrag(null)}
+                                onDropItem={canDrop ? () => handleDrop(pos.type, pos.index) : undefined}
                             />
                         );
                     })}

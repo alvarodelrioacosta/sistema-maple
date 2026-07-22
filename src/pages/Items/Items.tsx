@@ -431,6 +431,17 @@ export const Items: React.FC = () => {
         return account ? account.tag : null;
     };
 
+    const handleReorderItems = async (updates: { id: string; slot_index: number }[]) => {
+        setItems(prev => prev.map(i => {
+            const u = updates.find(x => x.id === i.id);
+            return u ? { ...i, slot_index: u.slot_index } : i;
+        }));
+        try {
+            await itemsService.updateSlotIndexes(updates);
+        } catch (error) {
+            console.error('Error reordering items:', error);
+        }
+    };
 
 
 
@@ -604,10 +615,8 @@ export const Items: React.FC = () => {
                         items={filteredItems}
                         itemsDB={itemsDB}
                         getImageUrl={getImageUrl}
-                        getAccountNumber={getAccountNumber}
-                        getAccountTag={getAccountTag}
-                        formatValue={formatValue}
                         onEdit={(item) => setWorkspaceItem(item)}
+                        onReorder={handleReorderItems}
                     />
                 ) : loading ? (
                     <div className="items-loading">Loading items…</div>
